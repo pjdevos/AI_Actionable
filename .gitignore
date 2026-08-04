@@ -1,0 +1,11 @@
+# Commission guideline PDFs the classification is based on – third-party documents,
+# cited by URL in decision-tree.json (meta.sources). Kept out of the repo to keep it
+# small and text-only.
+*.pdf
+
+# OS / editor noise
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/

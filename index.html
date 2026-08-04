@@ -1,0 +1,2092 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Non-binding self-assessment tool: find out which risk category of the EU AI Act (Regulation (EU) 2024/1689) your AI system falls into.">
+<title>EU AI Act – Risk Tier Self-Assessment</title>
+
+<!--
+  EU AI Act – Risk Tier Self-Assessment
+  =====================================
+  Single self-contained page. No build step, no back-end, no storage, no tracking.
+
+  ALL content and ALL classification logic live in decision-tree.json.
+  This file only renders whatever that file describes.
+
+  Data loading order:
+    1. try fetch("decision-tree.json")  -> used when hosted next to the JSON file
+    2. fall back to the embedded copy in <script id="decision-tree-data"> below
+       (needed when the page is opened directly from disk via file://)
+
+  After editing decision-tree.json, refresh the embedded copy with:
+      node sync-embedded-json.mjs
+-->
+
+<style>
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --border: #dce0e6;
+  --border-strong: #b9c0ca;
+  --text: #14181f;
+  --text-muted: #5b6472;
+  --accent: #1d4ed8;
+  --accent-weak: #e8eeff;
+  --focus: #1d4ed8;
+
+  /* semantic tier palette – outcomes[].color maps onto these */
+  --c-grey: #4b5563;
+  --c-grey-bg: #eef0f3;
+  --c-red: #c81e1e;
+  --c-red-bg: #fdeceb;
+  --c-orange: #b3450b;
+  --c-orange-bg: #fdefe4;
+  --c-yellow: #8a6100;
+  --c-yellow-bg: #fdf3d7;
+  --c-green: #11703a;
+  --c-green-bg: #e6f5ea;
+  --c-blue: #1d4ed8;
+  --c-blue-bg: #e8eeff;
+  --c-purple: #6528c4;
+  --c-purple-bg: #f1e9fe;
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 8px 24px -16px rgba(16, 24, 40, .3);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --motion: 200ms;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #10141a;
+    --surface: #171c24;
+    --surface-2: #1e242e;
+    --border: #2c3440;
+    --border-strong: #46505f;
+    --text: #e8ecf2;
+    --text-muted: #9aa5b4;
+    --accent: #7ea2ff;
+    --accent-weak: #1c2740;
+    --focus: #7ea2ff;
+    --c-grey: #a8b1bd; --c-grey-bg: #232932;
+    --c-red: #ff8a80; --c-red-bg: #3a1e1e;
+    --c-orange: #ffab6b; --c-orange-bg: #3a2716;
+    --c-yellow: #f0c650; --c-yellow-bg: #33290d;
+    --c-green: #6ede97; --c-green-bg: #14301f;
+    --c-blue: #9db8ff; --c-blue-bg: #1b2540;
+    --c-purple: #c4a3ff; --c-purple-bg: #271a3e;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion: 0ms; }
+  * { animation: none !important; transition: none !important; }
+}
+
+* { box-sizing: border-box; }
+/* class-based display rules below would otherwise beat the UA [hidden] rule */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin: 0; font-weight: 650; letter-spacing: -.01em; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+ul, ol { margin: 0; padding-left: 1.25em; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- header ---------- */
+header.site {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 20;
+}
+header.site .inner {
+  display: flex; align-items: center; gap: 14px;
+  min-height: 64px; flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.brand svg { width: 26px; height: 26px; color: var(--accent); flex: none; }
+.brand .t { font-weight: 680; font-size: 1.02rem; }
+.brand .s { color: var(--text-muted); font-size: .8rem; }
+
+/* ---------- generic bits ---------- */
+.chip {
+  display: inline-block; font-family: var(--mono); font-size: .74rem;
+  padding: 2px 7px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text-muted);
+  /* article refs can be long ("Art. 3(1); Guidelines on…") – must never force a
+     horizontal scrollbar on narrow screens */
+  max-width: 100%; overflow-wrap: anywhere;
+}
+.chip.art { background: var(--accent-weak); border-color: transparent; color: var(--accent); }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border-strong);
+  background: var(--surface); font-weight: 550;
+  transition: background var(--motion), border-color var(--motion), transform var(--motion);
+}
+.btn:hover { border-color: var(--accent); background: var(--surface-2); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { .btn.primary { color: #0d1017; } }
+.btn.primary:hover { filter: brightness(1.06); background: var(--accent); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--text-muted); }
+.btn.ghost:hover { background: var(--surface-2); border-color: var(--border); }
+.btn.small { padding: 6px 11px; font-size: .85rem; }
+.btn svg { width: 17px; height: 17px; flex: none; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+details.disclosure { border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); }
+details.disclosure > summary {
+  cursor: pointer; padding: 10px 14px; font-weight: 550; font-size: .93rem;
+  display: flex; align-items: center; gap: 8px; list-style: none;
+}
+details.disclosure > summary::-webkit-details-marker { display: none; }
+details.disclosure > summary::before {
+  content: ""; width: 7px; height: 7px; flex: none;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform var(--motion); margin-right: 2px;
+}
+details.disclosure[open] > summary::before { transform: rotate(45deg); }
+details.disclosure > .body { padding: 0 14px 14px; font-size: .92rem; }
+
+.note {
+  border-left: 3px solid var(--border-strong); padding: 8px 0 8px 12px;
+  color: var(--text-muted); font-size: .9rem;
+}
+
+/* ---------- start screen ---------- */
+#start { padding: 40px 0 64px; }
+#start .lead { max-width: 62ch; }
+#start h1 { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.3rem); margin-bottom: 12px; }
+#start .sub { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 26px; }
+.tier-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0; }
+.tier-legend .item {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 5px 12px 5px 9px; font-size: .85rem; background: var(--surface);
+}
+.tier-legend .item svg { width: 15px; height: 15px; }
+.disclaimer {
+  border: 1px solid var(--border); border-left: 4px solid var(--c-yellow);
+  background: var(--c-yellow-bg); color: var(--text);
+  border-radius: 8px; padding: 14px 16px; font-size: .9rem; margin: 26px 0;
+}
+.disclaimer strong { display: block; margin-bottom: 4px; }
+.facts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin: 26px 0 30px; }
+.facts .f { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
+.facts .f b { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 600; }
+.facts .f span { font-size: .92rem; }
+
+/* ---------- assessment layout ---------- */
+#app { padding: 22px 0 60px; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 26px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+
+/* phase stepper */
+.stepper { list-style: none; padding: 0; margin: 0 0 20px; display: flex; gap: 8px; }
+.stepper li { flex: 1 1 0; min-width: 0; }
+.stepper .seg {
+  display: flex; align-items: center; gap: 7px;
+  border-top: 4px solid var(--border); padding-top: 8px;
+  font-size: .82rem; color: var(--text-muted);
+  transition: border-color var(--motion), color var(--motion);
+}
+.stepper .seg .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stepper .seg .dot {
+  width: 16px; height: 16px; border-radius: 50%; flex: none;
+  border: 2px solid var(--border-strong); display: grid; place-items: center;
+  font-size: 10px; line-height: 1;
+}
+.stepper .seg .dot svg { width: 10px; height: 10px; }
+.stepper li[data-state="current"] .seg { border-top-color: var(--accent); color: var(--text); font-weight: 600; }
+.stepper li[data-state="current"] .seg .dot { border-color: var(--accent); background: var(--accent-weak); color: var(--accent); animation: pulse 2s ease-in-out infinite; }
+.stepper li[data-state="done"] .seg { border-top-color: var(--c-green); color: var(--text); }
+.stepper li[data-state="done"] .seg .dot { border-color: var(--c-green); background: var(--c-green-bg); color: var(--c-green); }
+.stepper li[data-state="skipped"] .seg { opacity: .55; border-top-style: dotted; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 5px var(--accent-weak); } }
+.stepper-mobile { display: none; }
+@media (max-width: 640px) {
+  .stepper .seg .lbl { display: none; }
+  .stepper-mobile { display: block; font-size: .85rem; color: var(--text-muted); margin: -12px 0 16px; }
+}
+
+/* question screen */
+#screen { padding: 26px; }
+@media (max-width: 560px) { #screen { padding: 20px 16px; } }
+.q-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.q-text { font-size: clamp(1.2rem, 1.05rem + .8vw, 1.5rem); margin-bottom: 12px; }
+.q-text:focus { outline: none; }
+.q-explainer { color: var(--text-muted); font-size: .95rem; margin-bottom: 18px; max-width: 72ch; }
+.panels { display: grid; gap: 10px; margin-bottom: 20px; }
+.help-cols { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.help-cols h4 { font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); margin-bottom: 6px; }
+.help-cols ul { padding-left: 1.1em; }
+.help-cols li { margin-bottom: 4px; }
+
+fieldset.choices { border: 0; margin: 0 0 20px; padding: 0; }
+fieldset.choices > legend { font-weight: 600; font-size: .95rem; padding: 0; margin-bottom: 10px; }
+.opt {
+  display: flex; gap: 11px; align-items: flex-start;
+  border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px;
+  background: var(--surface); margin-bottom: 8px; cursor: pointer;
+  transition: border-color var(--motion), background var(--motion);
+}
+.opt:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-weak); }
+.opt input { margin: 3px 0 0; width: 17px; height: 17px; flex: none; accent-color: var(--accent); }
+.opt .txt { font-size: .94rem; }
+.opt .txt .lead { font-weight: 550; }
+.opt .txt .detail, .opt .txt .obl { color: var(--text-muted); font-size: .87rem; margin-top: 4px; }
+.opt .txt .obl { color: var(--accent); }
+.opt .refline { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+
+.area { border: 1px solid var(--border); border-radius: 9px; margin-bottom: 8px; background: var(--surface); overflow: hidden; }
+.area > summary {
+  cursor: pointer; padding: 12px 14px; display: flex; gap: 10px; align-items: center;
+  list-style: none; font-weight: 550; font-size: .95rem;
+}
+.area > summary::-webkit-details-marker { display: none; }
+.area > summary .count {
+  margin-left: auto; font-size: .78rem; color: var(--accent);
+  background: var(--accent-weak); border-radius: 999px; padding: 2px 9px; font-weight: 600;
+}
+.area > summary .count[hidden] { display: none; }
+.area .inner { padding: 0 14px 12px; }
+.area .cond { font-size: .84rem; color: var(--text-muted); margin-bottom: 10px; font-style: italic; }
+.area.has-sel { border-color: var(--accent); }
+
+.resolved {
+  display: flex; gap: 9px; align-items: flex-start;
+  border: 1px dashed var(--border-strong); border-radius: 9px;
+  padding: 11px 14px; margin-bottom: 18px; font-size: .9rem; background: var(--surface-2);
+}
+.resolved svg { width: 17px; height: 17px; flex: none; margin-top: 2px; color: var(--accent); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.actions .spacer { flex: 1 1 auto; }
+.btn-list { display: grid; gap: 10px; margin-bottom: 20px; }
+.btn-opt {
+  display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
+  padding: 14px 16px; border-radius: 9px; border: 1px solid var(--border-strong);
+  background: var(--surface); font-size: .98rem; font-weight: 550;
+  transition: border-color var(--motion), background var(--motion), transform var(--motion);
+}
+.btn-opt:hover { border-color: var(--accent); background: var(--accent-weak); }
+.btn-opt:active { transform: translateY(1px); }
+.btn-opt .mark {
+  width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  border: 1px solid var(--border-strong); font-size: .72rem; color: var(--text-muted); font-family: var(--mono);
+}
+.btn-opt[data-tone="unsure"] { border-style: dashed; font-weight: 500; color: var(--text-muted); }
+.btn-opt[data-tone="unsure"]:hover { color: var(--text); }
+
+/* verdict-so-far panel */
+aside.verdict { position: sticky; top: 88px; }
+@media (max-width: 900px) { aside.verdict { position: static; } }
+.verdict .card { padding: 16px; }
+.verdict h3 { font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 12px; }
+.vlist { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+.vlist li { display: flex; gap: 9px; align-items: flex-start; font-size: .89rem; }
+.vlist li.new { animation: highlight 1.1s ease-out; }
+@keyframes highlight { from { background: var(--accent-weak); } to { background: transparent; } }
+.vlist .mk {
+  width: 20px; height: 20px; border-radius: 5px; flex: none; display: grid; place-items: center;
+  background: var(--surface-2); color: var(--text-muted);
+}
+.vlist .mk svg { width: 13px; height: 13px; }
+.vlist li[data-color] .mk { background: var(--tone-bg); color: var(--tone); }
+.vlist .sub { color: var(--text-muted); font-size: .82rem; }
+.vlist li.pending .mk { animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+.verdict .empty { color: var(--text-muted); font-size: .88rem; }
+
+/* ---------- result ---------- */
+#result { padding: 26px 0 70px; }
+#result > .wrap > header { margin-bottom: 22px; }
+#result h1 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.05rem); margin-bottom: 8px; }
+#result .subtitle { color: var(--text-muted); }
+.result-cards { display: grid; gap: 16px; margin-bottom: 26px; }
+.rcard { border-radius: var(--radius); border: 1px solid var(--border); border-left: 5px solid var(--tone); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+.rcard .top { display: flex; gap: 13px; padding: 18px 20px 0; align-items: flex-start; }
+.rcard .badge {
+  width: 34px; height: 34px; border-radius: 8px; flex: none; display: grid; place-items: center;
+  background: var(--tone-bg); color: var(--tone);
+}
+.rcard .badge svg { width: 19px; height: 19px; }
+.rcard .kicker { font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; color: var(--tone); }
+.rcard h2 { font-size: 1.16rem; margin: 2px 0 0; }
+.rcard .body { padding: 12px 20px 20px 67px; display: grid; gap: 14px; }
+@media (max-width: 560px) { .rcard .body { padding-left: 20px; } }
+.rcard .summary { font-size: .96rem; }
+.rcard h3.lbl { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 6px; }
+.rcard ul.obligations { padding-left: 1.15em; display: grid; gap: 5px; font-size: .93rem; }
+.rcard .triggered { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--surface-2); }
+.rcard .triggered ul { padding-left: 1.15em; display: grid; gap: 6px; font-size: .9rem; margin-top: 6px; }
+.rcard .dates { display: flex; gap: 9px; align-items: flex-start; font-size: .88rem; color: var(--text-muted); }
+.rcard .dates svg { width: 16px; height: 16px; flex: none; margin-top: 3px; }
+.rcard .refs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.review-box { border: 1px solid var(--c-yellow); background: var(--c-yellow-bg); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 26px; }
+.review-box h2 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.review-box h2 svg { width: 18px; height: 18px; color: var(--c-yellow); }
+.review-box ol { display: grid; gap: 10px; font-size: .92rem; }
+.review-box .q { font-weight: 600; }
+
+.section { margin-bottom: 26px; }
+.section > h2 { font-size: 1.05rem; margin-bottom: 12px; }
+
+/* answer timeline */
+.timeline { list-style: none; padding: 0; margin: 0; }
+.timeline li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 14px; }
+.timeline .rail { display: flex; flex-direction: column; align-items: center; }
+.timeline .rail .dot {
+  width: 12px; height: 12px; border-radius: 50%; background: var(--surface);
+  border: 2px solid var(--accent); margin-top: 5px; flex: none;
+}
+.timeline .rail .line { flex: 1 1 auto; width: 2px; background: var(--border); margin: 4px 0; min-height: 8px; }
+.timeline li:last-child .rail .line { display: none; }
+.timeline .content { padding-bottom: 18px; min-width: 0; }
+.timeline .q { font-size: .93rem; font-weight: 550; }
+.timeline .a { font-size: .93rem; margin-top: 3px; display: flex; gap: 7px; align-items: baseline; }
+.timeline .a .arrow { color: var(--text-muted); flex: none; }
+.timeline .meta { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-top: 6px; }
+.timeline ul.sel { padding-left: 1.1em; margin-top: 6px; font-size: .87rem; color: var(--text-muted); display: grid; gap: 3px; }
+.timeline .uncertain-tag { color: var(--c-yellow); font-family: var(--mono); font-size: .74rem; }
+
+/* decision map */
+.map-wrap { overflow-x: auto; }
+.map { min-width: 640px; }
+.map text { font: 11px system-ui, sans-serif; fill: var(--text-muted); }
+.map .box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+.map .box.on { stroke: var(--accent); stroke-width: 2.5; fill: var(--accent-weak); }
+.map .box.outcome { stroke-dasharray: 0; }
+.map .lbl { fill: var(--text); font-weight: 550; }
+.map .edge { stroke: var(--border); stroke-width: 1.5; fill: none; }
+.map .edge.on { stroke: var(--accent); stroke-width: 2.5; }
+.map .elabel { font-size: 9.5px; }
+
+/* ---------- footer ---------- */
+footer.site { border-top: 1px solid var(--border); background: var(--surface); padding: 26px 0 40px; font-size: .87rem; color: var(--text-muted); }
+footer.site .grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+footer.site h4 { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; color: var(--text); }
+footer.site ul { list-style: none; padding: 0; display: grid; gap: 5px; }
+footer.site .meta-line { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 6px 16px; }
+
+#databanner { display: none; margin: 16px 0; border: 1px solid var(--c-red); background: var(--c-red-bg); border-radius: 8px; padding: 12px 14px; font-size: .9rem; }
+#databanner ul { margin-top: 6px; }
+
+.print-only { display: none; }
+
+/* ---------- print / PDF ---------- */
+@media print {
+  :root {
+    --bg: #fff; --surface: #fff; --surface-2: #fff; --border: #b0b0b0; --border-strong: #808080;
+    --text: #000; --text-muted: #333; --accent: #000; --accent-weak: #fff; --shadow: none;
+    --c-grey: #444; --c-red: #000; --c-orange: #000; --c-yellow: #000; --c-green: #000; --c-blue: #000; --c-purple: #000;
+    --c-grey-bg: #fff; --c-red-bg: #fff; --c-orange-bg: #fff; --c-yellow-bg: #fff; --c-green-bg: #fff; --c-blue-bg: #fff; --c-purple-bg: #fff;
+  }
+  header.site, aside.verdict, .no-print, .stepper, #databanner { display: none !important; }
+  .print-only { display: block; }
+  body { background: #fff; font-size: 11.5pt; }
+  .wrap { max-width: none; padding: 0; }
+  #result { padding: 0; }
+  .card, .rcard, .review-box { box-shadow: none; break-inside: avoid; }
+  .rcard { border: 1px solid #999; border-left: 4px solid #000; }
+  details.disclosure > .body, .area .inner { display: block !important; }
+  details.disclosure > summary::before { display: none; }
+  a { color: #000; text-decoration: underline; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8.5pt; color: #555; word-break: break-all; }
+  .section, .rcard { page-break-inside: avoid; }
+}
+</style>
+
+<script type="application/json" id="decision-tree-data">
+{
+  "meta": {
+    "id": "ai-act-tier-assessment",
+    "title": "EU AI Act – Risk Tier Self-Assessment",
+    "version": "1.0.0",
+    "language": "en",
+    "lastUpdated": "2026-08-04",
+    "regulation": "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
+    "purpose": "Help a provider or deployer of an algorithm or AI application determine which risk category of the EU AI Act their system falls into: out of scope, prohibited, high-risk (Annex I or Annex III), limited-risk (transparency), or minimal-risk. A separate overlay determines general-purpose AI (GPAI) model obligations.",
+    "disclaimer": "This tool provides non-binding, indicative guidance only. It is based on the AI Act and the Commission's draft classification guidelines (stakeholder-consultation drafts, not yet final). It is not legal advice. The final classification is the responsibility of the provider, supervised by the competent market surveillance authority. Only the Court of Justice of the European Union can give an authoritative interpretation of the AI Act. In case of doubt, consult the AI Act Service Desk, your competent authority, or qualified legal counsel.",
+    "sources": [
+      "Regulation (EU) 2024/1689 (AI Act), Articles 3, 5, 6, 7, 50, 51, 53, 55; Annexes I, III",
+      "Commission Guidelines on the definition of an artificial intelligence system, C(2025) 5053",
+      "Draft Commission guidelines on the classification of high-risk AI systems under Article 6 (general principles; Annex I; Annex III), stakeholder-consultation drafts 2026",
+      "Annex III overview: https://artificialintelligenceact.eu/annex/3/"
+    ],
+    "keyDates": {
+      "prohibitions_apply": "2025-02-02",
+      "gpai_rules_apply": "2025-08-02",
+      "annex_iii_highrisk_apply": "originally 2026-08-02, postponed by the AI Omnibus to 2027-12-02",
+      "annex_i_highrisk_apply": "originally 2027-08-02, postponed by the AI Omnibus to 2028-08-02"
+    },
+    "links": [
+      { "label": "AI Act Service Desk / Single Information Platform", "url": "https://digital-strategy.ec.europa.eu/en/policies/ai-act-service-desk" },
+      { "label": "Full text of Regulation (EU) 2024/1689 (EUR-Lex)", "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj" },
+      { "label": "Annex III overview", "url": "https://artificialintelligenceact.eu/annex/3/" }
+    ],
+    "uncertaintyPolicy": "Where a question is judgement-heavy, an 'I am not sure' answer is available. It always routes to the more conservative (higher-risk) branch and records a point for expert review, which is listed on the result screen."
+  },
+
+  "resultModel": {
+    "description": "The assessment does not produce a single leaf. It produces a compiled PROFILE with up to three independent dimensions, because a system can carry more than one status at once (e.g. a high-risk system that is also subject to transparency duties, built on a GPAI model). The implementer must accumulate flags across the flow and render all applicable result cards.",
+    "dimensions": {
+      "primaryTier": "One of: out_of_scope | prohibited | high_risk_annex_i | high_risk_annex_iii | not_high_risk_filtered | minimal_risk. Determined by the SPINE module.",
+      "transparency": "Boolean + list of triggered Article 50 obligations. Determined by the TRANSPARENCY module. Cumulative with any tier except out_of_scope and prohibited.",
+      "gpai": "One of: none | gpai_model | gpai_model_systemic. Determined by the GPAI module. Independent of the system tier."
+    },
+    "shortCircuits": [
+      "If primaryTier = out_of_scope, stop. Do not run transparency or GPAI modules.",
+      "If primaryTier = prohibited, stop the tier spine. The system may not be placed on the market or used. Still worth noting GPAI status if relevant, but the transparency overlay is moot."
+    ]
+  },
+
+  "moduleOrder": ["SPINE", "TRANSPARENCY", "GPAI", "RESULT"],
+
+  "phases": [
+    { "id": "scope", "label": "Scope & prohibitions", "shortLabel": "Scope", "module": "SPINE", "nodes": ["S0_ai_system", "S1_prohibited"] },
+    { "id": "tier", "label": "Risk tier", "shortLabel": "Tier", "module": "SPINE", "nodes": ["S2_annex_i_product", "S3_annex_i_tpca", "S4_annex_iii_area", "S5_profiling", "S6_filter"] },
+    { "id": "transparency", "label": "Transparency", "shortLabel": "Transp.", "module": "TRANSPARENCY", "nodes": ["T0_transparency"] },
+    { "id": "gpai", "label": "GPAI", "shortLabel": "GPAI", "module": "GPAI", "nodes": ["G0_gpai", "G1_systemic"] }
+  ],
+
+  "ui": {
+    "_comment": "Every string the interface renders itself (buttons, headings, labels). Translating the tool = copying this file and translating meta, nodes, outcomes, catalog and this ui block. No code changes needed. {placeholders} are filled in by the interface.",
+    "chrome.restart": "Start over",
+    "chrome.dataSource": "Data: {source}",
+    "chrome.versionLine": "Version {version} · content last updated {date}",
+    "start.headline": "Which risk category of the EU AI Act does your system fall into?",
+    "start.legendLabel": "Possible outcomes",
+    "start.fact1.label": "Questions",
+    "start.fact1.text": "Typically 5–8, one per screen. The flow branches, so the exact number depends on your answers.",
+    "start.fact2.label": "Privacy",
+    "start.fact2.text": "Runs entirely in your browser. No account, no server, nothing stored or transmitted.",
+    "start.fact3.label": "Output",
+    "start.fact3.text": "All applicable result cards, the path you took, and a printable summary.",
+    "start.disclaimerLabel": "Not legal advice",
+    "start.button": "Start the assessment",
+    "start.modelSummary": "How this tool models the AI Act (and why there is more than one answer)",
+    "start.shortCircuitsLabel": "Short-circuits",
+    "progress.label": "Progress",
+    "progress.state.current": "current step",
+    "progress.state.done": "completed",
+    "progress.state.skipped": "not applicable",
+    "progress.state.upcoming": "upcoming",
+    "progress.mobile": "Phase {n} of {total}: {label}",
+    "verdict.title": "Your verdict so far",
+    "verdict.empty": "Answer the first question and your classification will start to take shape here.",
+    "verdict.isAiSystem": "Is an AI system",
+    "verdict.notAiSystem": "Not an AI system",
+    "verdict.aiSystemUnclear": "AI-system status unclear",
+    "verdict.conservativeSub": "continued conservatively",
+    "verdict.prohibitedFound": "Prohibited practice found",
+    "verdict.noProhibited": "No prohibited practice",
+    "verdict.assessingTier": "Assessing the risk tier…",
+    "verdict.minimalSub": "no mandatory obligations",
+    "verdict.transparencyAdded": "Transparency obligations added ({n})",
+    "verdict.noTransparency": "No Article 50 transparency situation",
+    "verdict.notGpai": "Not a GPAI model provider",
+    "verdict.reviewPoints.one": "1 point for expert review",
+    "verdict.reviewPoints.many": "{n} points for expert review",
+    "verdict.reviewSub": "shown in the result",
+    "question.helpSummary": "Examples / how to decide",
+    "question.likelyYes": "Points to “yes”",
+    "question.likelyNo": "Points to “no”",
+    "question.referenceSummary": "Reference list — {ref}",
+    "question.sectionA": "Section A — New Legislative Framework",
+    "question.sectionB": "Section B — other (mostly transport)",
+    "question.annexIIINotes": "How to read Annex III (important limitations)",
+    "question.checklistLegend": "{ref} — tick everything that applies",
+    "question.annexIIILegend": "{ref} — expand an area and tick every matching use case",
+    "question.overrides": "Overrides:",
+    "question.area": "Area {n}",
+    "question.selectedCount": "{n} selected",
+    "question.countsAs": "This counts as:",
+    "question.answerSubFirst": "Answer the question above to continue.",
+    "question.continue": "Continue",
+    "question.back": "Back",
+    "question.obligationPrefix": "Obligation:",
+    "result.heading.fallback": "Result",
+    "result.kicker.primary": "Primary risk tier",
+    "result.kicker.transparency": "Cumulative overlay",
+    "result.kicker.gpai": "Model-level overlay",
+    "result.subtitle.one": "1 applicable result card. A system can carry a risk tier, transparency duties and a GPAI model status at the same time.",
+    "result.subtitle.many": "{n} applicable result cards. A system can carry a risk tier, transparency duties and a GPAI model status at the same time.",
+    "result.print": "Print / save as PDF",
+    "result.download": "Download summary (.md)",
+    "result.backToQuestion": "Back to the last question",
+    "result.triggered": "Triggered in your case",
+    "result.obligationsLabel": "What this means in practice",
+    "result.applicationDate": "Application date —",
+    "result.reviewTitle.one": "1 point to have reviewed by an expert",
+    "result.reviewTitle.many": "{n} points to have reviewed by an expert",
+    "result.reviewIntro": "You answered “I'm not sure” below. Each time, the assessment took the more conservative (higher-risk) route, so the result above may be stricter than necessary — or, if the underlying facts differ, wrong.",
+    "result.pathTitle": "The path you took",
+    "result.pathIntro": "This trail is the auditable record of the assessment. In the filtered case it is the starting point for the Article 6(4) documentation duty.",
+    "result.pathResultLabel": "Result",
+    "result.editAnswer": "Edit this answer",
+    "result.flagged": "flagged for review",
+    "result.mapSummary": "Show the decision map, with your path highlighted",
+    "result.mapCaption": "Highlighted boxes and lines are the path you took. Overlay questions (transparency, GPAI) always run; they do not change the tier.",
+    "result.mapAria": "Decision map of the assessment with the path taken highlighted",
+    "result.nextTitle": "What this means, and what to do next",
+    "result.nextSteps": [
+      "Treat this as a triage result: it tells you which part of the AI Act to read, not whether you comply.",
+      "Write down your reasoning per question — the trail above is a starting point. For the Article 6(3) filter this documentation is a legal duty (Art. 6(4)).",
+      "Re-run the assessment whenever the intended purpose, the deployment context or the model changes.",
+      "For borderline calls — the Article 3(1) inference test, the Annex I safety-component test, the Article 6(3) filter — get expert or legal review.",
+      "Consult the AI Act Service Desk or your national competent authority."
+    ],
+    "result.draftNote": "Version {version} · content last updated {date} · based on {regulation} and the Commission's draft classification guidelines (stakeholder-consultation versions). Application dates reflect the AI Omnibus postponements and are indicative and subject to change.",
+    "footer.help": "Need help deciding?",
+    "footer.sources": "Sources encoded in this tool",
+    "footer.dates": "Key application dates",
+    "footer.date.prohibitions_apply": "Prohibitions (Art. 5)",
+    "footer.date.gpai_rules_apply": "GPAI models (Art. 53–55)",
+    "footer.date.annex_iii_highrisk_apply": "High-risk, Annex III (Art. 6(2))",
+    "footer.date.annex_i_highrisk_apply": "High-risk, Annex I (Art. 6(1))",
+    "footer.date.transparency": "Transparency (Art. 50): 2 August 2026",
+    "export.filename": "ai-act-assessment",
+    "export.title": "{title} — result",
+    "export.outcome": "Outcome",
+    "export.toolVersion": "Tool version",
+    "export.regulation": "Regulation",
+    "export.generated": "Generated",
+    "export.generatedNote": "local browser time",
+    "export.cardsTitle": "Result cards",
+    "export.legalRefs": "Legal references",
+    "export.reviewTitle": "Points for expert review",
+    "export.trailTitle": "Answer trail",
+    "export.answer": "Answer",
+    "export.selected": "Selected",
+    "export.flagged": "Flagged for expert review",
+    "export.disclaimerTitle": "Disclaimer",
+    "export.sourcesTitle": "Sources",
+    "error.contract": "decision-tree.json does not match the expected contract:",
+    "error.externalIgnored": "The external decision-tree.json was ignored (validation failed) — using the embedded copy:",
+    "source.external": "{file} (loaded from the server)",
+    "source.embedded": "embedded copy of decision-tree.json",
+    "source.embeddedFallback": "embedded copy (the external decision-tree.json failed validation)"
+  },
+
+  "nodes": {
+    "S0_ai_system": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Does your system qualify as an 'AI system' under the AI Act?",
+      "explainer": "Article 3(1) defines an AI system as a machine-based system that (a) is designed to operate with varying levels of autonomy, (b) may show adaptiveness after deployment, and (c) for explicit or implicit objectives, INFERS from the input it receives how to generate outputs such as predictions, content, recommendations or decisions that can influence physical or virtual environments. The key element is 'inference': the system derives outputs from data using techniques such as machine learning or knowledge/logic-based approaches, rather than executing only rules defined solely by natural persons.",
+      "help": {
+        "likelyYes": [
+          "Uses machine learning (supervised, unsupervised, reinforcement, deep learning)",
+          "Uses knowledge- or logic-based inference, expert systems, or search/optimisation that infers solutions",
+          "Generates content, predictions, recommendations or decisions from data with some autonomy"
+        ],
+        "likelyNo": [
+          "Systems for improving mathematical optimisation only, or that merely speed up classical methods",
+          "Basic data processing following rules defined solely by natural persons (e.g. a spreadsheet with fixed formulas, a static database query)",
+          "Systems based on classical heuristics with no learning/inference",
+          "Simple prediction using a single basic statistical rule"
+        ]
+      },
+      "articleRef": "Art. 3(1); Guidelines on the definition of an AI system (C(2025) 5053)",
+      "options": [
+        { "label": "Yes – it meets the Article 3(1) definition", "value": "yes", "next": "S1_prohibited" },
+        { "label": "No – it only executes rules defined solely by natural persons", "value": "no", "next": "OUT_OF_SCOPE" },
+        { "label": "I'm not sure whether it 'infers'", "value": "unsure", "next": "S1_prohibited", "uncertain": true, "reviewNote": "Whether the system 'infers' outputs within the meaning of Art. 3(1) was not established. The assessment continued on the assumption that it is an AI system. Verify against the Commission Guidelines on the definition of an AI system (C(2025) 5053)." }
+      ]
+    },
+
+    "S1_prohibited": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Does the system's intended purpose or use match any PROHIBITED practice under Article 5?",
+      "explainer": "Article 5 bans certain AI practices outright (unacceptable risk). If any of the practices below applies, the system is prohibited regardless of anything else. Review each listed practice.",
+      "articleRef": "Art. 5",
+      "checklist": "prohibitedPractices",
+      "multiSelect": true,
+      "selectionRule": "anySelected",
+      "options": [
+        { "label": "Yes – at least one prohibited practice applies", "value": "yes", "next": "PROHIBITED" },
+        { "label": "No – none of these apply", "value": "no", "next": "S2_annex_i_product" }
+      ]
+    },
+
+    "S2_annex_i_product": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Is the AI system itself a product, OR a safety component of a product, covered by one of the Union harmonisation laws listed in Annex I?",
+      "explainer": "Article 6(1) – first cumulative condition. Annex I lists EU product-safety legislation (e.g. machinery, toys, lifts, medical devices, in-vitro diagnostics, radio equipment, pressure equipment, PPE, cableways, gas appliances, and the automotive, aviation, rail and marine sectors). A 'safety component' (Art. 3(14)) is a component whose failure/malfunction endangers health and safety, OR that fulfils a safety function. Comfort/efficiency/optimisation functions are generally NOT safety functions, but a system can still be a safety component if its failure would endanger health or safety.",
+      "help": {
+        "likelyYes": [
+          "The AI is (or is embedded in) a regulated product like a medical device, machine, vehicle, lift, toy, radio equipment",
+          "The AI performs a safety function (e.g. detects human presence and triggers a safe stop; prevents collisions)",
+          "Failure/malfunction of the AI could endanger persons or property (e.g. lane assistance, lift door control)"
+        ],
+        "likelyNo": [
+          "The AI only optimises comfort, efficiency, performance or convenience and its failure would cause only inconvenience/cost (e.g. a smart thermostat learning routines, music recommendation in a connected toy, yield forecasting)",
+          "The product is not covered by any Annex I legislation at all"
+        ]
+      },
+      "articleRef": "Art. 6(1); Art. 3(14); Annex I",
+      "reference": "annexI_legislation",
+      "options": [
+        { "label": "Yes – covered by Annex I legislation (as product or safety component)", "value": "yes", "next": "S3_annex_i_tpca" },
+        { "label": "No", "value": "no", "next": "S4_annex_iii_area" },
+        { "label": "I'm not sure (e.g. unclear whether it is a safety component)", "value": "unsure", "next": "S3_annex_i_tpca", "uncertain": true, "reviewNote": "It was not established whether the system is a product or a safety component under Annex I legislation (Art. 3(14) test). The assessment continued on the assumption that it is. Have the applicable product legislation and the safety-component test reviewed." }
+      ]
+    },
+
+    "S3_annex_i_tpca": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Is that product (or the AI system itself, if it is the product) required to undergo a THIRD-PARTY conformity assessment under the relevant Annex I legislation?",
+      "explainer": "Article 6(1) – second cumulative condition. Both conditions must be met. Third-party conformity assessment means a notified body must be involved (conformity assessment modules other than internal-control-only module A). If the product only requires self-assessment (internal control), it is NOT high-risk under Article 6(1).",
+      "help": {
+        "likelyYes": [
+          "The applicable legislation requires involvement of a notified body (e.g. certain medical devices, many machinery categories of higher risk)"
+        ],
+        "likelyNo": [
+          "The product can be self-certified via internal control (module A) only"
+        ]
+      },
+      "articleRef": "Art. 6(1)(b); Decision 768/2008/EC (conformity assessment modules)",
+      "options": [
+        { "label": "Yes – third-party conformity assessment is required", "value": "yes", "next": "HIGH_RISK_ANNEX_I" },
+        { "label": "No – only self-assessment / internal control", "value": "no", "next": "S4_annex_iii_area" },
+        { "label": "I'm not sure which conformity-assessment route applies", "value": "unsure", "next": "HIGH_RISK_ANNEX_I", "uncertain": true, "reviewNote": "The applicable conformity-assessment route under the Annex I legislation was not established. The assessment assumed a third-party assessment is required (the higher-risk reading). Check the conformity-assessment modules in the relevant product legislation." }
+      ]
+    },
+
+    "S4_annex_iii_area": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Does the intended purpose of the system fall within any of the specific use cases listed under the eight Annex III areas?",
+      "explainer": "Article 6(2). Annex III lists eight areas, but ONLY the specific use cases listed under each area count. Select every use case that matches the system's intended purpose. Many use cases apply only where the system evaluates NATURAL PERSONS (not only legal persons/companies), and some law-enforcement/migration/justice cases apply only to public authorities or those acting on their behalf, and only in so far as the use is permitted under Union or national law.",
+      "articleRef": "Art. 6(2); Annex III",
+      "reference": "annexIII",
+      "multiSelect": true,
+      "selectionRule": "anySelected",
+      "options": [
+        { "label": "Yes – it matches at least one Annex III use case", "value": "yes", "next": "S5_profiling" },
+        { "label": "No – it does not match any listed use case", "value": "no", "next": "T0_transparency" }
+      ]
+    },
+
+    "S5_profiling": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Does the system perform PROFILING of natural persons?",
+      "explainer": "Third sub-paragraph of Article 6(3): an Annex III system that performs profiling of natural persons is ALWAYS high-risk and can never use the Article 6(3) filter exemption. 'Profiling' has the GDPR meaning (Art. 4(4) GDPR / Art. 3(4) LED / Art. 3(5) EUDPR): any automated processing of personal data to evaluate personal aspects of a natural person, in particular to analyse or predict performance at work, economic situation, health, preferences, interests, reliability, behaviour, location or movements.",
+      "articleRef": "Art. 6(3) third sub-para; Art. 4(4) GDPR",
+      "options": [
+        { "label": "Yes – it profiles natural persons", "value": "yes", "next": "HIGH_RISK_ANNEX_III" },
+        { "label": "No", "value": "no", "next": "S6_filter" }
+      ]
+    },
+
+    "S6_filter": {
+      "module": "SPINE",
+      "type": "question",
+      "text": "Does the system meet at least ONE of the four Article 6(3) 'filter' conditions AND not materially influence the outcome of decision-making?",
+      "explainer": "Article 6(3) lets a provider treat an Annex III system as NOT high-risk if it does not pose a significant risk of harm because it meets at least one of four exhaustive-but-alternative conditions (below). The overriding test is that the system must NOT materially influence the outcome of decision-making. The conditions are interpreted narrowly. NOTE: the filter does NOT apply if the system is part of a complex/agentic configuration whose combined outputs materially influence a decision in a high-risk use case, nor to Article 6(1)/Annex I systems.",
+      "articleRef": "Art. 6(3)(a)-(d); Recital 53",
+      "checklist": "filterConditions",
+      "multiSelect": true,
+      "selectionRule": "anySelectedAndSubNo",
+      "subQuestion": {
+        "id": "material_influence",
+        "text": "Does the system materially influence the outcome of decision-making?",
+        "explainer": "This is the overriding test in the opening words of Article 6(3). Even if one of the four conditions above is met, the exemption is unavailable when the system materially influences the outcome — including where it is part of a complex or agentic configuration whose joint outputs do.",
+        "articleRef": "Art. 6(3), opening words",
+        "options": [
+          { "label": "No – it does not materially influence the outcome", "value": "no" },
+          { "label": "Yes – it does materially influence the outcome", "value": "yes" },
+          { "label": "I'm not sure", "value": "unsure", "uncertain": true, "reviewNote": "It was not established whether the system materially influences the outcome of decision-making. The assessment treated the system as high-risk (the conservative reading). The Article 6(3) filter is interpreted narrowly; have this point reviewed before relying on the exemption." }
+        ]
+      },
+      "options": [
+        { "label": "Yes – one condition is met and the system does not materially influence the outcome", "value": "yes", "next": "NOT_HIGH_RISK_FILTERED" },
+        { "label": "No – none of the conditions applies, or it does materially influence the outcome", "value": "no", "next": "HIGH_RISK_ANNEX_III" }
+      ]
+    },
+
+    "T0_transparency": {
+      "module": "TRANSPARENCY",
+      "type": "question",
+      "text": "Do any Article 50 TRANSPARENCY situations apply to the system?",
+      "explainer": "Article 50 imposes transparency duties that are CUMULATIVE with any risk tier (they can apply to a high-risk system, a minimal-risk system, or a system that is not high-risk after the filter). Select all that apply. If at least one applies, the system carries limited-risk transparency obligations. If none applies and the system is not high-risk, it is minimal-risk.",
+      "articleRef": "Art. 50",
+      "checklist": "transparencyTriggers",
+      "multiSelect": true,
+      "selectionRule": "anySelected",
+      "options": [
+        { "label": "Yes – at least one Article 50 situation applies", "value": "yes", "next": "G0_gpai" },
+        { "label": "No", "value": "no", "next": "G0_gpai" }
+      ],
+      "setsFlag": "transparency"
+    },
+
+    "G0_gpai": {
+      "module": "GPAI",
+      "type": "question",
+      "text": "Are you the provider of a GENERAL-PURPOSE AI MODEL (a foundation model)?",
+      "explainer": "This is a separate, model-level classification (independent of the system tier). Article 3(63): a GPAI model displays significant generality, is trained on a large amount of data using self-supervision at scale, and can competently perform a wide range of distinct tasks, regardless of how it is placed on the market (it can be integrated into many downstream systems). Typical examples: large language models and other large generative models. If you only USE or fine-tune a third party's model into a specific application, the GPAI-model obligations sit with the original model provider (though substantial modification can transfer them).",
+      "articleRef": "Art. 3(63); Art. 53",
+      "options": [
+        { "label": "Yes – I provide a general-purpose AI model", "value": "yes", "next": "G1_systemic" },
+        { "label": "No – it is a specific-purpose system, or I only deploy someone else's model", "value": "no", "next": "RESULT" }
+      ]
+    },
+
+    "G1_systemic": {
+      "module": "GPAI",
+      "type": "question",
+      "text": "Does the GPAI model have SYSTEMIC RISK?",
+      "explainer": "Article 51: a GPAI model has systemic risk if it has high-impact capabilities. This is presumed when the cumulative compute used for training is greater than 10^25 floating-point operations (FLOP), or when the Commission designates it as such. Systemic-risk models carry additional obligations under Article 55 (model evaluations, adversarial testing, systemic-risk assessment and mitigation, serious-incident reporting, cybersecurity).",
+      "articleRef": "Art. 51; Art. 55",
+      "options": [
+        { "label": "Yes – >10^25 FLOP training compute or designated by the Commission", "value": "yes", "next": "RESULT", "setsGpai": "gpai_model_systemic" },
+        { "label": "No", "value": "no", "next": "RESULT", "setsGpai": "gpai_model" }
+      ]
+    },
+
+    "RESULT": {
+      "module": "RESULT",
+      "type": "result",
+      "text": "Compile and display all applicable result cards from the accumulated flags (primaryTier + transparency + gpai)."
+    }
+  },
+
+  "outcomes": {
+    "OUT_OF_SCOPE": {
+      "shortTitle": "Not an AI system",
+      "tier": "out_of_scope",
+      "color": "grey",
+      "icon": "circle-slash",
+      "applicationDate": "Not applicable – the AI Act does not apply.",
+      "title": "Not an AI system – outside the AI Act",
+      "summary": "Your system does not meet the Article 3(1) definition of an AI system, so the AI Act does not apply to it. Note that other EU law (e.g. GDPR, product-safety, consumer-protection law) may still apply.",
+      "obligations": [],
+      "legalRefs": ["Art. 3(1)"]
+    },
+    "PROHIBITED": {
+      "shortTitle": "Prohibited",
+      "tier": "prohibited",
+      "color": "red",
+      "icon": "ban",
+      "applicationDate": "Already in force: the prohibitions apply since 2 February 2025.",
+      "title": "Prohibited – unacceptable risk",
+      "summary": "The system falls under an Article 5 prohibited practice. It may not be placed on the market, put into service, or used in the EU. These prohibitions have applied since 2 February 2025.",
+      "obligations": ["Do not place on the market / put into service / use.", "Redesign to remove the prohibited practice, or abandon."],
+      "legalRefs": ["Art. 5"]
+    },
+    "HIGH_RISK_ANNEX_I": {
+      "shortTitle": "High-risk — Annex I",
+      "tier": "high_risk_annex_i",
+      "color": "orange",
+      "icon": "warning",
+      "applicationDate": "Indicative: originally 2 August 2027, postponed by the AI Omnibus to 2 August 2028. Subject to change.",
+      "title": "High-risk – Article 6(1) / Annex I (regulated product)",
+      "summary": "The system is (or is a safety component of) a product covered by Annex I harmonisation legislation AND that product must undergo third-party conformity assessment. It is high-risk under Article 6(1).",
+      "obligations": [
+        "Comply with the Chapter III, Section 2 requirements for high-risk AI systems (risk management, data governance, technical documentation, record-keeping, transparency to deployers, human oversight, accuracy/robustness/cybersecurity).",
+        "Conformity assessment is carried out under the relevant Annex I legislation (integrated with the product's existing procedure).",
+        "Provider obligations under Art. 16 et seq.; deployer obligations under Art. 26.",
+        "Application date for these Article 6(1) obligations: postponed by the AI Omnibus to 2 August 2028."
+      ],
+      "legalRefs": ["Art. 6(1)", "Art. 8-15", "Annex I"]
+    },
+    "HIGH_RISK_ANNEX_III": {
+      "shortTitle": "High-risk — Annex III",
+      "tier": "high_risk_annex_iii",
+      "color": "orange",
+      "icon": "warning",
+      "applicationDate": "Indicative: originally 2 August 2026, postponed by the AI Omnibus to 2 December 2027. Subject to change.",
+      "title": "High-risk – Article 6(2) / Annex III (listed use case)",
+      "summary": "The system's intended purpose falls within a listed Annex III use case and it is not exempted (it profiles natural persons, or it does not meet any Article 6(3) filter condition / materially influences the outcome). It is high-risk under Article 6(2).",
+      "obligations": [
+        "Comply with the Chapter III, Section 2 requirements for high-risk AI systems (risk management, data governance, technical documentation, logging, transparency, human oversight, accuracy/robustness/cybersecurity).",
+        "Provider obligations (Art. 16 et seq.), including registration in the EU database (Art. 49) and drawing up an EU declaration of conformity + CE marking.",
+        "Deployer obligations (Art. 26), and a fundamental-rights impact assessment where Art. 27 applies.",
+        "Application date for Article 6(2) obligations: postponed by the AI Omnibus to 2 December 2027."
+      ],
+      "legalRefs": ["Art. 6(2)", "Art. 8-15", "Annex III"]
+    },
+    "NOT_HIGH_RISK_FILTERED": {
+      "shortTitle": "Not high-risk (filtered)",
+      "tier": "not_high_risk_filtered",
+      "color": "yellow",
+      "icon": "filter",
+      "applicationDate": "Indicative: the Article 6(4) documentation and Article 49(2) registration duties follow the Annex III timeline, postponed by the AI Omnibus to 2 December 2027. Subject to change.",
+      "title": "Not high-risk – Article 6(3) filter applies",
+      "summary": "The system's purpose is within an Annex III use case, but it qualifies for the Article 6(3) exemption because it meets a filter condition, does not perform profiling, and does not materially influence decision-making. It is therefore NOT classified as high-risk.",
+      "obligations": [
+        "Document the assessment demonstrating the exemption BEFORE placing on the market / putting into service (Art. 6(4)).",
+        "Register the system in the EU database as a non-high-risk Annex III system (Art. 49(2)).",
+        "Make the assessment available to competent authorities on request.",
+        "Re-assess if the intended purpose changes: a change could make it high-risk.",
+        "Transparency obligations under Article 50 may still apply (see the transparency result)."
+      ],
+      "legalRefs": ["Art. 6(3)", "Art. 6(4)", "Art. 49(2)"]
+    },
+    "MINIMAL_RISK": {
+      "shortTitle": "Minimal risk",
+      "tier": "minimal_risk",
+      "color": "green",
+      "icon": "check",
+      "applicationDate": "No mandatory obligations, so no application date.",
+      "title": "Minimal risk – no mandatory AI Act obligations",
+      "summary": "The system is not prohibited, not high-risk, and no Article 50 transparency situation applies. It falls in the minimal-risk category, which carries no mandatory obligations under the AI Act.",
+      "obligations": [
+        "No mandatory AI Act obligations.",
+        "Voluntary codes of conduct are encouraged (Art. 95).",
+        "Other EU law (GDPR, consumer, product-safety) may still apply.",
+        "Re-assess if the intended purpose changes."
+      ],
+      "legalRefs": ["Art. 95"]
+    },
+    "TRANSPARENCY": {
+      "shortTitle": "Transparency duties",
+      "tier": "transparency",
+      "color": "blue",
+      "icon": "eye",
+      "applicationDate": "2 August 2026.",
+      "title": "Transparency obligations (limited risk) – Article 50",
+      "summary": "One or more Article 50 situations apply. These transparency duties are CUMULATIVE: they apply on top of the system's risk tier (they can accompany a high-risk, filtered, or minimal-risk classification).",
+      "obligations": [
+        "Inform natural persons when they interact with an AI system, unless obvious (Art. 50(1)).",
+        "Mark AI-generated/manipulated audio, image, video or text as artificial in a machine-readable way (Art. 50(2)).",
+        "Deployers of emotion-recognition or biometric-categorisation systems must inform exposed persons (Art. 50(3)).",
+        "Deployers must disclose deep fakes and AI-generated text published to inform the public on matters of public interest (Art. 50(4)).",
+        "Application date: 2 August 2026."
+      ],
+      "legalRefs": ["Art. 50"]
+    },
+    "GPAI_MODEL": {
+      "shortTitle": "GPAI model",
+      "tier": "gpai_model",
+      "color": "purple",
+      "icon": "cube",
+      "applicationDate": "Already in force since 2 August 2025. Models placed on the market before that date: comply by 2 August 2027.",
+      "title": "General-purpose AI model (no systemic risk) – Article 53",
+      "summary": "You provide a GPAI model without systemic risk. Model-level obligations apply in addition to any system-level classification.",
+      "obligations": [
+        "Draw up and keep technical documentation of the model (Annex XI).",
+        "Provide information and documentation to downstream providers who integrate the model (Annex XII).",
+        "Put in place a policy to comply with EU copyright law.",
+        "Publish a sufficiently detailed summary of the training content (using the AI Office template).",
+        "Some documentation duties are relaxed for models released under a free and open-source licence (unless they have systemic risk).",
+        "Application date: 2 August 2025 (existing models on the market before that date: comply by 2 August 2027)."
+      ],
+      "legalRefs": ["Art. 53", "Annexes XI, XII"]
+    },
+    "GPAI_MODEL_SYSTEMIC": {
+      "shortTitle": "GPAI model with systemic risk",
+      "tier": "gpai_model_systemic",
+      "color": "purple",
+      "icon": "cube",
+      "applicationDate": "Already in force since 2 August 2025. Models placed on the market before that date: comply by 2 August 2027.",
+      "title": "GPAI model with systemic risk – Articles 53 + 55",
+      "summary": "You provide a GPAI model with systemic risk (high-impact capabilities, presumed above 10^25 FLOP training compute, or designated by the Commission). All Article 53 obligations apply PLUS the Article 55 systemic-risk obligations.",
+      "obligations": [
+        "All Article 53 obligations (documentation, downstream info, copyright policy, training-content summary).",
+        "Perform model evaluation, including adversarial testing (red-teaming).",
+        "Assess and mitigate systemic risks at Union level.",
+        "Track, document and report serious incidents to the AI Office and, as relevant, national authorities.",
+        "Ensure an adequate level of cybersecurity for the model and its physical infrastructure.",
+        "Notify the Commission when the model meets the systemic-risk threshold.",
+        "Application date: 2 August 2025 (existing models: comply by 2 August 2027)."
+      ],
+      "legalRefs": ["Art. 51", "Art. 53", "Art. 55"]
+    }
+  },
+
+  "catalog": {
+    "prohibitedPractices": {
+      "articleRef": "Art. 5",
+      "note": "If the intended purpose matches any of these, the system is prohibited. See the Commission Guidelines on prohibited AI practices for detail.",
+      "items": [
+        { "id": "5-1-a", "ref": "Art. 5(1)(a)", "label": "Subliminal, purposefully manipulative or deceptive techniques that materially distort behaviour and cause (or are likely to cause) significant harm." },
+        { "id": "5-1-b", "ref": "Art. 5(1)(b)", "label": "Exploiting vulnerabilities due to age, disability, or a specific social or economic situation, to materially distort behaviour and cause significant harm." },
+        { "id": "5-1-c", "ref": "Art. 5(1)(c)", "label": "Social scoring: evaluating/classifying persons over time based on social behaviour or personal characteristics, leading to detrimental or unfavourable treatment that is unjustified or disproportionate." },
+        { "id": "5-1-d", "ref": "Art. 5(1)(d)", "label": "Predicting the risk of a person committing a criminal offence based solely on profiling or personality traits (with a narrow exception for supporting human assessment based on objective, verifiable facts linked to criminal activity)." },
+        { "id": "5-1-e", "ref": "Art. 5(1)(e)", "label": "Creating/expanding facial-recognition databases through untargeted scraping of facial images from the internet or CCTV." },
+        { "id": "5-1-f", "ref": "Art. 5(1)(f)", "label": "Inferring emotions in the workplace or education institutions (except for medical or safety reasons)." },
+        { "id": "5-1-g", "ref": "Art. 5(1)(g)", "label": "Biometric categorisation that infers race, political opinions, trade-union membership, religious/philosophical beliefs, sex life or sexual orientation (narrow lawful exceptions apply)." },
+        { "id": "5-1-h", "ref": "Art. 5(1)(h)", "label": "Real-time remote biometric identification in publicly accessible spaces for law-enforcement purposes (subject to narrow, authorised exceptions)." }
+      ]
+    },
+
+    "annexI_legislation": {
+      "articleRef": "Annex I",
+      "note": "Non-exhaustive prompt list of the harmonisation legislation in Annex I. Section A (New Legislative Framework) and Section B (other, mostly transport). The system is in scope of Article 6(1) if it is a product, or a safety component of a product, covered by one of these.",
+      "sectionA": [
+        "Machinery (Regulation (EU) 2023/1230)",
+        "Toys (Directive 2009/48/EC)",
+        "Recreational craft and personal watercraft (Directive 2013/53/EU)",
+        "Lifts and safety components for lifts (Directive 2014/33/EU)",
+        "Equipment and protective systems for use in potentially explosive atmospheres – ATEX (Directive 2014/34/EU)",
+        "Radio equipment (Directive 2014/53/EU)",
+        "Pressure equipment (Directive 2014/68/EU)",
+        "Cableway installations (Regulation (EU) 2016/424)",
+        "Personal protective equipment (Regulation (EU) 2016/425)",
+        "Appliances burning gaseous fuels (Regulation (EU) 2016/426)",
+        "Medical devices (Regulation (EU) 2017/745)",
+        "In vitro diagnostic medical devices (Regulation (EU) 2017/746)"
+      ],
+      "sectionB": [
+        "Civil aviation security (Regulation (EC) 300/2008)",
+        "Two- or three-wheel vehicles and quadricycles (Regulation (EU) 168/2013)",
+        "Agricultural and forestry vehicles (Regulation (EU) 167/2013)",
+        "Marine equipment (Directive 2014/90/EU)",
+        "Interoperability of the rail system (Directive (EU) 2016/797)",
+        "Motor vehicles and their trailers – general safety (Regulation (EU) 2018/858 and 2019/2144)",
+        "Civil aviation (Regulation (EU) 2018/1139)"
+      ]
+    },
+
+    "filterConditions": {
+      "articleRef": "Art. 6(3)(a)-(d)",
+      "note": "Exhaustive but ALTERNATIVE: meeting one is enough, but only if the system does not materially influence the outcome of decision-making and does not profile natural persons. Interpret narrowly.",
+      "items": [
+        { "id": "6-3-a", "ref": "Art. 6(3)(a)", "label": "Narrow procedural task", "detail": "e.g. transforming unstructured into structured data, classifying incoming documents into categories, detecting duplicates. NOT if it scores/ranks or judges data as 'useful/less useful' for a decision." },
+        { "id": "6-3-b", "ref": "Art. 6(3)(b)", "label": "Improves the result of a previously completed human activity", "detail": "Only an additional layer to a completed human activity (e.g. improving the language/clarity of an already-drafted text). It must not replace or materially change the human's result, rights or legal/economic position." },
+        { "id": "6-3-c", "ref": "Art. 6(3)(c)", "label": "Detects decision-making patterns or deviations, without replacing/influencing the completed human assessment absent proper human review", "detail": "e.g. flagging inconsistencies in a teacher's grading pattern for quality assurance. Ex-post comparison only; must not infer new criteria or alter the underlying reasoning." },
+        { "id": "6-3-d", "ref": "Art. 6(3)(d)", "label": "Performs a preparatory task to an assessment relevant to an Annex III use case", "detail": "e.g. file handling, indexing, translation, that prepares but does not itself perform the relevant assessment." }
+      ],
+      "overrides": [
+        "ALWAYS high-risk if the system profiles natural persons (Art. 6(3) third sub-para).",
+        "Filter does NOT apply where the system is part of a complex or agentic configuration whose combined intended purpose or joint outputs materially influence a decision in a high-risk use case.",
+        "Filter does NOT apply to Article 6(1) / Annex I systems."
+      ]
+    },
+
+    "transparencyTriggers": {
+      "articleRef": "Art. 50",
+      "note": "Select all that apply. Any one triggers limited-risk transparency obligations, cumulative with the system's tier.",
+      "items": [
+        { "id": "50-1", "ref": "Art. 50(1)", "label": "The system is intended to interact directly with natural persons (e.g. a chatbot / conversational agent).", "obligation": "Inform the person they are interacting with AI, unless it is obvious from the context." },
+        { "id": "50-2", "ref": "Art. 50(2)", "label": "The system generates synthetic audio, image, video or text content.", "obligation": "Mark outputs as artificially generated/manipulated in a machine-readable format." },
+        { "id": "50-3", "ref": "Art. 50(3)", "label": "The system is an emotion-recognition or biometric-categorisation system (and is not prohibited).", "obligation": "Deployers must inform the natural persons exposed to it." },
+        { "id": "50-4", "ref": "Art. 50(4)", "label": "The system generates or manipulates 'deep fakes', or generates/manipulates text published to inform the public on matters of public interest.", "obligation": "Deployers must disclose that the content is artificially generated or manipulated (with narrow exceptions, e.g. clearly artistic work, or human editorial review for text)." }
+      ]
+    },
+
+    "annexIII": {
+      "articleRef": "Art. 6(2); Annex III",
+      "horizontalNotes": [
+        "Only the specific use cases listed under each area count – not the broad area itself.",
+        "'Natural persons' limitation: several use cases apply only where a natural person is evaluated. A system that only assesses legal persons/companies is out of scope of those use cases.",
+        "'On behalf of' / public authority: several law-enforcement, migration and justice use cases apply to public authorities or private parties acting on their behalf.",
+        "'In so far as permitted under Union or national law' qualifies areas 1, 6 and 7.",
+        "Human oversight added on top does not remove high-risk classification; only the Art. 6(3) filter can."
+      ],
+      "areas": [
+        {
+          "id": 1,
+          "area": "Biometrics",
+          "condition": "In so far as their use is permitted under relevant Union or national law.",
+          "useCases": [
+            { "ref": "Annex III(1)(a)", "label": "Remote biometric identification systems (excluding biometric verification that merely confirms a person is who they claim to be)." },
+            { "ref": "Annex III(1)(b)", "label": "Biometric categorisation according to sensitive or protected attributes/characteristics." },
+            { "ref": "Annex III(1)(c)", "label": "Emotion recognition." }
+          ]
+        },
+        {
+          "id": 2,
+          "area": "Critical infrastructure",
+          "useCases": [
+            { "ref": "Annex III(2)", "label": "Safety components in the management and operation of critical digital infrastructure, road traffic, or the supply of water, gas, heating or electricity." }
+          ]
+        },
+        {
+          "id": 3,
+          "area": "Education and vocational training",
+          "useCases": [
+            { "ref": "Annex III(3)(a)", "label": "Determining access, admission, or assignment of persons to education/vocational-training institutions at all levels." },
+            { "ref": "Annex III(3)(b)", "label": "Evaluating learning outcomes, including steering the learning process." },
+            { "ref": "Annex III(3)(c)", "label": "Assessing the appropriate level of education a person will receive or be able to access." },
+            { "ref": "Annex III(3)(d)", "label": "Monitoring and detecting prohibited behaviour of students during tests." }
+          ]
+        },
+        {
+          "id": 4,
+          "area": "Employment, workers' management and access to self-employment",
+          "useCases": [
+            { "ref": "Annex III(4)(a)", "label": "Recruitment or selection of natural persons (e.g. targeted job ads, analysing/filtering applications, evaluating candidates)." },
+            { "ref": "Annex III(4)(b)", "label": "Decisions on terms of work, promotion/termination, task allocation based on behaviour/traits, or monitoring and evaluating performance and behaviour." }
+          ]
+        },
+        {
+          "id": 5,
+          "area": "Access to and enjoyment of essential private and public services and benefits",
+          "useCases": [
+            { "ref": "Annex III(5)(a)", "label": "Evaluating eligibility for essential public assistance benefits/services, and granting, reducing, revoking or reclaiming them." },
+            { "ref": "Annex III(5)(b)", "label": "Evaluating creditworthiness or establishing a credit score (excluding AI used to detect financial fraud)." },
+            { "ref": "Annex III(5)(c)", "label": "Risk assessment and pricing in life and health insurance for natural persons." },
+            { "ref": "Annex III(5)(d)", "label": "Evaluating and classifying emergency calls, or dispatching / prioritising emergency first-response services (police, firefighters, medical, triage)." }
+          ]
+        },
+        {
+          "id": 6,
+          "area": "Law enforcement",
+          "condition": "In so far as permitted under Union or national law; by or on behalf of law-enforcement authorities.",
+          "useCases": [
+            { "ref": "Annex III(6)(a)", "label": "Assessing the risk of a natural person becoming the victim of a criminal offence." },
+            { "ref": "Annex III(6)(b)", "label": "Polygraphs and similar tools." },
+            { "ref": "Annex III(6)(c)", "label": "Evaluating the reliability of evidence during investigation/prosecution." },
+            { "ref": "Annex III(6)(d)", "label": "Assessing the risk of a person offending or re-offending (beyond Art. 5(1)(d) profiling-only prediction), or assessing personality traits/past criminal behaviour." },
+            { "ref": "Annex III(6)(e)", "label": "Profiling of natural persons in the course of detection, investigation or prosecution of criminal offences." }
+          ]
+        },
+        {
+          "id": 7,
+          "area": "Migration, asylum and border control management",
+          "condition": "In so far as permitted under Union or national law; by or on behalf of competent authorities.",
+          "useCases": [
+            { "ref": "Annex III(7)(a)", "label": "Polygraphs and similar tools." },
+            { "ref": "Annex III(7)(b)", "label": "Assessing risks (security, irregular migration, health) posed by persons seeking to enter or who have entered." },
+            { "ref": "Annex III(7)(c)", "label": "Assisting in examining applications for asylum, visa or residence permits and associated complaints regarding eligibility." },
+            { "ref": "Annex III(7)(d)", "label": "Detecting, recognising or identifying natural persons in migration/asylum/border contexts (excluding verification of travel documents)." }
+          ]
+        },
+        {
+          "id": 8,
+          "area": "Administration of justice and democratic processes",
+          "useCases": [
+            { "ref": "Annex III(8)(a)", "label": "Assisting a judicial authority in researching/interpreting facts and law and applying the law, or used in alternative dispute resolution." },
+            { "ref": "Annex III(8)(b)", "label": "Influencing the outcome of an election or referendum, or the voting behaviour of natural persons (excluding tools not directly interacting with voters, e.g. campaign admin/logistics)." }
+          ]
+        }
+      ]
+    }
+  }
+}
+</script>
+
+<body>
+<header class="site no-print">
+  <div class="wrap inner">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span>
+        <span class="t" id="brand-title">EU AI Act – Risk Tier Self-Assessment</span><br>
+        <span class="s" id="brand-sub"></span>
+      </span>
+    </div>
+    <button class="btn small ghost" id="btn-restart" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      <span id="btn-restart-label"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+  <!-- start screen -->
+  <section id="start" class="wrap" aria-labelledby="start-h">
+    <div id="databanner" role="alert"></div>
+    <div class="lead">
+      <h1 id="start-h"></h1>
+      <p class="sub" id="start-purpose"></p>
+    </div>
+
+    <div class="tier-legend" id="start-legend"></div>
+    <div class="facts" id="start-facts"></div>
+    <div class="disclaimer" id="start-disclaimer"></div>
+
+    <p><button class="btn primary" id="btn-start"></button></p>
+
+    <details class="disclosure" style="margin-top: 30px;">
+      <summary id="start-model-summary"></summary>
+      <div class="body" id="start-model"></div>
+    </details>
+  </section>
+
+  <!-- assessment -->
+  <section id="app" class="wrap" hidden aria-labelledby="app-h">
+    <h2 id="app-h" class="visually-hidden">Assessment questions</h2>
+    <div class="layout">
+      <div>
+        <nav id="progress-nav">
+          <ol class="stepper" id="stepper"></ol>
+          <p class="stepper-mobile" id="stepper-mobile"></p>
+        </nav>
+        <article class="card" id="screen"></article>
+      </div>
+      <aside class="verdict no-print" aria-labelledby="verdict-h">
+        <div class="card">
+          <h3 id="verdict-h"></h3>
+          <div id="verdict-body" aria-live="polite"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- result -->
+  <section id="result" hidden aria-labelledby="result-h"></section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <h4 id="foot-h-help"></h4>
+        <ul id="foot-links"></ul>
+      </div>
+      <div>
+        <h4 id="foot-h-sources"></h4>
+        <ul id="foot-sources"></ul>
+      </div>
+      <div>
+        <h4 id="foot-h-dates"></h4>
+        <ul id="foot-dates"></ul>
+      </div>
+    </div>
+    <div class="meta-line">
+      <span id="foot-version"></span>
+      <span id="foot-regulation"></span>
+      <span id="foot-source-of-data"></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   0. Tiny helpers
+   ========================================================================= */
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = (s) => String(s == null ? "" : s)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+/* ---- interface strings: every one of them comes from decision-tree.json → ui ----
+   A translation is a copy of that file with meta/nodes/outcomes/catalog/ui translated;
+   no code changes. A missing key renders as ⟨key⟩ so gaps are visible, never fatal. */
+let UI = {};
+const interpolate = (s, vars) => String(s).replace(/\{(\w+)\}/g, (m, k) => (vars && k in vars ? String(vars[k]) : m));
+function t(key, vars) {
+  const s = UI[key];
+  if (s == null) return `⟨${key}⟩`;
+  return Array.isArray(s) ? s : interpolate(s, vars);
+}
+/* singular/plural pairs are stored as key.one / key.many */
+const tn = (base, n) => t(`${base}.${n === 1 ? "one" : "many"}`, { n });
+
+const ICONS = {
+  "circle-slash": '<circle cx="12" cy="12" r="9"/><path d="M5.6 18.4 18.4 5.6"/>',
+  ban:            '<circle cx="12" cy="12" r="9"/><path d="M5.6 18.4 18.4 5.6"/>',
+  warning:        '<path d="M12 3.6 2.7 19.2h18.6L12 3.6z"/><path d="M12 9.6v4.2"/><path d="M12 17h.01"/>',
+  filter:         '<path d="M3 5h18l-7 8v6l-4-2v-4L3 5z"/>',
+  check:          '<path d="M4 12.6 9 17.5 20 6.5"/>',
+  eye:            '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  cube:           '<path d="M12 2.8l8 4.4v9.6l-8 4.4-8-4.4V7.2l8-4.4z"/><path d="M4 7.2l8 4.4 8-4.4"/><path d="M12 11.6V21"/>',
+  plus:           '<path d="M12 5v14"/><path d="M5 12h14"/>',
+  dots:           '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
+  question:       '<circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 1 1 3.6 2.7c-.6.2-.9.7-.9 1.3v.6"/><path d="M12 17h.01"/>',
+  calendar:       '<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/>',
+  arrowRight:     '<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
+  info:           '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.8h.01"/>'
+};
+function icon(name, cls = "") {
+  const d = ICONS[name] || ICONS.info;
+  return `<svg ${cls ? `class="${cls}" ` : ""}viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+}
+/* inline style that binds a card/marker to a semantic tier colour */
+const toneStyle = (color) => `--tone: var(--c-${color || "grey"}); --tone-bg: var(--c-${color || "grey"}-bg);`;
+/* compact label for an outcome (legend, verdict panel, heading, map) */
+const shortOf = (oc) => (oc && (oc.shortTitle || String(oc.title || "").split(" – ")[0])) || "";
+
+/* =========================================================================
+   1. ENGINE — pure logic, no DOM. Driven entirely by decision-tree.json.
+      (Kept between these markers so test-scenarios.mjs can run the very
+      same code that ships in the page.)
+   ========================================================================= */
+/* ===== ENGINE START ===== */
+function validateTree(tree) {
+  const errors = [];
+  const req = ["meta", "resultModel", "moduleOrder", "nodes", "outcomes", "catalog"];
+  for (const k of req) if (!tree || !tree[k]) errors.push(`missing top-level key "${k}"`);
+  if (errors.length) return errors;
+
+  const isTarget = (id) => Object.hasOwn(tree.nodes, id) || Object.hasOwn(tree.outcomes, id);
+  for (const [id, node] of Object.entries(tree.nodes)) {
+    if (!node.module) errors.push(`node ${id}: missing "module"`);
+    if (!node.type) errors.push(`node ${id}: missing "type"`);
+    if (node.type !== "question") continue;
+    if (!Array.isArray(node.options) || !node.options.length) errors.push(`node ${id}: no options`);
+    for (const o of node.options || []) {
+      if (!o.value) errors.push(`node ${id}: option without "value"`);
+      if (!isTarget(o.next)) errors.push(`node ${id}: option "${o.value}" points at unknown target "${o.next}"`);
+    }
+    if (node.checklist && !tree.catalog[node.checklist]) errors.push(`node ${id}: unknown checklist "${node.checklist}"`);
+    if (node.reference && !tree.catalog[node.reference]) errors.push(`node ${id}: unknown reference "${node.reference}"`);
+    if (node.selectionRule && !["anySelected", "anySelectedAndSubNo"].includes(node.selectionRule)) {
+      errors.push(`node ${id}: unsupported selectionRule "${node.selectionRule}"`);
+    }
+    if (node.selectionRule === "anySelectedAndSubNo" && !node.subQuestion) {
+      errors.push(`node ${id}: selectionRule needs a subQuestion`);
+    }
+  }
+  for (const [id, oc] of Object.entries(tree.outcomes)) {
+    for (const k of ["tier", "color", "title", "summary"]) {
+      if (!oc[k]) errors.push(`outcome ${id}: missing "${k}"`);
+    }
+  }
+  if (!tree.nodes.RESULT) errors.push('missing the "RESULT" node');
+  if (!tree.ui || typeof tree.ui !== "object") errors.push('missing the "ui" block with the interface strings');
+  return errors;
+}
+
+function createEngine(tree, startNodeId = "S0_ai_system") {
+  const outcomeIds = new Set(Object.keys(tree.outcomes));
+
+  /* local string lookup, so the engine stays independent of the UI layer */
+  const tt = (key, vars) => {
+    const s = (tree.ui || {})[key];
+    if (s == null) return `⟨${key}⟩`;
+    return String(s).replace(/\{(\w+)\}/g, (m, k) => (vars && k in vars ? String(vars[k]) : m));
+  };
+  const ttn = (base, n) => tt(`${base}.${n === 1 ? "one" : "many"}`, { n });
+
+  const freshState = () => ({
+    currentNodeId: startNodeId,
+    answers: [],                                        // the audit trail
+    flags: { primaryTier: null, transparency: [], gpai: "none" },
+    review: [],                                         // points flagged for expert review
+    finished: false
+  });
+
+  let state = freshState();
+  let stack = [];        // state snapshots, for Back
+  const memory = {};     // last input per node, so rewinding never loses answers
+
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const node = (id) => tree.nodes[id];
+
+  /* selection screens derive their yes/no from what the user ticked */
+  function resolveValue(n, input) {
+    if (!n.selectionRule) return input.value;
+    const any = (input.selections || []).length > 0;
+    if (n.selectionRule === "anySelected") return any ? "yes" : "no";
+    if (n.selectionRule === "anySelectedAndSubNo") return any && input.sub === "no" ? "yes" : "no";
+    return input.value;
+  }
+
+  /* which catalog items were ticked, resolved to their full objects */
+  function selectedItems(n, ids) {
+    const cat = tree.catalog[n.checklist] || tree.catalog[n.reference];
+    if (!cat || !ids || !ids.length) return [];
+    const flat = cat.items
+      ? cat.items
+      : (cat.areas || []).flatMap(a => (a.useCases || []).map(u => ({ ...u, id: u.ref, area: a.area })));
+    return ids.map(id => flat.find(i => i.id === id || i.ref === id)).filter(Boolean);
+  }
+
+  function submit(input) {
+    const n = node(state.currentNodeId);
+    if (!n || n.type !== "question" || state.finished) return state;
+
+    stack.push({ state: clone(state) });
+    memory[state.currentNodeId] = clone(input);
+
+    const value = resolveValue(n, input);
+    const option = n.options.find(o => o.value === value);
+    if (!option) { stack.pop(); return state; }
+
+    const items = selectedItems(n, input.selections);
+    const subOption = n.subQuestion
+      ? (n.subQuestion.options.find(o => o.value === input.sub) || null)
+      : null;
+
+    /* --- side effects --- */
+    for (const src of [option, subOption]) {
+      if (src && src.uncertain) {
+        state.review.push({
+          nodeId: n.id || state.currentNodeId,
+          question: src === subOption ? n.subQuestion.text : n.text,
+          answer: src.label,
+          articleRef: (src === subOption ? n.subQuestion.articleRef : n.articleRef) || "",
+          note: src.reviewNote || ""
+        });
+      }
+    }
+    if (n.setsFlag === "transparency") state.flags.transparency = items.map(i => i.id);
+    if (option.setsGpai) state.flags.gpai = option.setsGpai;
+
+    /* --- audit trail --- */
+    state.answers.push({
+      nodeId: state.currentNodeId,
+      module: n.module,
+      question: n.text,
+      articleRef: n.articleRef || "",
+      value,
+      answerLabel: option.label,
+      uncertain: !!(option.uncertain || (subOption && subOption.uncertain)),
+      selections: items.map(i => ({ ref: i.ref, label: i.label, area: i.area || null, obligation: i.obligation || null })),
+      sub: subOption ? { text: n.subQuestion.text, label: subOption.label, value: subOption.value } : null
+    });
+
+    /* --- routing, per SPEC §7 --- */
+    let next = option.next;
+    if (outcomeIds.has(next)) {
+      state.flags.primaryTier = next;
+      if (next === "OUT_OF_SCOPE") {
+        state.currentNodeId = "RESULT"; state.finished = true; return state;   // hard stop
+      }
+      next = next === "PROHIBITED" ? "G0_gpai" : "T0_transparency";            // prohibited skips transparency
+    }
+    state.currentNodeId = next;
+    if (next === "RESULT" || node(next).type === "result") {
+      if (!state.flags.primaryTier) state.flags.primaryTier = "MINIMAL_RISK";
+      state.finished = true;
+    }
+    return state;
+  }
+
+  function back() {
+    const prev = stack.pop();
+    if (prev) state = prev.state;
+    return state;
+  }
+
+  /* jump back to an already-answered question, keeping later answers in memory */
+  function editFrom(nodeId) {
+    const idx = stack.findIndex(s => s.state.currentNodeId === nodeId);
+    if (idx === -1) return state;
+    state = stack[idx].state;
+    stack = stack.slice(0, idx);
+    return state;
+  }
+
+  function compileCards() {
+    const f = state.flags;
+    const cards = [];
+    if (f.primaryTier) cards.push({ id: f.primaryTier, ...tree.outcomes[f.primaryTier], role: "primary" });
+    const tier = f.primaryTier ? tree.outcomes[f.primaryTier].tier : null;
+    if (f.transparency.length && !["out_of_scope", "prohibited"].includes(tier)) {
+      cards.push({ id: "TRANSPARENCY", ...tree.outcomes.TRANSPARENCY, role: "overlay" });
+    }
+    if (f.gpai !== "none") {
+      const id = f.gpai === "gpai_model_systemic" ? "GPAI_MODEL_SYSTEMIC" : "GPAI_MODEL";
+      cards.push({ id, ...tree.outcomes[id], role: "overlay" });
+    }
+    return cards;
+  }
+
+  /* phase stepper state, derived – never a fake percentage */
+  function phases() {
+    const defs = tree.phases || (tree.moduleOrder || []).filter(m => m !== "RESULT")
+      .map(m => ({ id: m, label: m, shortLabel: m, module: m, nodes: Object.entries(tree.nodes).filter(([, n]) => n.module === m).map(([id]) => id) }));
+    const answered = new Set(state.answers.map(a => a.nodeId));
+    const currentIdx = defs.findIndex(p => p.nodes.includes(state.currentNodeId));
+    return defs.map((p, i) => {
+      const visited = p.nodes.some(id => answered.has(id));
+      let st;
+      if (!state.finished && i === currentIdx) st = "current";
+      else if (visited) st = "done";
+      else if (state.finished || (currentIdx > -1 && i < currentIdx)) st = "skipped";
+      else st = "upcoming";
+      return { ...p, state: st };
+    });
+  }
+
+  /* the live "verdict so far" lines */
+  function verdict() {
+    const lines = [];
+    const byNode = {};
+    for (const a of state.answers) byNode[a.nodeId] = a;
+    const f = state.flags;
+
+    if (byNode.S0_ai_system) {
+      const a = byNode.S0_ai_system;
+      lines.push(a.value === "yes"
+        ? { icon: "check", color: "green", text: tt("verdict.isAiSystem"), sub: "Art. 3(1)" }
+        : a.value === "unsure"
+          ? { icon: "question", color: "yellow", text: tt("verdict.aiSystemUnclear"), sub: tt("verdict.conservativeSub") }
+          : { icon: "circle-slash", color: "grey", text: tt("verdict.notAiSystem"), sub: "Art. 3(1)" });
+    }
+    if (byNode.S1_prohibited) {
+      lines.push(byNode.S1_prohibited.value === "yes"
+        ? { icon: "ban", color: "red", text: tt("verdict.prohibitedFound"), sub: "Art. 5" }
+        : { icon: "check", color: "green", text: tt("verdict.noProhibited"), sub: "Art. 5" });
+    }
+
+    const tierId = f.primaryTier;
+    const tierResolved = tierId && !["OUT_OF_SCOPE", "PROHIBITED"].includes(tierId);
+    const inTier = ["S2_annex_i_product", "S3_annex_i_tpca", "S4_annex_iii_area", "S5_profiling", "S6_filter"]
+      .some(id => byNode[id]);
+    /* self-contained inside the engine: no dependency on UI helpers */
+    const short = (oc) => oc.shortTitle || String(oc.title || "").split(" – ")[0];
+    if (tierResolved) {
+      const oc = tree.outcomes[tierId];
+      lines.push({ icon: oc.icon, color: oc.color, text: short(oc), sub: (oc.legalRefs || [])[0] || "" });
+    } else if (inTier && !state.finished) {
+      lines.push({ icon: "dots", color: null, text: tt("verdict.assessingTier"), pending: true });
+    } else if (state.finished && tierId === "MINIMAL_RISK") {
+      const oc = tree.outcomes.MINIMAL_RISK;
+      lines.push({ icon: oc.icon, color: oc.color, text: short(oc), sub: tt("verdict.minimalSub") });
+    }
+
+    if (byNode.T0_transparency) {
+      const n = f.transparency.length;
+      lines.push(n
+        ? { icon: "plus", color: "blue", text: tt("verdict.transparencyAdded", { n }), sub: "Art. 50" }
+        : { icon: "check", color: "green", text: tt("verdict.noTransparency"), sub: "Art. 50" });
+    }
+    if (byNode.G1_systemic || (byNode.G0_gpai && byNode.G0_gpai.value === "no")) {
+      const gpaiCard = f.gpai === "gpai_model_systemic" ? tree.outcomes.GPAI_MODEL_SYSTEMIC : tree.outcomes.GPAI_MODEL;
+      lines.push(f.gpai === "none"
+        ? { icon: "check", color: "green", text: tt("verdict.notGpai"), sub: "Art. 3(63)" }
+        : { icon: gpaiCard.icon, color: gpaiCard.color, text: short(gpaiCard), sub: (gpaiCard.legalRefs || []).join(" + ") });
+    }
+    if (state.review.length) {
+      lines.push({ icon: "question", color: "yellow", text: ttn("verdict.reviewPoints", state.review.length), sub: tt("verdict.reviewSub") });
+    }
+    return lines;
+  }
+
+  return {
+    tree,
+    get state() { return state; },
+    get memory() { return memory; },
+    canGoBack: () => stack.length > 0,
+    currentNode: () => ({ id: state.currentNodeId, ...node(state.currentNodeId) }),
+    submit, back, editFrom, compileCards, phases, verdict, selectedItems,
+    resolveValue,
+    reset() { state = freshState(); stack = []; return state; }
+  };
+}
+/* ===== ENGINE END ===== */
+
+/* =========================================================================
+   2. UI
+   ========================================================================= */
+let TREE = null, E = null, prevVerdictLen = 0;
+
+/* ---- data loading -------------------------------------------------------
+   1. ?lang=nl  ->  decision-tree.nl.json   (drop a translated copy next to this file)
+   2. decision-tree.json
+   3. the embedded copy (needed for file:// where fetch is blocked)
+   A candidate that fails validation is skipped and reported in the banner. */
+async function loadTree() {
+  const lang = new URLSearchParams(location.search).get("lang");
+  const candidates = [];
+  if (lang && /^[a-z]{2}(-[a-z]{2})?$/i.test(lang)) candidates.push(`decision-tree.${lang.toLowerCase()}.json`);
+  candidates.push("decision-tree.json");
+
+  let errors = null;
+  for (const file of candidates) {
+    let json = null;
+    try {
+      const res = await fetch(file, { cache: "no-cache" });
+      if (res.ok) json = await res.json();
+    } catch (_) { /* not hosted, or file:// – try the next candidate */ }
+    if (!json) continue;
+    const errs = validateTree(json);
+    if (!errs.length) return { tree: json, sourceKey: "source.external", sourceFile: file };
+    errors = errors || errs;
+  }
+  const embedded = JSON.parse($("#decision-tree-data").textContent);
+  return {
+    tree: embedded,
+    sourceKey: errors ? "source.embeddedFallback" : "source.embedded",
+    errors
+  };
+}
+
+function showDataErrors(title, errors) {
+  const el = $("#databanner");
+  el.innerHTML = `<strong>${esc(title)}</strong><ul>${errors.slice(0, 12).map(e => `<li>${esc(e)}</li>`).join("")}</ul>`;
+  el.style.display = "block";
+}
+
+/* ---------- start screen ---------- */
+function renderStart() {
+  const m = TREE.meta;
+  $("#brand-title").textContent = m.title;
+  $("#brand-sub").textContent = `${m.regulation} · v${m.version}`;
+  document.title = m.title;
+  $("#start-h").textContent = t("start.headline");
+  $("#start-purpose").textContent = m.purpose;
+  $("#start-disclaimer").innerHTML = `<strong>${esc(t("start.disclaimerLabel"))}</strong>${esc(m.disclaimer)}`;
+  $("#start-legend").setAttribute("aria-label", t("start.legendLabel"));
+  $("#progress-nav").setAttribute("aria-label", t("progress.label"));
+  $("#verdict-h").textContent = t("verdict.title");
+  $("#btn-restart-label").textContent = t("chrome.restart");
+  $("#start-model-summary").textContent = t("start.modelSummary");
+  $("#btn-start").innerHTML = `${esc(t("start.button"))}${icon("arrowRight")}`;
+  $("#start-facts").innerHTML = [1, 2, 3].map(i =>
+    `<div class="f"><b>${esc(t(`start.fact${i}.label`))}</b><span>${esc(t(`start.fact${i}.text`))}</span></div>`).join("");
+
+  const order = ["OUT_OF_SCOPE", "PROHIBITED", "HIGH_RISK_ANNEX_I", "HIGH_RISK_ANNEX_III", "NOT_HIGH_RISK_FILTERED", "MINIMAL_RISK", "TRANSPARENCY", "GPAI_MODEL"];
+  $("#start-legend").innerHTML = order.filter(id => TREE.outcomes[id]).map(id => {
+    const oc = TREE.outcomes[id];
+    return `<span class="item" style="${toneStyle(oc.color)}"><span style="color: var(--tone); display:inline-flex">${icon(oc.icon)}</span>${esc(shortOf(oc))}</span>`;
+  }).join("");
+
+  const rm = TREE.resultModel;
+  $("#start-model").innerHTML = `
+    <p>${esc(rm.description)}</p>
+    <ul style="margin-top:10px; display:grid; gap:6px">
+      ${Object.entries(rm.dimensions).map(([k, v]) => `<li><b>${esc(k)}</b> — ${esc(v)}</li>`).join("")}
+    </ul>
+    <p style="margin-top:12px"><b>${esc(t("start.shortCircuitsLabel"))}</b></p>
+    <ul style="display:grid; gap:6px">${(rm.shortCircuits || []).map(s => `<li>${esc(s)}</li>`).join("")}</ul>
+    <p style="margin-top:12px" class="note">${esc(TREE.meta.uncertaintyPolicy || "")}</p>`;
+
+  $("#foot-links").innerHTML = (m.links || []).map(l =>
+    `<li><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label)}</a></li>`).join("");
+  $("#foot-sources").innerHTML = (m.sources || []).map(s => `<li>${esc(s)}</li>`).join("");
+  $("#foot-dates").innerHTML = Object.entries(m.keyDates || {}).map(([k, v]) =>
+    `<li><b style="color:var(--text)">${esc(t(`footer.date.${k}`))}:</b> ${esc(v)}</li>`).join("")
+    + `<li style="margin-top:6px">${esc(t("footer.date.transparency"))}</li>`;
+  $("#foot-h-help").textContent = t("footer.help");
+  $("#foot-h-sources").textContent = t("footer.sources");
+  $("#foot-h-dates").textContent = t("footer.dates");
+  $("#foot-version").textContent = t("chrome.versionLine", { version: m.version, date: m.lastUpdated });
+  $("#foot-regulation").textContent = m.regulation;
+}
+
+/* ---------- progress stepper ---------- */
+function renderStepper() {
+  const phases = E.phases();
+  const stateWords = {
+    current: t("progress.state.current"), done: t("progress.state.done"),
+    skipped: t("progress.state.skipped"), upcoming: t("progress.state.upcoming")
+  };
+  $("#stepper").innerHTML = phases.map((p, i) => `
+    <li data-state="${p.state}" ${p.state === "current" ? 'aria-current="step"' : ""}>
+      <div class="seg">
+        <span class="dot">${p.state === "done" ? icon("check") : (p.state === "skipped" ? "–" : i + 1)}</span>
+        <span class="lbl">${esc(p.label)}</span>
+        <span class="visually-hidden">: ${stateWords[p.state]}${p.state === "skipped" ? " (n/a)" : ""}</span>
+      </div>
+    </li>`).join("");
+  const cur = phases.find(p => p.state === "current");
+  const idx = phases.findIndex(p => p.state === "current");
+  $("#stepper-mobile").textContent = cur
+    ? t("progress.mobile", { n: idx + 1, total: phases.length, label: cur.label })
+    : "";
+}
+
+/* ---------- verdict-so-far ---------- */
+function renderVerdict() {
+  const lines = E.verdict();
+  const body = $("#verdict-body");
+  if (!lines.length) {
+    body.innerHTML = `<p class="empty">${esc(t("verdict.empty"))}</p>`;
+    prevVerdictLen = 0;
+    return;
+  }
+  body.innerHTML = `<ul class="vlist">${lines.map((l, i) => `
+    <li ${l.color ? `data-color="${l.color}" style="${toneStyle(l.color)}"` : ""} class="${l.pending ? "pending" : ""} ${i >= prevVerdictLen ? "new" : ""}">
+      <span class="mk">${icon(l.icon)}</span>
+      <span><span>${esc(l.text)}</span>${l.sub ? `<br><span class="sub">${esc(l.sub)}</span>` : ""}</span>
+    </li>`).join("")}</ul>`;
+  prevVerdictLen = lines.length;
+}
+
+/* ---------- question screen ---------- */
+function itemRow(item, { name, type, checked }) {
+  const id = `${name}__${(item.id || item.ref).replace(/[^\w-]/g, "_")}`;
+  return `
+  <label class="opt" for="${esc(id)}">
+    <input type="${type}" id="${esc(id)}" name="${esc(name)}" value="${esc(item.id || item.ref)}" ${checked ? "checked" : ""}>
+    <span class="txt">
+      <span class="refline">
+        ${item.ref ? `<span class="chip art">${esc(item.ref)}</span>` : ""}
+        <span class="lead">${esc(item.label)}</span>
+      </span>
+      ${item.detail ? `<span class="detail">${esc(item.detail)}</span>` : ""}
+      ${item.obligation ? `<span class="obl">${esc(t("question.obligationPrefix"))} ${esc(item.obligation)}</span>` : ""}
+    </span>
+  </label>`;
+}
+
+function renderScreen() {
+  const n = E.currentNode();
+  if (n.type === "result" || E.state.finished) return renderResult();
+
+  const mem = E.memory[n.id] || {};
+  const selection = new Set(mem.selections || []);
+  const cat = n.checklist ? TREE.catalog[n.checklist] : null;
+  const refCat = n.reference ? TREE.catalog[n.reference] : null;
+  const grouped = refCat && refCat.areas ? refCat : null;      // Annex III: grouped multi-select
+  const isSelectionScreen = !!n.selectionRule;
+
+  const parts = [];
+
+  parts.push(`<div class="q-head">
+    ${n.articleRef ? `<span class="chip art">${esc(n.articleRef)}</span>` : ""}
+  </div>
+  <h2 class="q-text" id="q-text" tabindex="-1">${esc(n.text)}</h2>
+  <p class="q-explainer">${esc(n.explainer || "")}</p>`);
+
+  /* collapsible help + reference panels */
+  const panels = [];
+  if (n.help && (n.help.likelyYes || n.help.likelyNo)) {
+    panels.push(`<details class="disclosure"><summary>${esc(t("question.helpSummary"))}</summary><div class="body">
+      <div class="help-cols">
+        ${n.help.likelyYes ? `<div><h4>${esc(t("question.likelyYes"))}</h4><ul>${n.help.likelyYes.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        ${n.help.likelyNo ? `<div><h4>${esc(t("question.likelyNo"))}</h4><ul>${n.help.likelyNo.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+      </div></div></details>`);
+  }
+  if (refCat && !grouped) {   // Annex I: informational prompt list
+    panels.push(`<details class="disclosure"><summary>${esc(t("question.referenceSummary", { ref: refCat.articleRef || n.reference }))}</summary><div class="body">
+      ${refCat.note ? `<p class="note" style="margin-bottom:12px">${esc(refCat.note)}</p>` : ""}
+      <div class="help-cols">
+        ${refCat.sectionA ? `<div><h4>${esc(t("question.sectionA"))}</h4><ul>${refCat.sectionA.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        ${refCat.sectionB ? `<div><h4>${esc(t("question.sectionB"))}</h4><ul>${refCat.sectionB.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+      </div></div></details>`);
+  }
+  if (grouped && grouped.horizontalNotes) {
+    panels.push(`<details class="disclosure"><summary>${esc(t("question.annexIIINotes"))}</summary><div class="body">
+      <ul>${grouped.horizontalNotes.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></details>`);
+  }
+  if (panels.length) parts.push(`<div class="panels">${panels.join("")}</div>`);
+
+  /* selection body */
+  if (cat) {
+    parts.push(`<fieldset class="choices">
+      <legend>${esc(t("question.checklistLegend", { ref: cat.articleRef || "" }))}</legend>
+      ${cat.note ? `<p class="note" style="margin-bottom:12px">${esc(cat.note)}</p>` : ""}
+      ${cat.items.map(it => itemRow(it, { name: "sel", type: "checkbox", checked: selection.has(it.id) })).join("")}
+      ${cat.overrides ? `<div class="note" style="margin-top:10px"><b>${esc(t("question.overrides"))}</b><ul style="margin-top:4px">${cat.overrides.map(o => `<li>${esc(o)}</li>`).join("")}</ul></div>` : ""}
+    </fieldset>`);
+  }
+  if (grouped) {
+    parts.push(`<fieldset class="choices">
+      <legend>${esc(t("question.annexIIILegend", { ref: grouped.articleRef }))}</legend>
+      ${grouped.areas.map(a => {
+        const sel = (a.useCases || []).filter(u => selection.has(u.ref)).length;
+        return `<details class="area ${sel ? "has-sel" : ""}" ${sel ? "open" : ""}>
+          <summary><span class="chip">${esc(t("question.area", { n: a.id }))}</span> ${esc(a.area)}<span class="count" ${sel ? "" : "hidden"}>${esc(t("question.selectedCount", { n: sel }))}</span></summary>
+          <div class="inner">
+            ${a.condition ? `<p class="cond">${esc(a.condition)}</p>` : ""}
+            ${(a.useCases || []).map(u => itemRow({ ...u, id: u.ref }, { name: "sel", type: "checkbox", checked: selection.has(u.ref) })).join("")}
+          </div></details>`;
+      }).join("")}
+    </fieldset>`);
+  }
+  if (n.subQuestion) {
+    const sq = n.subQuestion;
+    parts.push(`<fieldset class="choices" id="subq">
+      <legend>${esc(sq.text)} ${sq.articleRef ? `<span class="chip art">${esc(sq.articleRef)}</span>` : ""}</legend>
+      ${sq.explainer ? `<p class="note" style="margin-bottom:12px">${esc(sq.explainer)}</p>` : ""}
+      ${sq.options.map(o => itemRow({ id: o.value, label: o.label }, { name: "sub", type: "radio", checked: mem.sub === o.value })).join("")}
+    </fieldset>`);
+  }
+
+  /* actions */
+  if (isSelectionScreen) {
+    parts.push(`<div class="resolved" id="resolved" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn primary" id="btn-continue">${esc(t("question.continue"))} ${icon("arrowRight")}</button>
+        ${E.canGoBack() ? `<button class="btn ghost" id="btn-back">${esc(t("question.back"))}</button>` : ""}
+      </div>`);
+  } else {
+    parts.push(`<div class="btn-list" role="group" aria-labelledby="q-text">
+      ${n.options.map((o, i) => `<button class="btn-opt" data-value="${esc(o.value)}" data-tone="${o.uncertain ? "unsure" : "plain"}">
+        <span class="mark">${o.uncertain ? "?" : String.fromCharCode(65 + i)}</span>
+        <span>${esc(o.label)}</span>
+      </button>`).join("")}
+    </div>
+    <div class="actions">${E.canGoBack() ? `<button class="btn ghost" id="btn-back">${esc(t("question.back"))}</button>` : ""}</div>`);
+  }
+
+  const screen = $("#screen");
+  screen.innerHTML = parts.join("");
+
+  /* wiring */
+  const back = $("#btn-back", screen);
+  if (back) back.onclick = () => { E.back(); paint({ focus: true }); };
+
+  if (isSelectionScreen) {
+    const updateResolved = () => {
+      const input = readSelectionInput(screen, n);
+      const value = E.resolveValue(n, input);
+      const opt = n.options.find(o => o.value === value);
+      const needSub = n.subQuestion && !input.sub;
+      $("#btn-continue", screen).disabled = needSub;
+      $("#resolved", screen).innerHTML = needSub
+        ? `${icon("info")}<span>${esc(t("question.answerSubFirst"))}</span>`
+        : `${icon("arrowRight")}<span><b>${esc(t("question.countsAs"))}</b> ${esc(opt ? opt.label : value)}</span>`;
+      /* keep the Annex III area chips in sync */
+      screen.querySelectorAll("details.area").forEach(d => {
+        const boxes = [...d.querySelectorAll('input[name="sel"]')];
+        const c = boxes.filter(b => b.checked).length;
+        d.classList.toggle("has-sel", c > 0);
+        const badge = d.querySelector(".count");
+        if (badge) { badge.textContent = t("question.selectedCount", { n: c }); badge.hidden = c === 0; }
+      });
+    };
+    screen.querySelectorAll('input[name="sel"], input[name="sub"]').forEach(el => el.addEventListener("change", updateResolved));
+    updateResolved();
+    $("#btn-continue", screen).onclick = () => {
+      E.submit(readSelectionInput(screen, n));
+      paint({ focus: true });
+    };
+  } else {
+    screen.querySelectorAll(".btn-opt").forEach(b => {
+      b.onclick = () => { E.submit({ value: b.dataset.value }); paint({ focus: true }); };
+    });
+  }
+}
+
+function readSelectionInput(screen, n) {
+  const selections = [...screen.querySelectorAll('input[name="sel"]:checked')].map(i => i.value);
+  const subEl = screen.querySelector('input[name="sub"]:checked');
+  return { selections, sub: subEl ? subEl.value : (n.subQuestion ? null : undefined) };
+}
+
+/* ---------- result screen ---------- */
+function renderResult() {
+  const cards = E.compileCards();
+  const st = E.state;
+  const m = TREE.meta;
+  const primary = cards.find(c => c.role === "primary");
+  const overlays = cards.filter(c => c.role === "overlay");
+  const triggered = E.selectedItems(TREE.nodes.T0_transparency, st.flags.transparency);
+
+  const heading = [primary ? shortOf(primary) : t("result.heading.fallback")]
+    .concat(overlays.map(o => `+ ${shortOf(o)}`)).join(" ");
+
+  const html = `<div class="wrap">
+    <header>
+      <p class="chip" style="margin-bottom:10px">${esc(m.title)} · v${esc(m.version)}</p>
+      <h1 id="result-h" tabindex="-1">${esc(heading)}</h1>
+      <p class="subtitle">${esc(tn("result.subtitle", cards.length))}</p>
+    </header>
+
+    <div class="actions no-print" style="margin-bottom:24px">
+      <button class="btn primary" id="btn-print">${esc(t("result.print"))}</button>
+      <button class="btn" id="btn-download">${esc(t("result.download"))}</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="btn-back-result">${esc(t("result.backToQuestion"))}</button>
+      <button class="btn ghost" id="btn-restart-2">${esc(t("chrome.restart"))}</button>
+    </div>
+
+    <div class="result-cards">
+      ${cards.map(c => resultCard(c, triggered)).join("")}
+    </div>
+
+    ${st.review.length ? `<div class="review-box">
+      <h2>${icon("question")} ${esc(tn("result.reviewTitle", st.review.length))}</h2>
+      <p style="font-size:.92rem; margin-bottom:10px">${esc(t("result.reviewIntro"))}</p>
+      <ol>${st.review.map(r => `<li>
+        <div class="q">${esc(r.question)}</div>
+        ${r.articleRef ? `<span class="chip art">${esc(r.articleRef)}</span>` : ""}
+        <div style="margin-top:5px">${esc(r.note)}</div>
+      </li>`).join("")}</ol>
+    </div>` : ""}
+
+    <div class="section">
+      <h2>${esc(t("result.pathTitle"))}</h2>
+      <p class="subtitle" style="font-size:.9rem; margin-bottom:14px">${esc(t("result.pathIntro"))}</p>
+      <ol class="timeline">
+        ${st.answers.map(a => timelineItem(a)).join("")}
+        <li>
+          <div class="rail"><div class="dot" style="background:var(--accent)"></div></div>
+          <div class="content"><div class="q">${esc(t("result.pathResultLabel"))}</div><div class="a">${esc(heading)}</div></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="section no-print">
+      <details class="disclosure" id="map-toggle">
+        <summary>${esc(t("result.mapSummary"))}</summary>
+        <div class="body"><div class="map-wrap" id="map-holder"></div></div>
+      </details>
+    </div>
+
+    <div class="section">
+      <h2>${esc(t("result.nextTitle"))}</h2>
+      <div class="card" style="padding:16px 18px">
+        <ol style="display:grid; gap:8px; font-size:.94rem">
+          ${(t("result.nextSteps") || []).map(s => `<li>${esc(s)}</li>`).join("")}
+        </ol>
+        <ul style="list-style:none; padding:0; margin-top:14px; display:grid; gap:6px">
+          ${(m.links || []).map(l => `<li>${icon("arrowRight")} <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label)}</a></li>`).join("")}
+        </ul>
+      </div>
+    </div>
+
+    <div class="disclaimer"><strong>${esc(t("start.disclaimerLabel"))}</strong>${esc(m.disclaimer)}</div>
+    <p style="font-size:.85rem; color:var(--text-muted)">${esc(t("result.draftNote", { version: m.version, date: m.lastUpdated, regulation: m.regulation }))}</p>
+  </div>`;
+
+  const sec = $("#result");
+  sec.innerHTML = html;
+  sec.hidden = false;
+  $("#app").hidden = true;
+  $("#start").hidden = true;
+  $("#btn-restart").hidden = false;
+
+  $("#btn-print").onclick = () => window.print();
+  $("#btn-download").onclick = () => downloadSummary(heading, cards, triggered);
+  $("#btn-back-result").onclick = () => { E.back(); paint({ focus: true }); };
+  $("#btn-restart-2").onclick = restart;
+  $("#map-toggle").addEventListener("toggle", (e) => {
+    if (e.target.open && !$("#map-holder").innerHTML) $("#map-holder").innerHTML = decisionMapSVG();
+  }, { once: false });
+
+  $("#result-h").focus();
+}
+
+function resultCard(c, triggered) {
+  const kicker = c.role === "primary"
+    ? t("result.kicker.primary")
+    : (c.tier === "transparency" ? t("result.kicker.transparency") : t("result.kicker.gpai"));
+  const trig = c.id === "TRANSPARENCY" && triggered.length
+    ? `<div class="triggered"><b>${esc(t("result.triggered"))}</b><ul>${triggered.map(item =>
+        `<li><span class="chip art">${esc(item.ref)}</span> ${esc(item.label)}<br><span style="color:var(--text-muted)">${esc(item.obligation || "")}</span></li>`).join("")}</ul></div>`
+    : "";
+  return `<article class="rcard" style="${toneStyle(c.color)}">
+    <div class="top">
+      <span class="badge">${icon(c.icon)}</span>
+      <div>
+        <div class="kicker">${esc(kicker)}</div>
+        <h2>${esc(c.title)}</h2>
+      </div>
+    </div>
+    <div class="body">
+      <p class="summary">${esc(c.summary)}</p>
+      ${trig}
+      ${(c.obligations || []).length ? `<div>
+        <h3 class="lbl">${esc(t("result.obligationsLabel"))}</h3>
+        <ul class="obligations">${c.obligations.map(o => `<li>${esc(o)}</li>`).join("")}</ul>
+      </div>` : ""}
+      ${c.applicationDate ? `<p class="dates">${icon("calendar")}<span><b>${esc(t("result.applicationDate"))}</b> ${esc(c.applicationDate)}</span></p>` : ""}
+      ${(c.legalRefs || []).length ? `<div class="refs">${c.legalRefs.map(r => `<span class="chip art">${esc(r)}</span>`).join("")}</div>` : ""}
+    </div>
+  </article>`;
+}
+
+function timelineItem(a) {
+  return `<li>
+    <div class="rail"><div class="dot"></div><div class="line"></div></div>
+    <div class="content">
+      <div class="q">${esc(a.question)}</div>
+      <div class="a"><span class="arrow">→</span><span><b>${esc(a.answerLabel)}</b></span></div>
+      ${a.sub ? `<div class="a"><span class="arrow">→</span><span>${esc(a.sub.text)} <b>${esc(a.sub.label)}</b></span></div>` : ""}
+      ${a.selections.length ? `<ul class="sel">${a.selections.map(s => `<li>${esc(s.ref)} — ${esc(s.label)}</li>`).join("")}</ul>` : ""}
+      <div class="meta">
+        ${a.articleRef ? `<span class="chip art">${esc(a.articleRef)}</span>` : ""}
+        ${a.uncertain ? `<span class="uncertain-tag">${esc(t("result.flagged"))}</span>` : ""}
+        <button class="btn small ghost no-print" data-edit="${esc(a.nodeId)}">${esc(t("result.editAnswer"))}</button>
+      </div>
+    </div>
+  </li>`;
+}
+
+/* ---------- decision map (result screen only, opt-in) ---------- */
+function decisionMapSVG() {
+  const qNodes = Object.entries(TREE.nodes).filter(([, n]) => n.type === "question").map(([id]) => id);
+  const taken = new Set(E.state.answers.map(a => a.nodeId));
+  const takenEdges = new Set(E.state.answers.map(a => `${a.nodeId}>${
+    (TREE.nodes[a.nodeId].options.find(o => o.value === a.value) || {}).next}`));
+
+  const rowH = 62, boxW = 250, boxH = 40, x1 = 10, x2 = 330, pad = 20;
+  const rows = {};
+  qNodes.forEach((id, i) => { rows[id] = i; });
+
+  /* place each outcome on the row of the first question that can reach it */
+  const outcomeRows = {};
+  qNodes.forEach(id => {
+    for (const o of TREE.nodes[id].options) {
+      if (TREE.outcomes[o.next] && outcomeRows[o.next] === undefined) outcomeRows[o.next] = rows[id];
+    }
+  });
+  const used = new Set();
+  for (const k of Object.keys(outcomeRows)) {           // avoid overlapping outcome boxes
+    let r = outcomeRows[k];
+    while (used.has(r)) r += 1;
+    outcomeRows[k] = r; used.add(r);
+  }
+  const maxRow = Math.max(...Object.values(rows), ...Object.values(outcomeRows));
+  const h = (maxRow + 1) * rowH + pad;
+  const cy = (r) => pad + r * rowH + boxH / 2;
+
+  const parts = [];
+  /* edges */
+  qNodes.forEach(id => {
+    const n = TREE.nodes[id];
+    n.options.forEach(o => {
+      const on = takenEdges.has(`${id}>${o.next}`);
+      const fromY = cy(rows[id]);
+      if (TREE.outcomes[o.next]) {
+        const toY = cy(outcomeRows[o.next]);
+        parts.push(`<path class="edge ${on ? "on" : ""}" d="M ${x1 + boxW} ${fromY} C ${x1 + boxW + 40} ${fromY}, ${x2 - 40} ${toY}, ${x2} ${toY}"/>`);
+      } else if (rows[o.next] !== undefined) {
+        const toY = cy(rows[o.next]);
+        const bend = x1 + boxW / 2;
+        parts.push(`<path class="edge ${on ? "on" : ""}" d="M ${bend} ${fromY + boxH / 2} L ${bend} ${toY - boxH / 2}"/>`);
+      } else if (o.next === "RESULT") {
+        parts.push(`<path class="edge ${on ? "on" : ""}" d="M ${x1 + boxW / 2} ${fromY + boxH / 2} L ${x1 + boxW / 2} ${h - 6}"/>`);
+      }
+    });
+  });
+  /* boxes */
+  qNodes.forEach(id => {
+    const on = taken.has(id);
+    const y = pad + rows[id] * rowH;
+    parts.push(`<g><rect class="box ${on ? "on" : ""}" x="${x1}" y="${y}" width="${boxW}" height="${boxH}" rx="8"/>
+      <text class="lbl" x="${x1 + 12}" y="${y + 17}">${esc(id.split("_")[0])} — ${esc(shortQ(id))}</text>
+      <text x="${x1 + 12}" y="${y + 31}">${esc(TREE.nodes[id].articleRef || "").slice(0, 44)}</text></g>`);
+  });
+  Object.entries(outcomeRows).forEach(([oid, r]) => {
+    const oc = TREE.outcomes[oid];
+    const on = E.state.flags.primaryTier === oid;
+    const y = pad + r * rowH;
+    parts.push(`<g><rect class="box outcome ${on ? "on" : ""}" x="${x2}" y="${y}" width="${boxW}" height="${boxH}" rx="8" style="stroke: var(--c-${oc.color})"/>
+      <text class="lbl" x="${x2 + 12}" y="${y + 24}">${esc(shortOf(oc))}</text></g>`);
+  });
+
+  return `<svg class="map" viewBox="0 0 ${x2 + boxW + 10} ${h}" width="${x2 + boxW + 10}" height="${h}" role="img"
+    aria-label="${esc(t("result.mapAria"))}">${parts.join("")}</svg>
+    <p style="font-size:.85rem;color:var(--text-muted);margin-top:8px">${esc(t("result.mapCaption"))}</p>`;
+}
+function shortQ(id) {
+  const map = {
+    S0_ai_system: "AI system?", S1_prohibited: "Prohibited practice?", S2_annex_i_product: "Annex I product?",
+    S3_annex_i_tpca: "Third-party assessment?", S4_annex_iii_area: "Annex III use case?", S5_profiling: "Profiling?",
+    S6_filter: "Art. 6(3) filter?", T0_transparency: "Art. 50 situation?", G0_gpai: "GPAI model?", G1_systemic: "Systemic risk?"
+  };
+  return map[id] || id;
+}
+
+/* ---------- markdown summary download (no server, no library) ---------- */
+function downloadSummary(heading, cards, triggered) {
+  const m = TREE.meta, st = E.state;
+  const L = [];
+  L.push(`# ${t("export.title", { title: m.title })}`, "");
+  L.push(`**${t("export.outcome")}:** ${heading}`, "");
+  L.push(`- ${t("export.toolVersion")}: ${m.version} (${m.lastUpdated})`);
+  L.push(`- ${t("export.regulation")}: ${m.regulation}`);
+  L.push(`- ${t("export.generated")}: ${new Date().toISOString().slice(0, 16).replace("T", " ")} (${t("export.generatedNote")})`, "");
+  L.push(`## ${t("export.cardsTitle")}`, "");
+  for (const c of cards) {
+    L.push(`### ${c.title}`, "", c.summary, "");
+    if (c.id === "TRANSPARENCY" && triggered.length) {
+      L.push(`**${t("result.triggered")}**`, "");
+      triggered.forEach(item => L.push(`- ${item.ref} — ${item.label} → ${item.obligation || ""}`));
+      L.push("");
+    }
+    if ((c.obligations || []).length) { L.push(`**${t("result.obligationsLabel")}**`, ""); c.obligations.forEach(o => L.push(`- ${o}`)); L.push(""); }
+    if (c.applicationDate) L.push(`**${t("result.applicationDate")}** ${c.applicationDate}`, "");
+    if ((c.legalRefs || []).length) L.push(`**${t("export.legalRefs")}:** ${c.legalRefs.join(", ")}`, "");
+  }
+  if (st.review.length) {
+    L.push(`## ${t("export.reviewTitle")}`, "");
+    st.review.forEach(r => L.push(`- **${r.question}** (${r.articleRef}) — ${r.note}`));
+    L.push("");
+  }
+  L.push(`## ${t("export.trailTitle")}`, "");
+  st.answers.forEach((a, i) => {
+    L.push(`${i + 1}. **${a.question}** (${a.articleRef})`);
+    L.push(`   - ${t("export.answer")}: ${a.answerLabel}`);
+    if (a.sub) L.push(`   - ${a.sub.text} ${a.sub.label}`);
+    a.selections.forEach(s => L.push(`   - ${t("export.selected")}: ${s.ref} — ${s.label}`));
+    if (a.uncertain) L.push(`   - ${t("export.flagged")}`);
+  });
+  L.push("", `## ${t("export.disclaimerTitle")}`, "", m.disclaimer, "");
+  L.push(`## ${t("export.sourcesTitle")}`, "");
+  (m.sources || []).forEach(s => L.push(`- ${s}`));
+
+  const blob = new Blob([L.join("\n")], { type: "text/markdown;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${t("export.filename")}-${new Date().toISOString().slice(0, 10)}.md`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+/* ---------- orchestration ---------- */
+function paint({ focus = false } = {}) {
+  if (E.state.finished) { renderResult(); return; }
+  $("#start").hidden = true;
+  $("#result").hidden = true;
+  $("#app").hidden = false;
+  $("#btn-restart").hidden = false;
+  renderStepper();
+  renderVerdict();
+  renderScreen();
+  if (focus) {
+    const h = $("#q-text");
+    if (h) h.focus();
+  }
+}
+
+function restart() {
+  E.reset();
+  prevVerdictLen = 0;
+  $("#result").hidden = true;
+  $("#app").hidden = true;
+  $("#btn-restart").hidden = true;
+  $("#start").hidden = false;
+  window.scrollTo({ top: 0, behavior: "auto" });
+  $("#btn-start").focus();
+}
+
+/* printing: expand every disclosure so nothing is silently missing from the PDF */
+let reopenAfterPrint = [];
+window.addEventListener("beforeprint", () => {
+  reopenAfterPrint = [...document.querySelectorAll("details:not([open])")];
+  reopenAfterPrint.forEach(d => { d.open = true; });
+});
+window.addEventListener("afterprint", () => {
+  reopenAfterPrint.forEach(d => { d.open = false; });
+  reopenAfterPrint = [];
+});
+
+/* edit-an-answer links live on the result screen */
+document.addEventListener("click", (ev) => {
+  const btn = ev.target.closest("[data-edit]");
+  if (!btn || !E) return;
+  E.editFrom(btn.dataset.edit);
+  paint({ focus: true });
+});
+
+(async function init() {
+  const { tree, sourceKey, sourceFile, errors } = await loadTree();
+  const own = validateTree(tree);
+  TREE = tree;
+  UI = tree.ui || {};
+  if (own.length) { showDataErrors(t("error.contract"), own); return; }
+  if (errors && errors.length) showDataErrors(t("error.externalIgnored"), errors);
+
+  E = createEngine(TREE);
+  renderStart();
+  $("#foot-source-of-data").textContent = t("chrome.dataSource", { source: t(sourceKey, { file: sourceFile }) });
+  document.documentElement.lang = TREE.meta.language || "en";
+  $("#btn-start").onclick = () => paint({ focus: true });
+  $("#btn-restart").onclick = restart;
+
+  /* exposed for test-scenarios.mjs and for console debugging */
+  window.AIAct = { get tree() { return TREE; }, get engine() { return E; }, createEngine, validateTree };
+})();
+</script>
+</body>
