@@ -130,6 +130,7 @@
     "result.mapCaption": "Highlighted boxes and lines are the path you took. Overlay questions (transparency, GPAI) always run; they do not change the tier.",
     "result.mapAria": "Decision map of the assessment with the path taken highlighted",
     "result.nextTitle": "What this means, and what to do next",
+    "result.linksLabel": "Where to get help (opens in a new tab)",
     "result.nextSteps": [
       "Treat this as a triage result: it tells you which part of the AI Act to read, not whether you comply.",
       "Write down your reasoning per question — the trail above is a starting point. For the Article 6(3) filter this documentation is a legal duty (Art. 6(4)).",

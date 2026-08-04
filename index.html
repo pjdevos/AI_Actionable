@@ -119,6 +119,9 @@ header.site .inner {
 .brand .s { color: var(--text-muted); font-size: .8rem; }
 
 /* ---------- generic bits ---------- */
+/* default size for any inline icon; component rules below override it */
+.ico { width: 1.05em; height: 1.05em; vertical-align: -.15em; flex: none; }
+
 .chip {
   display: inline-block; font-family: var(--mono); font-size: .74rem;
   padding: 2px 7px; border-radius: 999px;
@@ -344,6 +347,10 @@ aside.verdict { position: sticky; top: 88px; }
 .rcard .dates svg { width: 16px; height: 16px; flex: none; margin-top: 3px; }
 .rcard .refs { display: flex; flex-wrap: wrap; gap: 6px; }
 
+.link-list { list-style: none; padding: 0; margin-top: 8px; display: grid; gap: 7px; font-size: .93rem; }
+.link-list a { display: inline-flex; align-items: center; gap: 6px; }
+.link-list .ico { width: 14px; height: 14px; opacity: .7; }
+
 .review-box { border: 1px solid var(--c-yellow); background: var(--c-yellow-bg); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 26px; }
 .review-box h2 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
 .review-box h2 svg { width: 18px; height: 18px; color: var(--c-yellow); }
@@ -551,6 +558,7 @@ footer.site .meta-line { margin-top: 22px; padding-top: 14px; border-top: 1px so
     "result.mapCaption": "Highlighted boxes and lines are the path you took. Overlay questions (transparency, GPAI) always run; they do not change the tier.",
     "result.mapAria": "Decision map of the assessment with the path taken highlighted",
     "result.nextTitle": "What this means, and what to do next",
+    "result.linksLabel": "Where to get help (opens in a new tab)",
     "result.nextSteps": [
       "Treat this as a triage result: it tells you which part of the AI Act to read, not whether you comply.",
       "Write down your reasoning per question — the trail above is a starting point. For the Article 6(3) filter this documentation is a legal duty (Art. 6(4)).",
@@ -1208,11 +1216,15 @@ const ICONS = {
   question:       '<circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 1 1 3.6 2.7c-.6.2-.9.7-.9 1.3v.6"/><path d="M12 17h.01"/>',
   calendar:       '<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/>',
   arrowRight:     '<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
+  external:       '<path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 14.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V7.5A1.5 1.5 0 0 1 5 6h4.5"/>',
   info:           '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.8h.01"/>'
 };
+/* every icon carries .ico, which gives it a sane default size. Component rules
+   (.btn svg, .rcard .badge svg, …) are more specific and still win, so an icon
+   dropped into a context without its own sizing can never render oversized. */
 function icon(name, cls = "") {
   const d = ICONS[name] || ICONS.info;
-  return `<svg ${cls ? `class="${cls}" ` : ""}viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  return `<svg class="ico${cls ? " " + cls : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 }
 /* inline style that binds a card/marker to a semantic tier colour */
 const toneStyle = (color) => `--tone: var(--c-${color || "grey"}); --tone-bg: var(--c-${color || "grey"}-bg);`;
@@ -1828,8 +1840,9 @@ function renderResult() {
         <ol style="display:grid; gap:8px; font-size:.94rem">
           ${(t("result.nextSteps") || []).map(s => `<li>${esc(s)}</li>`).join("")}
         </ol>
-        <ul style="list-style:none; padding:0; margin-top:14px; display:grid; gap:6px">
-          ${(m.links || []).map(l => `<li>${icon("arrowRight")} <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label)}</a></li>`).join("")}
+        <h3 class="lbl" style="margin-top:18px">${esc(t("result.linksLabel"))}</h3>
+        <ul class="link-list">
+          ${(m.links || []).map(l => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label)}${icon("external")}</a></li>`).join("")}
         </ul>
       </div>
     </div>
