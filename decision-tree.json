@@ -2,327 +2,343 @@
   "meta": {
     "id": "ai-act-tier-assessment",
     "title": "EU AI Act – Risk Tier Self-Assessment",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "language": "en",
-    "lastUpdated": "2026-08-04",
-    "regulation": "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
-    "purpose": "Help a provider or deployer of an algorithm or AI application determine which risk category of the EU AI Act their system falls into: out of scope, prohibited, high-risk (Annex I or Annex III), limited-risk (transparency), or minimal-risk. A separate overlay determines general-purpose AI (GPAI) model obligations.",
-    "disclaimer": "This tool provides non-binding, indicative guidance only. It is based on the AI Act and the Commission's draft classification guidelines (stakeholder-consultation drafts, not yet final). It is not legal advice. The final classification is the responsibility of the provider, supervised by the competent market surveillance authority. Only the Court of Justice of the European Union can give an authoritative interpretation of the AI Act. In case of doubt, consult the AI Act Service Desk, your competent authority, or qualified legal counsel.",
-    "sources": [
-      "Regulation (EU) 2024/1689 (AI Act), Articles 3, 5, 6, 7, 50, 51, 53, 55; Annexes I, III",
-      "Commission Guidelines on the definition of an artificial intelligence system, C(2025) 5053",
-      "Draft Commission guidelines on the classification of high-risk AI systems under Article 6 (general principles; Annex I; Annex III), stakeholder-consultation drafts 2026",
-      "Annex III overview: https://artificialintelligenceact.eu/annex/3/"
+    "lastUpdated": "2026-08-05",
+    "changelog": [
+      "1.2.0 – Plain-language rewrite of every question, explainer and answer. The exact wording of the law now lives in a collapsible 'In the words of the law' panel (node.legalText) and each checklist item keeps its exact legal phrasing on expand (item.label) beside a plain summary (item.plain). Added an explicit 'I'm not sure' answer on judgement-heavy questions that routes conservatively and records a review flag.",
+      "1.1.0 – Added cross-links, official guideline links + examples, FOSS exemption note, provider/deployer obligation split, optional context step.",
+      "1.0.0 – Initial decision tree."
     ],
+    "regulation": "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
+    "purpose": "Help the owner of an algorithm or AI application find out, in plain language, which risk category of the EU AI Act their system falls into: out of scope, prohibited, high-risk (Annex I or Annex III), limited-risk (transparency) or minimal-risk. A separate overlay covers general-purpose AI (GPAI) models.",
+    "disclaimer": "This tool gives you a first, indicative answer. It is not legal advice and it is not binding. It is based on the AI Act and the European Commission's guidance (the high-risk classification guidance is still a draft). The final call is the provider's responsibility, checked by the market surveillance authority, and only the Court of Justice of the EU can give a binding interpretation. When in doubt, ask the AI Act Service Desk, your authority, or a lawyer.",
+    "languageStyle": {
+      "note": "Every screen has three layers. Show them in this priority: (1) the plain-language question + explainer (node.text, node.explainer) — always visible; (2) an 'In the words of the law' collapsible holding the exact/near-verbatim regulation wording (node.legalText) — collapsed by default; (3) an 'Examples / how to decide' collapsible holding node.help (likelyYes / likelyNo) — collapsed by default. Checklist items follow the same idea: item.plain is the visible line, item.label + item.ref are the exact wording shown on expand.",
+      "tone": "Warm, direct, second person ('your system'). Short sentences. Avoid article numbers in the main text; keep them in the legalText panel and the small reference chips."
+    },
     "keyDates": {
       "prohibitions_apply": "2025-02-02",
       "gpai_rules_apply": "2025-08-02",
+      "transparency_apply": "2026-08-02",
       "annex_iii_highrisk_apply": "originally 2026-08-02, postponed by the AI Omnibus to 2027-12-02",
       "annex_i_highrisk_apply": "originally 2027-08-02, postponed by the AI Omnibus to 2028-08-02"
+    }
+  },
+
+  "guidelines": {
+    "note": "Official European Commission guidance. Surface the relevant link(s) on each question and result card. The high-risk classification guidance is still a draft (stakeholder consultation).",
+    "ai_system_definition": {
+      "title": "Guidance: what counts as an AI system",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-ai-system-definition-facilitate-first-ai-acts-rules-application",
+      "status": "final"
     },
-    "links": [
-      { "label": "AI Act Service Desk / Single Information Platform", "url": "https://digital-strategy.ec.europa.eu/en/policies/ai-act-service-desk" },
-      { "label": "Full text of Regulation (EU) 2024/1689 (EUR-Lex)", "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj" },
-      { "label": "Annex III overview", "url": "https://artificialintelligenceact.eu/annex/3/" }
-    ],
-    "uncertaintyPolicy": "Where a question is judgement-heavy, an 'I am not sure' answer is available. It always routes to the more conservative (higher-risk) branch and records a point for expert review, which is listed on the result screen."
+    "prohibited_practices": {
+      "title": "Guidance: banned AI practices (Article 5)",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-prohibited-artificial-intelligence-ai-practices-defined-ai-act",
+      "status": "final"
+    },
+    "high_risk_classification": {
+      "title": "Draft guidance: is my system high-risk? (Article 6)",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "status": "draft (stakeholder consultation)"
+    },
+    "annex_iii_reference": {
+      "title": "The high-risk list (Annex III)",
+      "url": "https://artificialintelligenceact.eu/annex/3/",
+      "status": "reference"
+    },
+    "gpai_scope": {
+      "title": "Guidance: duties for general-purpose AI model providers",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act",
+      "status": "final"
+    },
+    "gpai_code_of_practice": {
+      "title": "General-Purpose AI Code of Practice",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai",
+      "status": "final"
+    },
+    "gpai_training_summary_template": {
+      "title": "Template: public summary of training content",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/explanatory-notice-and-template-public-summary-training-content-general-purpose-ai-models",
+      "status": "final"
+    },
+    "transparency": {
+      "title": "Guidance: being open with people (Article 50)",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/guidelines-transparency-obligations-providers-and-deployers-ai-systems",
+      "status": "final"
+    },
+    "transparency_code_of_practice": {
+      "title": "Code of Practice on marking AI-generated content",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
+      "status": "final"
+    }
+  },
+
+  "notes": {
+    "fossExemption": {
+      "title": "A note if your system is open-source",
+      "articleRef": "Art. 2(12); Art. 53(2); Recitals 102-104",
+      "body": "If your AI system is released under a free and open-source licence, the AI Act mostly leaves it alone. But there's an important catch: this free pass does NOT apply if the system is high-risk, banned, or one of the systems that must be transparent with people. In those three cases the rules apply even to open-source. Separately, open-source general-purpose models get a lighter documentation load, except when the model is a very powerful 'systemic-risk' one. Even then, an open-source model still needs a copyright policy and a public summary of its training data.",
+      "howToShow": "Show as an info note on the minimal-risk and GPAI result cards, and whenever the user says the system is open-source. Never let 'open-source' downgrade a banned, high-risk or transparency result: show the note but keep the category."
+    },
+    "providerVsDeployer": {
+      "title": "Who has to do what: makers vs users",
+      "articleRef": "Art. 3(3), 3(4); Art. 16, 22-27; Art. 25; Art. 50",
+      "body": "The duties depend on your role. A 'provider' builds the system (or model) and puts it on the market under its own name. A 'deployer' uses the system in its own work. Most of the heavy duties (building it safely, documentation, the conformity check) fall on the provider. Deployers have a shorter list: use it as instructed, keep a human in the loop, monitor it, and in some cases run a fundamental-rights impact check. Watch out: if a user rebrands a system, changes it substantially, or uses it for a new purpose that makes it high-risk, that user legally becomes a provider.",
+      "howToShow": "Use the role context flag to show the relevant obligations first, with a 'show all roles' toggle."
+    }
   },
 
   "resultModel": {
-    "description": "The assessment does not produce a single leaf. It produces a compiled PROFILE with up to three independent dimensions, because a system can carry more than one status at once (e.g. a high-risk system that is also subject to transparency duties, built on a GPAI model). The implementer must accumulate flags across the flow and render all applicable result cards.",
+    "description": "The assessment produces a compiled PROFILE, not a single leaf: a system can carry several statuses at once. Accumulate flags and render all applicable result cards, filtered by role, with the FOSS note where relevant, and a 'worth double-checking' box listing any review flags.",
     "dimensions": {
-      "primaryTier": "One of: out_of_scope | prohibited | high_risk_annex_i | high_risk_annex_iii | not_high_risk_filtered | minimal_risk. Determined by the SPINE module.",
-      "transparency": "Boolean + list of triggered Article 50 obligations. Determined by the TRANSPARENCY module. Cumulative with any tier except out_of_scope and prohibited.",
-      "gpai": "One of: none | gpai_model | gpai_model_systemic. Determined by the GPAI module. Independent of the system tier."
+      "primaryTier": "out_of_scope | prohibited | high_risk_annex_i | high_risk_annex_iii | not_high_risk_filtered | minimal_risk. Set by the SPINE.",
+      "transparency": "List of triggered Art. 50 items (some auto-derived). Cumulative with any tier except out_of_scope and prohibited.",
+      "gpai": "none | gpai_model | gpai_model_systemic. Independent of the system tier.",
+      "role": "provider | deployer | both | unknown. Only filters which obligations are shown.",
+      "fossLicence": "yes | no | unknown. Only surfaces the FOSS note.",
+      "reviewFlags": "Array of { node, note } collected whenever the user chose an 'I'm not sure' answer. Rendered as a 'Worth double-checking with an expert' box on the result screen. Does not change the tier."
     },
     "shortCircuits": [
-      "If primaryTier = out_of_scope, stop. Do not run transparency or GPAI modules.",
-      "If primaryTier = prohibited, stop the tier spine. The system may not be placed on the market or used. Still worth noting GPAI status if relevant, but the transparency overlay is moot."
+      "out_of_scope: stop. Do not run transparency or GPAI.",
+      "prohibited: stop the tier spine (banned overrides everything, including open-source). Still note GPAI if relevant; transparency is moot."
     ]
   },
 
-  "moduleOrder": ["SPINE", "TRANSPARENCY", "GPAI", "RESULT"],
+  "moduleOrder": ["CONTEXT", "SPINE", "TRANSPARENCY", "GPAI", "RESULT"],
 
-  "phases": [
-    { "id": "scope", "label": "Scope & prohibitions", "shortLabel": "Scope", "module": "SPINE", "nodes": ["S0_ai_system", "S1_prohibited"] },
-    { "id": "tier", "label": "Risk tier", "shortLabel": "Tier", "module": "SPINE", "nodes": ["S2_annex_i_product", "S3_annex_i_tpca", "S4_annex_iii_area", "S5_profiling", "S6_filter"] },
-    { "id": "transparency", "label": "Transparency", "shortLabel": "Transp.", "module": "TRANSPARENCY", "nodes": ["T0_transparency"] },
-    { "id": "gpai", "label": "GPAI", "shortLabel": "GPAI", "module": "GPAI", "nodes": ["G0_gpai", "G1_systemic"] }
-  ],
-
-  "ui": {
-    "_comment": "Every string the interface renders itself (buttons, headings, labels). Translating the tool = copying this file and translating meta, nodes, outcomes, catalog and this ui block. No code changes needed. {placeholders} are filled in by the interface.",
-    "chrome.restart": "Start over",
-    "chrome.dataSource": "Data: {source}",
-    "chrome.versionLine": "Version {version} · content last updated {date}",
-    "start.headline": "Which risk category of the EU AI Act does your system fall into?",
-    "start.legendLabel": "Possible outcomes",
-    "start.fact1.label": "Questions",
-    "start.fact1.text": "Typically 5–8, one per screen. The flow branches, so the exact number depends on your answers.",
-    "start.fact2.label": "Privacy",
-    "start.fact2.text": "Runs entirely in your browser. No account, no server, nothing stored or transmitted.",
-    "start.fact3.label": "Output",
-    "start.fact3.text": "All applicable result cards, the path you took, and a printable summary.",
-    "start.disclaimerLabel": "Not legal advice",
-    "start.button": "Start the assessment",
-    "start.modelSummary": "How this tool models the AI Act (and why there is more than one answer)",
-    "start.shortCircuitsLabel": "Short-circuits",
-    "progress.label": "Progress",
-    "progress.state.current": "current step",
-    "progress.state.done": "completed",
-    "progress.state.skipped": "not applicable",
-    "progress.state.upcoming": "upcoming",
-    "progress.mobile": "Phase {n} of {total}: {label}",
-    "verdict.title": "Your verdict so far",
-    "verdict.empty": "Answer the first question and your classification will start to take shape here.",
-    "verdict.isAiSystem": "Is an AI system",
-    "verdict.notAiSystem": "Not an AI system",
-    "verdict.aiSystemUnclear": "AI-system status unclear",
-    "verdict.conservativeSub": "continued conservatively",
-    "verdict.prohibitedFound": "Prohibited practice found",
-    "verdict.noProhibited": "No prohibited practice",
-    "verdict.assessingTier": "Assessing the risk tier…",
-    "verdict.minimalSub": "no mandatory obligations",
-    "verdict.transparencyAdded": "Transparency obligations added ({n})",
-    "verdict.noTransparency": "No Article 50 transparency situation",
-    "verdict.notGpai": "Not a GPAI model provider",
-    "verdict.reviewPoints.one": "1 point for expert review",
-    "verdict.reviewPoints.many": "{n} points for expert review",
-    "verdict.reviewSub": "shown in the result",
-    "question.helpSummary": "Examples / how to decide",
-    "question.likelyYes": "Points to “yes”",
-    "question.likelyNo": "Points to “no”",
-    "question.referenceSummary": "Reference list — {ref}",
-    "question.sectionA": "Section A — New Legislative Framework",
-    "question.sectionB": "Section B — other (mostly transport)",
-    "question.annexIIINotes": "How to read Annex III (important limitations)",
-    "question.checklistLegend": "{ref} — tick everything that applies",
-    "question.annexIIILegend": "{ref} — expand an area and tick every matching use case",
-    "question.overrides": "Overrides:",
-    "question.area": "Area {n}",
-    "question.selectedCount": "{n} selected",
-    "question.countsAs": "This counts as:",
-    "question.answerSubFirst": "Answer the question above to continue.",
-    "question.continue": "Continue",
-    "question.back": "Back",
-    "question.obligationPrefix": "Obligation:",
-    "result.heading.fallback": "Result",
-    "result.kicker.primary": "Primary risk tier",
-    "result.kicker.transparency": "Cumulative overlay",
-    "result.kicker.gpai": "Model-level overlay",
-    "result.subtitle.one": "1 applicable result card. A system can carry a risk tier, transparency duties and a GPAI model status at the same time.",
-    "result.subtitle.many": "{n} applicable result cards. A system can carry a risk tier, transparency duties and a GPAI model status at the same time.",
-    "result.print": "Print / save as PDF",
-    "result.download": "Download summary (.md)",
-    "result.backToQuestion": "Back to the last question",
-    "result.triggered": "Triggered in your case",
-    "result.obligationsLabel": "What this means in practice",
-    "result.applicationDate": "Application date —",
-    "result.reviewTitle.one": "1 point to have reviewed by an expert",
-    "result.reviewTitle.many": "{n} points to have reviewed by an expert",
-    "result.reviewIntro": "You answered “I'm not sure” below. Each time, the assessment took the more conservative (higher-risk) route, so the result above may be stricter than necessary — or, if the underlying facts differ, wrong.",
-    "result.pathTitle": "The path you took",
-    "result.pathIntro": "This trail is the auditable record of the assessment. In the filtered case it is the starting point for the Article 6(4) documentation duty.",
-    "result.pathResultLabel": "Result",
-    "result.editAnswer": "Edit this answer",
-    "result.flagged": "flagged for review",
-    "result.mapSummary": "Show the decision map, with your path highlighted",
-    "result.mapCaption": "Highlighted boxes and lines are the path you took. Overlay questions (transparency, GPAI) always run; they do not change the tier.",
-    "result.mapAria": "Decision map of the assessment with the path taken highlighted",
-    "result.nextTitle": "What this means, and what to do next",
-    "result.linksLabel": "Where to get help (opens in a new tab)",
-    "result.nextSteps": [
-      "Treat this as a triage result: it tells you which part of the AI Act to read, not whether you comply.",
-      "Write down your reasoning per question — the trail above is a starting point. For the Article 6(3) filter this documentation is a legal duty (Art. 6(4)).",
-      "Re-run the assessment whenever the intended purpose, the deployment context or the model changes.",
-      "For borderline calls — the Article 3(1) inference test, the Annex I safety-component test, the Article 6(3) filter — get expert or legal review.",
-      "Consult the AI Act Service Desk or your national competent authority."
-    ],
-    "result.draftNote": "Version {version} · content last updated {date} · based on {regulation} and the Commission's draft classification guidelines (stakeholder-consultation versions). Application dates reflect the AI Omnibus postponements and are indicative and subject to change.",
-    "footer.help": "Need help deciding?",
-    "footer.sources": "Sources encoded in this tool",
-    "footer.dates": "Key application dates",
-    "footer.date.prohibitions_apply": "Prohibitions (Art. 5)",
-    "footer.date.gpai_rules_apply": "GPAI models (Art. 53–55)",
-    "footer.date.annex_iii_highrisk_apply": "High-risk, Annex III (Art. 6(2))",
-    "footer.date.annex_i_highrisk_apply": "High-risk, Annex I (Art. 6(1))",
-    "footer.date.transparency": "Transparency (Art. 50): 2 August 2026",
-    "export.filename": "ai-act-assessment",
-    "export.title": "{title} — result",
-    "export.outcome": "Outcome",
-    "export.toolVersion": "Tool version",
-    "export.regulation": "Regulation",
-    "export.generated": "Generated",
-    "export.generatedNote": "local browser time",
-    "export.cardsTitle": "Result cards",
-    "export.legalRefs": "Legal references",
-    "export.reviewTitle": "Points for expert review",
-    "export.trailTitle": "Answer trail",
-    "export.answer": "Answer",
-    "export.selected": "Selected",
-    "export.flagged": "Flagged for expert review",
-    "export.disclaimerTitle": "Disclaimer",
-    "export.sourcesTitle": "Sources",
-    "error.contract": "decision-tree.json does not match the expected contract:",
-    "error.externalIgnored": "The external decision-tree.json was ignored (validation failed) — using the embedded copy:",
-    "source.external": "{file} (loaded from the server)",
-    "source.embedded": "embedded copy of decision-tree.json",
-    "source.embeddedFallback": "embedded copy (the external decision-tree.json failed validation)"
+  "crossLinks": {
+    "description": "Links that let the tool ask fewer questions and stay consistent. The implementer MUST apply these.",
+    "rules": [
+      {
+        "id": "biometrics-to-transparency",
+        "when": "The user selects 'biometric categorisation' (1(b)) or 'emotion recognition' (1(c)) at S4.",
+        "then": "Automatically add the Art. 50(3) 'tell people they are exposed to it' duty. At T0, show that item pre-ticked and locked, with a 'we worked this out from your earlier answer' tag. Don't ask it again.",
+        "refs": ["Annex III(1)(b)", "Annex III(1)(c)", "Art. 50(3)"]
+      },
+      {
+        "id": "biometrics-emotion-prohibition-reminder",
+        "when": "Emotion recognition or biometric categorisation is in play.",
+        "then": "Remind the user these can be BANNED rather than high-risk: reading emotions at work or school (Art. 5(1)(f)), and sorting people by sensitive traits (Art. 5(1)(g)). Already screened at S1; show a reminder so a banned system isn't mislabelled as merely high-risk.",
+        "refs": ["Art. 5(1)(f)", "Art. 5(1)(g)"]
+      },
+      {
+        "id": "deepfake-implies-synthetic",
+        "when": "The user ticks 'deep fakes' (50(4)) at T0.",
+        "then": "Point out that deep fakes are AI-generated content, so the 'mark it as AI-made' duty (50(2), on the provider) probably also applies. Suggest, don't force.",
+        "refs": ["Art. 50(2)", "Art. 50(4)"]
+      }
+    ]
   },
 
   "nodes": {
     "S0_ai_system": {
       "module": "SPINE",
       "type": "question",
-      "text": "Does your system qualify as an 'AI system' under the AI Act?",
-      "explainer": "Article 3(1) defines an AI system as a machine-based system that (a) is designed to operate with varying levels of autonomy, (b) may show adaptiveness after deployment, and (c) for explicit or implicit objectives, INFERS from the input it receives how to generate outputs such as predictions, content, recommendations or decisions that can influence physical or virtual environments. The key element is 'inference': the system derives outputs from data using techniques such as machine learning or knowledge/logic-based approaches, rather than executing only rules defined solely by natural persons.",
+      "text": "Is your system an artificial intelligence tool?",
+      "explainer": "An artificial intelligence tool is a computer-based system that: can work with some degree of independence; may adapt after it has been put into use; and uses the information it receives to work out how to produce results, such as predictions, content, recommendations or decisions that can affect the physical or digital world. The crucial feature is inference: the system analyses data and derives an output from it, for example through machine learning or logic-based methods. It does more than simply follow a fixed set of rules written entirely by humans.",
+      "legalText": {
+        "articleRef": "Art. 3(1)",
+        "text": "'AI system' means a machine-based system that is designed to operate with varying levels of autonomy and that may exhibit adaptiveness after deployment, and that, for explicit or implicit objectives, infers, from the input it receives, how to generate outputs such as predictions, content, recommendations, or decisions that can influence physical or virtual environments."
+      },
       "help": {
         "likelyYes": [
-          "Uses machine learning (supervised, unsupervised, reinforcement, deep learning)",
-          "Uses knowledge- or logic-based inference, expert systems, or search/optimisation that infers solutions",
-          "Generates content, predictions, recommendations or decisions from data with some autonomy"
+          "It uses machine learning (it was trained on data)",
+          "It reasons with knowledge or logic rules to work things out, or searches for/optimises solutions",
+          "It produces content, predictions, recommendations or decisions from data, with some independence"
         ],
         "likelyNo": [
-          "Systems for improving mathematical optimisation only, or that merely speed up classical methods",
-          "Basic data processing following rules defined solely by natural persons (e.g. a spreadsheet with fixed formulas, a static database query)",
-          "Systems based on classical heuristics with no learning/inference",
-          "Simple prediction using a single basic statistical rule"
+          "It just speeds up a maths calculation or a classic method",
+          "It only follows fixed formulas or rules a person wrote (like a spreadsheet or a simple database query)",
+          "It's a simple rule-of-thumb or a single basic statistical rule, with no learning"
         ]
       },
-      "articleRef": "Art. 3(1); Guidelines on the definition of an AI system (C(2025) 5053)",
+      "articleRef": "Art. 3(1)",
+      "guidelineLinks": ["ai_system_definition"],
       "options": [
-        { "label": "Yes – it meets the Article 3(1) definition", "value": "yes", "next": "S1_prohibited" },
-        { "label": "No – it only executes rules defined solely by natural persons", "value": "no", "next": "OUT_OF_SCOPE" },
-        { "label": "I'm not sure whether it 'infers'", "value": "unsure", "next": "S1_prohibited", "uncertain": true, "reviewNote": "Whether the system 'infers' outputs within the meaning of Art. 3(1) was not established. The assessment continued on the assumption that it is an AI system. Verify against the Commission Guidelines on the definition of an AI system (C(2025) 5053)." }
+        { "label": "Yes, it is an artificial intelligence tool", "value": "yes", "next": "C0_context" },
+        { "label": "No, it only runs pre-written code / fixed rules", "value": "no", "next": "OUT_OF_SCOPE" },
+        { "label": "I'm not sure whether it 'infers'", "value": "unsure", "next": "C0_context", "flagsReview": true, "reviewNote": "Whether your system 'infers' (rather than just following fixed rules) decides if the AI Act applies at all. Check the AI-system definition guidance or ask an expert." }
       ]
+    },
+
+    "C0_context": {
+      "module": "CONTEXT",
+      "type": "context",
+      "optional": true,
+      "text": "First, a little about you (optional)",
+      "explainer": "This won't change your result. It just lets us show the duties that actually apply to you, and the right note if your system is open-source. Feel free to skip it.",
+      "guidelineLinks": ["providerVsDeployer", "fossExemption"],
+      "fields": [
+        {
+          "id": "role",
+          "label": "What's your role with this system?",
+          "articleRef": "Art. 3(3), 3(4); Art. 25",
+          "setsFlag": "role",
+          "options": [
+            { "label": "I build it / put it on the market (provider)", "value": "provider" },
+            { "label": "I use it in my organisation (deployer)", "value": "deployer" },
+            { "label": "Both", "value": "both" },
+            { "label": "Not sure / skip", "value": "unknown" }
+          ]
+        },
+        {
+          "id": "fossLicence",
+          "label": "Is it released under a free and open-source licence?",
+          "articleRef": "Art. 2(12); Art. 53(2)",
+          "setsFlag": "fossLicence",
+          "options": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" },
+            { "label": "Not sure / skip", "value": "unknown" }
+          ]
+        }
+      ],
+      "next": "S1_prohibited"
     },
 
     "S1_prohibited": {
       "module": "SPINE",
       "type": "question",
-      "text": "Does the system's intended purpose or use match any PROHIBITED practice under Article 5?",
-      "explainer": "Article 5 bans certain AI practices outright (unacceptable risk). If any of the practices below applies, the system is prohibited regardless of anything else. Review each listed practice.",
+      "text": "Does your system do any of the things the AI Act bans outright?",
+      "explainer": "A small number of AI uses are banned in the EU because they're considered too harmful. Have a quick look through the list. If your system does any of them, it's banned, whatever else is true. Two to watch: reading people's emotions at work or school, and sorting people by sensitive traits (like race or beliefs), are usually banned rather than just 'high-risk'.",
+      "legalText": {
+        "articleRef": "Art. 5",
+        "text": "Article 5 prohibits, among others: manipulative or deceptive techniques and exploitation of vulnerabilities that cause significant harm; social scoring; predicting crime based solely on profiling; untargeted scraping of facial images; emotion recognition in the workplace and education; biometric categorisation inferring sensitive attributes; and real-time remote biometric identification in public spaces for law enforcement (with narrow exceptions)."
+      },
       "articleRef": "Art. 5",
+      "guidelineLinks": ["prohibited_practices"],
       "checklist": "prohibitedPractices",
-      "multiSelect": true,
-      "selectionRule": "anySelected",
       "options": [
-        { "label": "Yes – at least one prohibited practice applies", "value": "yes", "next": "PROHIBITED" },
-        { "label": "No – none of these apply", "value": "no", "next": "S2_annex_i_product" }
+        { "label": "Yes, at least one of these applies", "value": "yes", "next": "PROHIBITED" },
+        { "label": "No, none of these apply", "value": "no", "next": "S2_annex_i_product" }
       ]
     },
 
     "S2_annex_i_product": {
       "module": "SPINE",
       "type": "question",
-      "text": "Is the AI system itself a product, OR a safety component of a product, covered by one of the Union harmonisation laws listed in Annex I?",
-      "explainer": "Article 6(1) – first cumulative condition. Annex I lists EU product-safety legislation (e.g. machinery, toys, lifts, medical devices, in-vitro diagnostics, radio equipment, pressure equipment, PPE, cableways, gas appliances, and the automotive, aviation, rail and marine sectors). A 'safety component' (Art. 3(14)) is a component whose failure/malfunction endangers health and safety, OR that fulfils a safety function. Comfort/efficiency/optimisation functions are generally NOT safety functions, but a system can still be a safety component if its failure would endanger health or safety.",
+      "text": "Is your system part of a physical product that already has EU safety rules?",
+      "explainer": "Some products, like machines, medical devices, toys, cars or lifts, must already meet EU safety law before they can be sold. This route applies if your AI is one of those products, or is a part that keeps it safe (a 'safety component', meaning something whose failure could hurt people, or that does a safety job). Features that only improve comfort, efficiency or convenience usually don't count.",
+      "legalText": {
+        "articleRef": "Art. 6(1); Art. 3(14); Annex I",
+        "text": "An AI system is high-risk under Article 6(1) where it is itself a product, or is intended to be used as a safety component of a product, covered by the Union harmonisation legislation listed in Annex I. 'Safety component' (Art. 3(14)) means a component which fulfils a safety function for that product, or the failure or malfunctioning of which endangers the health and safety of persons or property."
+      },
       "help": {
         "likelyYes": [
-          "The AI is (or is embedded in) a regulated product like a medical device, machine, vehicle, lift, toy, radio equipment",
-          "The AI performs a safety function (e.g. detects human presence and triggers a safe stop; prevents collisions)",
-          "Failure/malfunction of the AI could endanger persons or property (e.g. lane assistance, lift door control)"
+          "Your AI is, or sits inside, a regulated product (medical device, machine, vehicle, lift, toy, radio equipment)",
+          "It does a safety job (spots a person and triggers a safe stop; prevents a collision)",
+          "If it failed, someone could get hurt (lane-keeping, lift-door control)"
         ],
         "likelyNo": [
-          "The AI only optimises comfort, efficiency, performance or convenience and its failure would cause only inconvenience/cost (e.g. a smart thermostat learning routines, music recommendation in a connected toy, yield forecasting)",
-          "The product is not covered by any Annex I legislation at all"
+          "It only improves comfort, efficiency or convenience, and a failure would just be annoying or costly",
+          "The product isn't covered by any EU product-safety law"
         ]
       },
-      "articleRef": "Art. 6(1); Art. 3(14); Annex I",
+      "articleRef": "Art. 6(1); Annex I",
+      "guidelineLinks": ["high_risk_classification"],
       "reference": "annexI_legislation",
       "options": [
-        { "label": "Yes – covered by Annex I legislation (as product or safety component)", "value": "yes", "next": "S3_annex_i_tpca" },
+        { "label": "Yes, it's a regulated product or a safety part of one", "value": "yes", "next": "S3_annex_i_tpca" },
         { "label": "No", "value": "no", "next": "S4_annex_iii_area" },
-        { "label": "I'm not sure (e.g. unclear whether it is a safety component)", "value": "unsure", "next": "S3_annex_i_tpca", "uncertain": true, "reviewNote": "It was not established whether the system is a product or a safety component under Annex I legislation (Art. 3(14) test). The assessment continued on the assumption that it is. Have the applicable product legislation and the safety-component test reviewed." }
+        { "label": "I'm not sure", "value": "unsure", "next": "S3_annex_i_tpca", "flagsReview": true, "reviewNote": "Whether your AI is a regulated product or a safety component can be technical. We've kept you on the product-safety route so you also see the next question; confirm with the relevant product legislation or an expert." }
       ]
     },
 
     "S3_annex_i_tpca": {
       "module": "SPINE",
       "type": "question",
-      "text": "Is that product (or the AI system itself, if it is the product) required to undergo a THIRD-PARTY conformity assessment under the relevant Annex I legislation?",
-      "explainer": "Article 6(1) – second cumulative condition. Both conditions must be met. Third-party conformity assessment means a notified body must be involved (conformity assessment modules other than internal-control-only module A). If the product only requires self-assessment (internal control), it is NOT high-risk under Article 6(1).",
-      "help": {
-        "likelyYes": [
-          "The applicable legislation requires involvement of a notified body (e.g. certain medical devices, many machinery categories of higher risk)"
-        ],
-        "likelyNo": [
-          "The product can be self-certified via internal control (module A) only"
-        ]
+      "text": "Does that product need to be checked by an independent body before it's sold?",
+      "explainer": "For your AI to be high-risk on this route, an outside body (a 'notified body') has to be involved in approving the product, not just your own company. If you're allowed to sign it off yourself, this route does not make it high-risk.",
+      "legalText": {
+        "articleRef": "Art. 6(1)(b)",
+        "text": "The second cumulative condition of Article 6(1): the product whose safety component is the AI system, or the AI system itself as a product, is required to undergo a third-party conformity assessment with a view to the placing on the market or putting into service of that product pursuant to the Annex I legislation."
       },
-      "articleRef": "Art. 6(1)(b); Decision 768/2008/EC (conformity assessment modules)",
+      "help": {
+        "likelyYes": ["The product law requires a notified body (e.g. many medical devices, higher-risk machinery)"],
+        "likelyNo": ["You can self-certify with internal checks only"]
+      },
+      "articleRef": "Art. 6(1)(b)",
+      "guidelineLinks": ["high_risk_classification"],
       "options": [
-        { "label": "Yes – third-party conformity assessment is required", "value": "yes", "next": "HIGH_RISK_ANNEX_I" },
-        { "label": "No – only self-assessment / internal control", "value": "no", "next": "S4_annex_iii_area" },
-        { "label": "I'm not sure which conformity-assessment route applies", "value": "unsure", "next": "HIGH_RISK_ANNEX_I", "uncertain": true, "reviewNote": "The applicable conformity-assessment route under the Annex I legislation was not established. The assessment assumed a third-party assessment is required (the higher-risk reading). Check the conformity-assessment modules in the relevant product legislation." }
+        { "label": "Yes, an independent body must check it", "value": "yes", "next": "HIGH_RISK_ANNEX_I" },
+        { "label": "No, we're allowed to self-certify", "value": "no", "next": "S4_annex_iii_area" },
+        { "label": "I'm not sure", "value": "unsure", "next": "S4_annex_iii_area", "flagsReview": true, "reviewNote": "If an independent ('notified') body must approve the product, your AI is high-risk on the product-safety route. Check the specific product legislation to be sure." }
       ]
     },
 
     "S4_annex_iii_area": {
       "module": "SPINE",
       "type": "question",
-      "text": "Does the intended purpose of the system fall within any of the specific use cases listed under the eight Annex III areas?",
-      "explainer": "Article 6(2). Annex III lists eight areas, but ONLY the specific use cases listed under each area count. Select every use case that matches the system's intended purpose. Many use cases apply only where the system evaluates NATURAL PERSONS (not only legal persons/companies), and some law-enforcement/migration/justice cases apply only to public authorities or those acting on their behalf, and only in so far as the use is permitted under Union or national law.",
+      "text": "Is your system used for one of the sensitive purposes on the AI Act's high-risk list?",
+      "explainer": "The AI Act singles out certain uses, across eight areas, as high-risk because they can seriously affect people's lives. The areas cover things like hiring and managing staff, credit and insurance, education, essential services, law enforcement, migration, and justice and elections. Only the specific uses listed under each area count, not the whole area. Tick anything that matches what your system is actually meant to do. Many only apply when the system assesses people, not just companies.",
+      "legalText": {
+        "articleRef": "Art. 6(2); Annex III",
+        "text": "AI systems referred to in Annex III shall be considered high-risk. Annex III lists eight areas (biometrics; critical infrastructure; education and vocational training; employment and workers' management; access to essential private and public services; law enforcement; migration, asylum and border control; administration of justice and democratic processes) and, under each, an exhaustive list of specific use cases."
+      },
       "articleRef": "Art. 6(2); Annex III",
+      "guidelineLinks": ["high_risk_classification", "annex_iii_reference"],
       "reference": "annexIII",
-      "multiSelect": true,
-      "selectionRule": "anySelected",
       "options": [
-        { "label": "Yes – it matches at least one Annex III use case", "value": "yes", "next": "S5_profiling" },
-        { "label": "No – it does not match any listed use case", "value": "no", "next": "T0_transparency" }
+        { "label": "Yes, it matches at least one listed use", "value": "yes", "next": "S5_profiling" },
+        { "label": "No, none of these match", "value": "no", "next": "T0_transparency" },
+        { "label": "I'm not sure", "value": "unsure", "next": "S5_profiling", "flagsReview": true, "reviewNote": "If you're unsure whether your use is on the high-risk list, we've treated it as possibly high-risk so you see the rest of the checks. Compare your exact purpose against the Annex III list or ask an expert." }
       ]
     },
 
     "S5_profiling": {
       "module": "SPINE",
       "type": "question",
-      "text": "Does the system perform PROFILING of natural persons?",
-      "explainer": "Third sub-paragraph of Article 6(3): an Annex III system that performs profiling of natural persons is ALWAYS high-risk and can never use the Article 6(3) filter exemption. 'Profiling' has the GDPR meaning (Art. 4(4) GDPR / Art. 3(4) LED / Art. 3(5) EUDPR): any automated processing of personal data to evaluate personal aspects of a natural person, in particular to analyse or predict performance at work, economic situation, health, preferences, interests, reliability, behaviour, location or movements.",
-      "articleRef": "Art. 6(3) third sub-para; Art. 4(4) GDPR",
+      "text": "Does your system build a profile of individual people?",
+      "explainer": "'Profiling' means automatically analysing someone's personal data to evaluate or predict things about them, for example their performance at work, health, finances, interests, reliability, behaviour, or where they are and where they go. If your system does this, the AI Act always treats it as high-risk, and the exemptions on the next screen can't be used.",
+      "legalText": {
+        "articleRef": "Art. 6(3), third sub-paragraph; Art. 4(4) GDPR",
+        "text": "An AI system referred to in Annex III shall always be considered high-risk where it performs profiling of natural persons. 'Profiling' (Art. 4(4) GDPR) means any form of automated processing of personal data to evaluate certain personal aspects relating to a natural person, in particular to analyse or predict aspects concerning performance at work, economic situation, health, personal preferences, interests, reliability, behaviour, location or movements."
+      },
+      "articleRef": "Art. 6(3); Art. 4(4) GDPR",
+      "guidelineLinks": ["high_risk_classification"],
       "options": [
-        { "label": "Yes – it profiles natural persons", "value": "yes", "next": "HIGH_RISK_ANNEX_III" },
-        { "label": "No", "value": "no", "next": "S6_filter" }
+        { "label": "Yes, it profiles people", "value": "yes", "next": "HIGH_RISK_ANNEX_III" },
+        { "label": "No", "value": "no", "next": "S6_filter" },
+        { "label": "I'm not sure", "value": "unsure", "next": "S6_filter", "flagsReview": true, "reviewNote": "If it turns out your system profiles people, it is automatically high-risk and the exemptions don't apply. We've let you check the exemptions, but confirm the profiling question carefully." }
       ]
     },
 
     "S6_filter": {
       "module": "SPINE",
       "type": "question",
-      "text": "Does the system meet at least ONE of the four Article 6(3) 'filter' conditions AND not materially influence the outcome of decision-making?",
-      "explainer": "Article 6(3) lets a provider treat an Annex III system as NOT high-risk if it does not pose a significant risk of harm because it meets at least one of four exhaustive-but-alternative conditions (below). The overriding test is that the system must NOT materially influence the outcome of decision-making. The conditions are interpreted narrowly. NOTE: the filter does NOT apply if the system is part of a complex/agentic configuration whose combined outputs materially influence a decision in a high-risk use case, nor to Article 6(1)/Annex I systems.",
-      "articleRef": "Art. 6(3)(a)-(d); Recital 53",
-      "checklist": "filterConditions",
-      "multiSelect": true,
-      "selectionRule": "anySelectedAndSubNo",
-      "subQuestion": {
-        "id": "material_influence",
-        "text": "Does the system materially influence the outcome of decision-making?",
-        "explainer": "This is the overriding test in the opening words of Article 6(3). Even if one of the four conditions above is met, the exemption is unavailable when the system materially influences the outcome — including where it is part of a complex or agentic configuration whose joint outputs do.",
-        "articleRef": "Art. 6(3), opening words",
-        "options": [
-          { "label": "No – it does not materially influence the outcome", "value": "no" },
-          { "label": "Yes – it does materially influence the outcome", "value": "yes" },
-          { "label": "I'm not sure", "value": "unsure", "uncertain": true, "reviewNote": "It was not established whether the system materially influences the outcome of decision-making. The assessment treated the system as high-risk (the conservative reading). The Article 6(3) filter is interpreted narrowly; have this point reviewed before relying on the exemption." }
-        ]
+      "text": "Could your system be exempt because it only plays a limited, supporting role?",
+      "explainer": "Even if your use is on the high-risk list, it might not count as high-risk if it only does a narrow, supporting job and doesn't really affect the final decision. You qualify only if at least one of the situations on this screen fits your system AND it doesn't meaningfully sway the outcome. These are read strictly. This escape hatch does not apply if your system profiles people, or if it's part of a bigger setup that together does affect decisions.",
+      "legalText": {
+        "articleRef": "Art. 6(3)(a)-(d); Recital 53",
+        "text": "By way of derogation, an Annex III system is not high-risk where it does not pose a significant risk of harm, including by not materially influencing the outcome of decision making, because it: (a) performs a narrow procedural task; (b) improves the result of a previously completed human activity; (c) detects decision-making patterns or deviations and is not meant to replace or influence the previously completed human assessment without proper human review; or (d) performs a preparatory task to a relevant assessment."
       },
+      "articleRef": "Art. 6(3)(a)-(d)",
+      "guidelineLinks": ["high_risk_classification"],
+      "checklist": "filterConditions",
       "options": [
-        { "label": "Yes – one condition is met and the system does not materially influence the outcome", "value": "yes", "next": "NOT_HIGH_RISK_FILTERED" },
-        { "label": "No – none of the conditions applies, or it does materially influence the outcome", "value": "no", "next": "HIGH_RISK_ANNEX_III" }
+        { "label": "Yes, one of these fits and it doesn't drive the decision", "value": "yes", "next": "NOT_HIGH_RISK_FILTERED" },
+        { "label": "No, none really fits (or it does affect the outcome)", "value": "no", "next": "HIGH_RISK_ANNEX_III" },
+        { "label": "I'm not sure", "value": "unsure", "next": "HIGH_RISK_ANNEX_III", "flagsReview": true, "reviewNote": "You can only rely on this exemption if you can clearly show and document that one of the conditions fits. If you're not sure, it's safer to treat the system as high-risk for now." }
       ]
     },
 
     "T0_transparency": {
       "module": "TRANSPARENCY",
       "type": "question",
-      "text": "Do any Article 50 TRANSPARENCY situations apply to the system?",
-      "explainer": "Article 50 imposes transparency duties that are CUMULATIVE with any risk tier (they can apply to a high-risk system, a minimal-risk system, or a system that is not high-risk after the filter). Select all that apply. If at least one applies, the system carries limited-risk transparency obligations. If none applies and the system is not high-risk, it is minimal-risk.",
+      "text": "Does your system need to be open with people in any of these ways?",
+      "explainer": "Some AI systems have to be upfront about what they are, whatever their risk level. These duties stack on top of your category. Tick anything that applies. Anything we already worked out from your earlier answers is ticked for you and locked. If none applies and your system isn't high-risk, it's minimal-risk.",
+      "legalText": {
+        "articleRef": "Art. 50",
+        "text": "Article 50 sets transparency obligations: informing people when they interact with an AI system; marking AI-generated or manipulated audio, image, video and text in a machine-readable way; informing people exposed to emotion-recognition or biometric-categorisation systems; and disclosing deep fakes and AI-generated text published to inform the public on matters of public interest."
+      },
       "articleRef": "Art. 50",
+      "guidelineLinks": ["transparency", "transparency_code_of_practice"],
       "checklist": "transparencyTriggers",
-      "multiSelect": true,
-      "selectionRule": "anySelected",
+      "prefillFrom": "crossLinks:biometrics-to-transparency",
       "options": [
-        { "label": "Yes – at least one Article 50 situation applies", "value": "yes", "next": "G0_gpai" },
-        { "label": "No", "value": "no", "next": "G0_gpai" }
+        { "label": "Continue", "value": "continue", "next": "G0_gpai" }
       ],
       "setsFlag": "transparency"
     },
@@ -330,208 +346,219 @@
     "G0_gpai": {
       "module": "GPAI",
       "type": "question",
-      "text": "Are you the provider of a GENERAL-PURPOSE AI MODEL (a foundation model)?",
-      "explainer": "This is a separate, model-level classification (independent of the system tier). Article 3(63): a GPAI model displays significant generality, is trained on a large amount of data using self-supervision at scale, and can competently perform a wide range of distinct tasks, regardless of how it is placed on the market (it can be integrated into many downstream systems). Typical examples: large language models and other large generative models. If you only USE or fine-tune a third party's model into a specific application, the GPAI-model obligations sit with the original model provider (though substantial modification can transfer them).",
+      "text": "Did you build a general-purpose ('foundation') AI model?",
+      "explainer": "This is a separate question about the model itself, not how it's used. A general-purpose model is a large model, trained on huge amounts of data, that can handle many different tasks, like a large language model or a big image generator. If you only use or fine-tune someone else's model to build your app, these duties usually sit with the maker of the original model, unless you change it substantially.",
+      "legalText": {
+        "articleRef": "Art. 3(63); Art. 53",
+        "text": "'General-purpose AI model' means an AI model, including where trained with a large amount of data using self-supervision at scale, that displays significant generality and is capable of competently performing a wide range of distinct tasks regardless of the way the model is placed on the market, and that can be integrated into a variety of downstream systems or applications."
+      },
+      "help": {
+        "likelyYes": [
+          "You trained a large model that works across many tasks (a language model, a big image/audio/video model)",
+          "You put a foundation model out there for others to build on"
+        ],
+        "likelyNo": [
+          "Your model does one specific job only",
+          "You just call or fine-tune someone else's model without changing it much"
+        ]
+      },
       "articleRef": "Art. 3(63); Art. 53",
+      "guidelineLinks": ["gpai_scope", "gpai_code_of_practice"],
       "options": [
-        { "label": "Yes – I provide a general-purpose AI model", "value": "yes", "next": "G1_systemic" },
-        { "label": "No – it is a specific-purpose system, or I only deploy someone else's model", "value": "no", "next": "RESULT" }
+        { "label": "Yes, I provide a general-purpose model", "value": "yes", "next": "G1_systemic" },
+        { "label": "No, it's a specific-purpose system, or I use someone else's model", "value": "no", "next": "RESULT" },
+        { "label": "I'm not sure", "value": "unsure", "next": "RESULT", "flagsReview": true, "reviewNote": "You might be a general-purpose AI model provider, which carries its own duties. Check the 'duties for GPAI model providers' guidance to be sure." }
       ]
     },
 
     "G1_systemic": {
       "module": "GPAI",
       "type": "question",
-      "text": "Does the GPAI model have SYSTEMIC RISK?",
-      "explainer": "Article 51: a GPAI model has systemic risk if it has high-impact capabilities. This is presumed when the cumulative compute used for training is greater than 10^25 floating-point operations (FLOP), or when the Commission designates it as such. Systemic-risk models carry additional obligations under Article 55 (model evaluations, adversarial testing, systemic-risk assessment and mitigation, serious-incident reporting, cybersecurity).",
+      "text": "Is your model one of the most powerful, 'systemic-risk' models?",
+      "explainer": "The most capable general-purpose models carry extra duties. Yours is presumed to be in this group if training it used more than 10^25 FLOP of computing power (a very high bar that only the largest models reach today), or if the Commission has formally designated it. Most models are not in this group.",
+      "legalText": {
+        "articleRef": "Art. 51; Art. 55",
+        "text": "A general-purpose AI model has systemic risk if it has high-impact capabilities (presumed where the cumulative amount of computation used for its training exceeds 10^25 floating point operations) or is designated as such by the Commission. Such models are subject to the additional obligations in Article 55."
+      },
+      "help": {
+        "likelyYes": ["Training used more than 10^25 FLOP", "The Commission has designated your model"],
+        "likelyNo": ["Training was well below that bar and there's no designation"]
+      },
       "articleRef": "Art. 51; Art. 55",
+      "guidelineLinks": ["gpai_scope", "gpai_code_of_practice"],
       "options": [
-        { "label": "Yes – >10^25 FLOP training compute or designated by the Commission", "value": "yes", "next": "RESULT", "setsGpai": "gpai_model_systemic" },
-        { "label": "No", "value": "no", "next": "RESULT", "setsGpai": "gpai_model" }
+        { "label": "Yes (over the 10^25 FLOP bar, or designated)", "value": "yes", "next": "RESULT", "setsGpai": "gpai_model_systemic" },
+        { "label": "No / it's a smaller model", "value": "no", "next": "RESULT", "setsGpai": "gpai_model" },
+        { "label": "I'm not sure", "value": "unsure", "next": "RESULT", "setsGpai": "gpai_model", "flagsReview": true, "reviewNote": "The systemic-risk bar is very high, so most models are below it. If your training compute was anywhere near 10^25 FLOP, check the GPAI guidance, as the extra duties are significant." }
       ]
     },
 
     "RESULT": {
       "module": "RESULT",
       "type": "result",
-      "text": "Compile and display all applicable result cards from the accumulated flags (primaryTier + transparency + gpai)."
+      "text": "Show all applicable result cards from the flags (primary tier + transparency + GPAI), with obligations filtered by role, the FOSS note where relevant, and a 'worth double-checking' box listing any review flags."
     }
   },
 
   "outcomes": {
     "OUT_OF_SCOPE": {
-      "shortTitle": "Not an AI system",
       "tier": "out_of_scope",
       "color": "grey",
-      "icon": "circle-slash",
-      "applicationDate": "Not applicable – the AI Act does not apply.",
-      "title": "Not an AI system – outside the AI Act",
-      "summary": "Your system does not meet the Article 3(1) definition of an AI system, so the AI Act does not apply to it. Note that other EU law (e.g. GDPR, product-safety, consumer-protection law) may still apply.",
+      "title": "Not an AI system, so the AI Act doesn't apply",
+      "summary": "Your system doesn't meet the AI Act's definition of an AI system, so this law doesn't apply to it. Keep in mind that other rules (like data-protection, product-safety or consumer law) still might.",
       "obligations": [],
-      "legalRefs": ["Art. 3(1)"]
+      "legalRefs": ["Art. 3(1)"],
+      "guidelineLinks": ["ai_system_definition"]
     },
     "PROHIBITED": {
-      "shortTitle": "Prohibited",
       "tier": "prohibited",
       "color": "red",
-      "icon": "ban",
-      "applicationDate": "Already in force: the prohibitions apply since 2 February 2025.",
-      "title": "Prohibited – unacceptable risk",
-      "summary": "The system falls under an Article 5 prohibited practice. It may not be placed on the market, put into service, or used in the EU. These prohibitions have applied since 2 February 2025.",
-      "obligations": ["Do not place on the market / put into service / use.", "Redesign to remove the prohibited practice, or abandon."],
-      "legalRefs": ["Art. 5"]
+      "title": "Banned: this use isn't allowed in the EU",
+      "summary": "Your system matches one of the AI Act's banned practices. It can't be sold, put into service or used in the EU. These bans have applied since 2 February 2025. Being open-source does not change this.",
+      "obligations": [
+        { "role": "both", "text": "Don't put it on the market, put it into service, or use it in the EU." },
+        { "role": "provider", "text": "Redesign it to remove the banned practice, or drop it." }
+      ],
+      "legalRefs": ["Art. 5"],
+      "guidelineLinks": ["prohibited_practices"]
     },
     "HIGH_RISK_ANNEX_I": {
-      "shortTitle": "High-risk — Annex I",
       "tier": "high_risk_annex_i",
       "color": "orange",
-      "icon": "warning",
-      "applicationDate": "Indicative: originally 2 August 2027, postponed by the AI Omnibus to 2 August 2028. Subject to change.",
-      "title": "High-risk – Article 6(1) / Annex I (regulated product)",
-      "summary": "The system is (or is a safety component of) a product covered by Annex I harmonisation legislation AND that product must undergo third-party conformity assessment. It is high-risk under Article 6(1).",
+      "title": "High-risk: it's a regulated safety product",
+      "summary": "Your AI is (or is a safety part of) a product that must meet EU safety law and be checked by an independent body. That makes it high-risk. These duties are due to start on 2 August 2028 (postponed by the AI Omnibus).",
       "obligations": [
-        "Comply with the Chapter III, Section 2 requirements for high-risk AI systems (risk management, data governance, technical documentation, record-keeping, transparency to deployers, human oversight, accuracy/robustness/cybersecurity).",
-        "Conformity assessment is carried out under the relevant Annex I legislation (integrated with the product's existing procedure).",
-        "Provider obligations under Art. 16 et seq.; deployer obligations under Art. 26.",
-        "Application date for these Article 6(1) obligations: postponed by the AI Omnibus to 2 August 2028."
+        { "role": "provider", "text": "Meet the core high-risk requirements: manage risks, use good-quality data, keep technical documentation and logs, be transparent with users, keep a human in the loop, and make it accurate, robust and secure (Art. 9-15)." },
+        { "role": "provider", "text": "Run a quality-management system, pass the conformity check (folded into the product's existing process), sign the EU declaration of conformity and put on the CE mark (Art. 16, 17, 43, 47, 48)." },
+        { "role": "provider", "text": "Keep watching it after launch, report serious incidents, fix problems, and cooperate with authorities (Art. 20, 21, 72, 73)." },
+        { "role": "deployer", "text": "Use it as instructed, keep human oversight, feed it suitable data, and pause and report it if something goes wrong (Art. 26)." },
+        { "role": "deployer", "text": "Tell affected people where required. If you rebrand it, change it substantially, or use it for a new purpose, you may legally become the provider (Art. 25)." }
       ],
-      "legalRefs": ["Art. 6(1)", "Art. 8-15", "Annex I"]
+      "legalRefs": ["Art. 6(1)", "Art. 8-15", "Art. 16-27", "Annex I"],
+      "guidelineLinks": ["high_risk_classification"]
     },
     "HIGH_RISK_ANNEX_III": {
-      "shortTitle": "High-risk — Annex III",
       "tier": "high_risk_annex_iii",
       "color": "orange",
-      "icon": "warning",
-      "applicationDate": "Indicative: originally 2 August 2026, postponed by the AI Omnibus to 2 December 2027. Subject to change.",
-      "title": "High-risk – Article 6(2) / Annex III (listed use case)",
-      "summary": "The system's intended purpose falls within a listed Annex III use case and it is not exempted (it profiles natural persons, or it does not meet any Article 6(3) filter condition / materially influences the outcome). It is high-risk under Article 6(2).",
+      "title": "High-risk: a sensitive, listed use",
+      "summary": "Your system is used for one of the sensitive purposes on the high-risk list and doesn't qualify for an exemption (either it profiles people, or it doesn't fit the limited-role exemption / it does affect the outcome). That makes it high-risk. These duties are due to start on 2 December 2027 (postponed by the AI Omnibus).",
       "obligations": [
-        "Comply with the Chapter III, Section 2 requirements for high-risk AI systems (risk management, data governance, technical documentation, logging, transparency, human oversight, accuracy/robustness/cybersecurity).",
-        "Provider obligations (Art. 16 et seq.), including registration in the EU database (Art. 49) and drawing up an EU declaration of conformity + CE marking.",
-        "Deployer obligations (Art. 26), and a fundamental-rights impact assessment where Art. 27 applies.",
-        "Application date for Article 6(2) obligations: postponed by the AI Omnibus to 2 December 2027."
+        { "role": "provider", "text": "Meet the core high-risk requirements: manage risks, use good-quality data, keep technical documentation and logs, be transparent with users, keep a human in the loop, and make it accurate, robust and secure (Art. 9-15)." },
+        { "role": "provider", "text": "Run a quality-management system, pass the conformity check, sign the EU declaration of conformity, put on the CE mark, and register the system in the EU database before launch (Art. 16, 17, 43, 47, 48, 49)." },
+        { "role": "provider", "text": "Keep watching it after launch, report serious incidents, fix problems, and cooperate with authorities (Art. 20, 21, 72, 73)." },
+        { "role": "deployer", "text": "Use it as instructed, assign trained people to oversee it, feed it suitable and representative data, and pause and report serious incidents (Art. 26)." },
+        { "role": "deployer", "text": "Tell affected people where required. Some deployers (public bodies, providers of public services, and the credit and life/health-insurance uses) must also run a fundamental-rights impact check (Art. 27)." },
+        { "role": "deployer", "text": "If you rebrand it, change it substantially, or use it for a new purpose, you may legally become the provider (Art. 25)." }
       ],
-      "legalRefs": ["Art. 6(2)", "Art. 8-15", "Annex III"]
+      "legalRefs": ["Art. 6(2)", "Art. 8-15", "Art. 16-27", "Art. 49", "Annex III"],
+      "guidelineLinks": ["high_risk_classification", "annex_iii_reference"]
     },
     "NOT_HIGH_RISK_FILTERED": {
-      "shortTitle": "Not high-risk (filtered)",
       "tier": "not_high_risk_filtered",
       "color": "yellow",
-      "icon": "filter",
-      "applicationDate": "Indicative: the Article 6(4) documentation and Article 49(2) registration duties follow the Annex III timeline, postponed by the AI Omnibus to 2 December 2027. Subject to change.",
-      "title": "Not high-risk – Article 6(3) filter applies",
-      "summary": "The system's purpose is within an Annex III use case, but it qualifies for the Article 6(3) exemption because it meets a filter condition, does not perform profiling, and does not materially influence decision-making. It is therefore NOT classified as high-risk.",
+      "title": "Not high-risk: the limited-role exemption fits",
+      "summary": "Your use is on the high-risk list, but it qualifies for the exemption: it only plays a limited, supporting role, it doesn't profile people, and it doesn't sway the decision. So it's not treated as high-risk. You may still have transparency duties (see below).",
       "obligations": [
-        "Document the assessment demonstrating the exemption BEFORE placing on the market / putting into service (Art. 6(4)).",
-        "Register the system in the EU database as a non-high-risk Annex III system (Art. 49(2)).",
-        "Make the assessment available to competent authorities on request.",
-        "Re-assess if the intended purpose changes: a change could make it high-risk.",
-        "Transparency obligations under Article 50 may still apply (see the transparency result)."
+        { "role": "provider", "text": "Write down the assessment that shows why the exemption fits, before you launch (Art. 6(4))." },
+        { "role": "provider", "text": "Register the system in the EU database as a non-high-risk listed system, and show the assessment to authorities on request (Art. 49(2))." },
+        { "role": "provider", "text": "Re-check if the purpose changes: a change could make it high-risk." },
+        { "role": "deployer", "text": "No high-risk duties, but note that using it for a new purpose can make you the provider (Art. 25). Any transparency duties still apply." }
       ],
-      "legalRefs": ["Art. 6(3)", "Art. 6(4)", "Art. 49(2)"]
+      "legalRefs": ["Art. 6(3)", "Art. 6(4)", "Art. 49(2)"],
+      "guidelineLinks": ["high_risk_classification"]
     },
     "MINIMAL_RISK": {
-      "shortTitle": "Minimal risk",
       "tier": "minimal_risk",
       "color": "green",
-      "icon": "check",
-      "applicationDate": "No mandatory obligations, so no application date.",
-      "title": "Minimal risk – no mandatory AI Act obligations",
-      "summary": "The system is not prohibited, not high-risk, and no Article 50 transparency situation applies. It falls in the minimal-risk category, which carries no mandatory obligations under the AI Act.",
+      "title": "Minimal risk: no mandatory AI Act duties",
+      "summary": "Your system isn't banned, isn't high-risk, and doesn't trigger the transparency rules. It's in the minimal-risk group, with no obligations under the AI Act. If it's open-source, the open-source exemption confirms it's outside the Act too (see the note).",
       "obligations": [
-        "No mandatory AI Act obligations.",
-        "Voluntary codes of conduct are encouraged (Art. 95).",
-        "Other EU law (GDPR, consumer, product-safety) may still apply.",
-        "Re-assess if the intended purpose changes."
+        { "role": "both", "text": "No mandatory AI Act duties. Voluntary codes of conduct are encouraged (Art. 95)." },
+        { "role": "both", "text": "Other rules (data-protection, consumer, product-safety) may still apply. Re-check if the purpose changes." }
       ],
-      "legalRefs": ["Art. 95"]
+      "legalRefs": ["Art. 95", "Art. 2(12)"],
+      "guidelineLinks": [],
+      "showNotes": ["fossExemption"]
     },
     "TRANSPARENCY": {
-      "shortTitle": "Transparency duties",
       "tier": "transparency",
       "color": "blue",
-      "icon": "eye",
-      "applicationDate": "2 August 2026.",
-      "title": "Transparency obligations (limited risk) – Article 50",
-      "summary": "One or more Article 50 situations apply. These transparency duties are CUMULATIVE: they apply on top of the system's risk tier (they can accompany a high-risk, filtered, or minimal-risk classification).",
+      "title": "Be transparent with people (limited-risk duties)",
+      "summary": "One or more transparency situations apply. These stack on top of your main category (they can go with a high-risk, exempt, or minimal-risk result). Being open-source does not remove them. They start on 2 August 2026. Exactly what you must do depends on which items were triggered and on your role.",
       "obligations": [
-        "Inform natural persons when they interact with an AI system, unless obvious (Art. 50(1)).",
-        "Mark AI-generated/manipulated audio, image, video or text as artificial in a machine-readable way (Art. 50(2)).",
-        "Deployers of emotion-recognition or biometric-categorisation systems must inform exposed persons (Art. 50(3)).",
-        "Deployers must disclose deep fakes and AI-generated text published to inform the public on matters of public interest (Art. 50(4)).",
-        "Application date: 2 August 2026."
+        { "role": "provider", "text": "If people chat with your AI, make sure they're told it's an AI, unless that's obvious." },
+        { "role": "provider", "text": "Mark AI-made or AI-edited audio, images, video and text so machines can detect it." },
+        { "role": "deployer", "text": "If you run an emotion-recognition or people-categorising system, tell the people it's used on." },
+        { "role": "deployer", "text": "If you publish deep fakes, or AI-written text on matters of public interest, say clearly that it's AI-made (with narrow exceptions)." }
       ],
-      "legalRefs": ["Art. 50"]
+      "legalRefs": ["Art. 50"],
+      "guidelineLinks": ["transparency", "transparency_code_of_practice"]
     },
     "GPAI_MODEL": {
-      "shortTitle": "GPAI model",
       "tier": "gpai_model",
       "color": "purple",
-      "icon": "cube",
-      "applicationDate": "Already in force since 2 August 2025. Models placed on the market before that date: comply by 2 August 2027.",
-      "title": "General-purpose AI model (no systemic risk) – Article 53",
-      "summary": "You provide a GPAI model without systemic risk. Model-level obligations apply in addition to any system-level classification.",
+      "title": "You provide a general-purpose AI model",
+      "summary": "You provide a general-purpose model that isn't in the 'systemic-risk' group. These model-level duties are on top of anything about how the model is used. They started on 2 August 2025 (for models already out before then: comply by 2 August 2027).",
       "obligations": [
-        "Draw up and keep technical documentation of the model (Annex XI).",
-        "Provide information and documentation to downstream providers who integrate the model (Annex XII).",
-        "Put in place a policy to comply with EU copyright law.",
-        "Publish a sufficiently detailed summary of the training content (using the AI Office template).",
-        "Some documentation duties are relaxed for models released under a free and open-source licence (unless they have systemic risk).",
-        "Application date: 2 August 2025 (existing models on the market before that date: comply by 2 August 2027)."
+        { "role": "provider", "text": "Keep up-to-date technical documentation of the model." },
+        { "role": "provider", "text": "Give the people who build on your model the information they need." },
+        { "role": "provider", "text": "Have a policy to respect EU copyright law (applies even if open-source)." },
+        { "role": "provider", "text": "Publish a good-enough summary of what the model was trained on, using the official template (applies even if open-source)." }
       ],
-      "legalRefs": ["Art. 53", "Annexes XI, XII"]
+      "legalRefs": ["Art. 53", "Art. 2(12)", "Annexes XI, XII"],
+      "guidelineLinks": ["gpai_scope", "gpai_code_of_practice", "gpai_training_summary_template"],
+      "showNotes": ["fossExemption"]
     },
     "GPAI_MODEL_SYSTEMIC": {
-      "shortTitle": "GPAI model with systemic risk",
       "tier": "gpai_model_systemic",
       "color": "purple",
-      "icon": "cube",
-      "applicationDate": "Already in force since 2 August 2025. Models placed on the market before that date: comply by 2 August 2027.",
-      "title": "GPAI model with systemic risk – Articles 53 + 55",
-      "summary": "You provide a GPAI model with systemic risk (high-impact capabilities, presumed above 10^25 FLOP training compute, or designated by the Commission). All Article 53 obligations apply PLUS the Article 55 systemic-risk obligations.",
+      "title": "You provide a powerful 'systemic-risk' model",
+      "summary": "You provide a general-purpose model powerful enough to count as systemic-risk (over the 10^25 FLOP bar, or designated by the Commission). All the standard model duties apply, plus extra ones. The open-source lightening does not apply to systemic-risk models. Duties started on 2 August 2025 (existing models: 2 August 2027).",
       "obligations": [
-        "All Article 53 obligations (documentation, downstream info, copyright policy, training-content summary).",
-        "Perform model evaluation, including adversarial testing (red-teaming).",
-        "Assess and mitigate systemic risks at Union level.",
-        "Track, document and report serious incidents to the AI Office and, as relevant, national authorities.",
-        "Ensure an adequate level of cybersecurity for the model and its physical infrastructure.",
-        "Notify the Commission when the model meets the systemic-risk threshold.",
-        "Application date: 2 August 2025 (existing models: comply by 2 August 2027)."
+        { "role": "provider", "text": "All the standard model duties (documentation, info for downstream builders, copyright policy, training-data summary)." },
+        { "role": "provider", "text": "Test the model hard, including adversarial 'red-team' testing." },
+        { "role": "provider", "text": "Find and reduce the big-picture ('systemic') risks it could pose across the EU." },
+        { "role": "provider", "text": "Track and report serious incidents to the AI Office and national authorities." },
+        { "role": "provider", "text": "Keep the model and its infrastructure well secured." },
+        { "role": "provider", "text": "Tell the Commission once the model crosses the systemic-risk bar." }
       ],
-      "legalRefs": ["Art. 51", "Art. 53", "Art. 55"]
+      "legalRefs": ["Art. 51", "Art. 52", "Art. 53", "Art. 55"],
+      "guidelineLinks": ["gpai_scope", "gpai_code_of_practice", "gpai_training_summary_template"]
     }
   },
 
   "catalog": {
     "prohibitedPractices": {
       "articleRef": "Art. 5",
-      "note": "If the intended purpose matches any of these, the system is prohibited. See the Commission Guidelines on prohibited AI practices for detail.",
+      "guideline": "prohibited_practices",
+      "note": "If your system does any of these, it's banned. Each line is in plain words; the exact legal wording and article is shown on expand.",
       "items": [
-        { "id": "5-1-a", "ref": "Art. 5(1)(a)", "label": "Subliminal, purposefully manipulative or deceptive techniques that materially distort behaviour and cause (or are likely to cause) significant harm." },
-        { "id": "5-1-b", "ref": "Art. 5(1)(b)", "label": "Exploiting vulnerabilities due to age, disability, or a specific social or economic situation, to materially distort behaviour and cause significant harm." },
-        { "id": "5-1-c", "ref": "Art. 5(1)(c)", "label": "Social scoring: evaluating/classifying persons over time based on social behaviour or personal characteristics, leading to detrimental or unfavourable treatment that is unjustified or disproportionate." },
-        { "id": "5-1-d", "ref": "Art. 5(1)(d)", "label": "Predicting the risk of a person committing a criminal offence based solely on profiling or personality traits (with a narrow exception for supporting human assessment based on objective, verifiable facts linked to criminal activity)." },
-        { "id": "5-1-e", "ref": "Art. 5(1)(e)", "label": "Creating/expanding facial-recognition databases through untargeted scraping of facial images from the internet or CCTV." },
-        { "id": "5-1-f", "ref": "Art. 5(1)(f)", "label": "Inferring emotions in the workplace or education institutions (except for medical or safety reasons)." },
-        { "id": "5-1-g", "ref": "Art. 5(1)(g)", "label": "Biometric categorisation that infers race, political opinions, trade-union membership, religious/philosophical beliefs, sex life or sexual orientation (narrow lawful exceptions apply)." },
-        { "id": "5-1-h", "ref": "Art. 5(1)(h)", "label": "Real-time remote biometric identification in publicly accessible spaces for law-enforcement purposes (subject to narrow, authorised exceptions)." }
+        { "id": "5-1-a", "ref": "Art. 5(1)(a)", "plain": "Manipulates or tricks people in hidden ways so they make choices that seriously harm them.", "label": "Uses subliminal, purposefully manipulative or deceptive techniques that materially distort behaviour and cause (or are likely to cause) significant harm." },
+        { "id": "5-1-b", "ref": "Art. 5(1)(b)", "plain": "Preys on people's vulnerabilities (their age, a disability, or a tough financial situation) to steer them into harmful choices.", "label": "Exploits vulnerabilities due to age, disability, or a specific social or economic situation, to materially distort behaviour and cause significant harm." },
+        { "id": "5-1-c", "ref": "Art. 5(1)(c)", "plain": "Scores people over time based on their behaviour or characteristics, then treats them unfairly because of that score ('social scoring').", "label": "Social scoring: evaluating/classifying persons over time based on social behaviour or personal characteristics, leading to detrimental or unfavourable treatment that is unjustified or disproportionate." },
+        { "id": "5-1-d", "ref": "Art. 5(1)(d)", "plain": "Predicts that someone will commit a crime based only on profiling or their personality.", "label": "Predicts the risk of a person committing a criminal offence based solely on profiling or personality traits (narrow exception for supporting a human assessment based on objective, verifiable facts)." },
+        { "id": "5-1-e", "ref": "Art. 5(1)(e)", "plain": "Builds face-recognition databases by scraping faces off the internet or CCTV without targeting.", "label": "Creates/expands facial-recognition databases through untargeted scraping of facial images from the internet or CCTV." },
+        { "id": "5-1-f", "ref": "Art. 5(1)(f)", "plain": "Reads people's emotions at work or in school (unless it's for medical or safety reasons).", "label": "Infers emotions in the workplace or education institutions (except for medical or safety reasons).", "crossLink": "biometrics-emotion-prohibition-reminder" },
+        { "id": "5-1-g", "ref": "Art. 5(1)(g)", "plain": "Sorts people by sensitive traits like race, political views, religion, sex life or sexual orientation, from their biometrics.", "label": "Biometric categorisation that infers race, political opinions, trade-union membership, religious/philosophical beliefs, sex life or sexual orientation (narrow lawful exceptions apply).", "crossLink": "biometrics-emotion-prohibition-reminder" },
+        { "id": "5-1-h", "ref": "Art. 5(1)(h)", "plain": "Identifies people live by their face in public spaces, for the police (only narrow, authorised exceptions).", "label": "Real-time remote biometric identification in publicly accessible spaces for law-enforcement purposes (subject to narrow, authorised exceptions)." }
       ]
     },
 
     "annexI_legislation": {
       "articleRef": "Annex I",
-      "note": "Non-exhaustive prompt list of the harmonisation legislation in Annex I. Section A (New Legislative Framework) and Section B (other, mostly transport). The system is in scope of Article 6(1) if it is a product, or a safety component of a product, covered by one of these.",
+      "guideline": "high_risk_classification",
+      "note": "A prompt list of the EU product-safety laws in Annex I. Your AI is on this route if it's a product, or a safety part of a product, covered by one of these.",
       "sectionA": [
         "Machinery (Regulation (EU) 2023/1230)",
         "Toys (Directive 2009/48/EC)",
         "Recreational craft and personal watercraft (Directive 2013/53/EU)",
-        "Lifts and safety components for lifts (Directive 2014/33/EU)",
-        "Equipment and protective systems for use in potentially explosive atmospheres – ATEX (Directive 2014/34/EU)",
+        "Lifts and their safety components (Directive 2014/33/EU)",
+        "Equipment for explosive atmospheres – ATEX (Directive 2014/34/EU)",
         "Radio equipment (Directive 2014/53/EU)",
         "Pressure equipment (Directive 2014/68/EU)",
         "Cableway installations (Regulation (EU) 2016/424)",
         "Personal protective equipment (Regulation (EU) 2016/425)",
-        "Appliances burning gaseous fuels (Regulation (EU) 2016/426)",
+        "Gas-burning appliances (Regulation (EU) 2016/426)",
         "Medical devices (Regulation (EU) 2017/745)",
         "In vitro diagnostic medical devices (Regulation (EU) 2017/746)"
       ],
@@ -540,123 +567,127 @@
         "Two- or three-wheel vehicles and quadricycles (Regulation (EU) 168/2013)",
         "Agricultural and forestry vehicles (Regulation (EU) 167/2013)",
         "Marine equipment (Directive 2014/90/EU)",
-        "Interoperability of the rail system (Directive (EU) 2016/797)",
-        "Motor vehicles and their trailers – general safety (Regulation (EU) 2018/858 and 2019/2144)",
+        "Rail system interoperability (Directive (EU) 2016/797)",
+        "Motor vehicles and trailers – general safety (Regulations (EU) 2018/858 and 2019/2144)",
         "Civil aviation (Regulation (EU) 2018/1139)"
       ]
     },
 
     "filterConditions": {
       "articleRef": "Art. 6(3)(a)-(d)",
-      "note": "Exhaustive but ALTERNATIVE: meeting one is enough, but only if the system does not materially influence the outcome of decision-making and does not profile natural persons. Interpret narrowly.",
+      "guideline": "high_risk_classification",
+      "note": "You need just one of these to fit, but only if the system also doesn't sway the outcome and doesn't profile people. Read strictly. Plain words first; exact wording on expand.",
       "items": [
-        { "id": "6-3-a", "ref": "Art. 6(3)(a)", "label": "Narrow procedural task", "detail": "e.g. transforming unstructured into structured data, classifying incoming documents into categories, detecting duplicates. NOT if it scores/ranks or judges data as 'useful/less useful' for a decision." },
-        { "id": "6-3-b", "ref": "Art. 6(3)(b)", "label": "Improves the result of a previously completed human activity", "detail": "Only an additional layer to a completed human activity (e.g. improving the language/clarity of an already-drafted text). It must not replace or materially change the human's result, rights or legal/economic position." },
-        { "id": "6-3-c", "ref": "Art. 6(3)(c)", "label": "Detects decision-making patterns or deviations, without replacing/influencing the completed human assessment absent proper human review", "detail": "e.g. flagging inconsistencies in a teacher's grading pattern for quality assurance. Ex-post comparison only; must not infer new criteria or alter the underlying reasoning." },
-        { "id": "6-3-d", "ref": "Art. 6(3)(d)", "label": "Performs a preparatory task to an assessment relevant to an Annex III use case", "detail": "e.g. file handling, indexing, translation, that prepares but does not itself perform the relevant assessment." }
+        { "id": "6-3-a", "ref": "Art. 6(3)(a)", "plain": "It just does a narrow, mechanical task (like tidying data, sorting documents into folders, or spotting duplicates).", "label": "Performs a narrow procedural task.", "detail": "Covers reformatting or categorising data. Does NOT apply if it scores or ranks data, or judges it 'useful / less useful' for a decision." },
+        { "id": "6-3-b", "ref": "Art. 6(3)(b)", "plain": "It only polishes work a person already finished (like improving the wording of a text someone already wrote).", "label": "Improves the result of a previously completed human activity.", "detail": "Only an added layer on a finished human task. It must not replace or materially change the person's result, rights or legal/economic position." },
+        { "id": "6-3-c", "ref": "Art. 6(3)(c)", "plain": "It just flags patterns or odd cases for a human to review, without replacing the human's judgement.", "label": "Detects decision-making patterns or deviations without replacing/influencing the completed human assessment absent proper human review.", "detail": "e.g. flagging inconsistencies in a teacher's grading for quality assurance. Comparison after the fact only; it must not invent new criteria or change the reasoning." },
+        { "id": "6-3-d", "ref": "Art. 6(3)(d)", "plain": "It only prepares the groundwork for a decision someone else makes (like filing, indexing or translating).", "label": "Performs a preparatory task to an assessment relevant to a listed use case.", "detail": "Prepares but does not itself carry out the relevant assessment." }
       ],
       "overrides": [
-        "ALWAYS high-risk if the system profiles natural persons (Art. 6(3) third sub-para).",
-        "Filter does NOT apply where the system is part of a complex or agentic configuration whose combined intended purpose or joint outputs materially influence a decision in a high-risk use case.",
-        "Filter does NOT apply to Article 6(1) / Annex I systems."
+        "Always high-risk if the system profiles people.",
+        "Doesn't apply if the system is part of a bigger/agentic setup whose combined output does sway a high-risk decision.",
+        "Doesn't apply to the product-safety (Annex I) route."
       ]
     },
 
     "transparencyTriggers": {
       "articleRef": "Art. 50",
-      "note": "Select all that apply. Any one triggers limited-risk transparency obligations, cumulative with the system's tier.",
+      "guideline": "transparency",
+      "note": "Tick anything that applies; any one brings transparency duties on top of your category. Items already worked out from earlier answers are pre-ticked and locked.",
       "items": [
-        { "id": "50-1", "ref": "Art. 50(1)", "label": "The system is intended to interact directly with natural persons (e.g. a chatbot / conversational agent).", "obligation": "Inform the person they are interacting with AI, unless it is obvious from the context." },
-        { "id": "50-2", "ref": "Art. 50(2)", "label": "The system generates synthetic audio, image, video or text content.", "obligation": "Mark outputs as artificially generated/manipulated in a machine-readable format." },
-        { "id": "50-3", "ref": "Art. 50(3)", "label": "The system is an emotion-recognition or biometric-categorisation system (and is not prohibited).", "obligation": "Deployers must inform the natural persons exposed to it." },
-        { "id": "50-4", "ref": "Art. 50(4)", "label": "The system generates or manipulates 'deep fakes', or generates/manipulates text published to inform the public on matters of public interest.", "obligation": "Deployers must disclose that the content is artificially generated or manipulated (with narrow exceptions, e.g. clearly artistic work, or human editorial review for text)." }
+        { "id": "50-1", "ref": "Art. 50(1)", "role": "provider", "plain": "People chat or interact directly with it (like a chatbot).", "label": "The system is intended to interact directly with natural persons.", "obligation": "Make sure people are told they're dealing with an AI, unless it's obvious.", "example": "A customer-service chatbot says it's an AI at the start of the chat." },
+        { "id": "50-2", "ref": "Art. 50(2)", "role": "provider", "plain": "It generates synthetic audio, images, video or text.", "label": "The system generates synthetic audio, image, video or text content.", "obligation": "Mark the output as AI-made in a way machines can detect.", "example": "An image generator embeds a watermark or metadata marking its pictures as AI-made." },
+        { "id": "50-3", "ref": "Art. 50(3)", "role": "deployer", "plain": "It reads people's emotions or sorts them by biometric traits (and isn't banned).", "label": "The system is an emotion-recognition or biometric-categorisation system (and is not prohibited).", "obligation": "Tell the people it's used on.", "example": "A shop using biometric age-estimation tells customers they're exposed to it.", "autoDerivedFrom": ["Annex III(1)(b)", "Annex III(1)(c)"] },
+        { "id": "50-4", "ref": "Art. 50(4)", "role": "deployer", "plain": "It makes deep fakes, or AI-written text on public-interest topics.", "label": "The system generates or manipulates 'deep fakes', or generates/manipulates text published to inform the public on matters of public interest.", "obligation": "Say clearly that the content is AI-made (narrow exceptions, e.g. clearly artistic work, or human-reviewed text).", "example": "A news outlet labels an AI-generated image of a public figure as AI-made." }
       ]
     },
 
     "annexIII": {
       "articleRef": "Art. 6(2); Annex III",
+      "guideline": "high_risk_classification",
       "horizontalNotes": [
-        "Only the specific use cases listed under each area count – not the broad area itself.",
-        "'Natural persons' limitation: several use cases apply only where a natural person is evaluated. A system that only assesses legal persons/companies is out of scope of those use cases.",
-        "'On behalf of' / public authority: several law-enforcement, migration and justice use cases apply to public authorities or private parties acting on their behalf.",
-        "'In so far as permitted under Union or national law' qualifies areas 1, 6 and 7.",
-        "Human oversight added on top does not remove high-risk classification; only the Art. 6(3) filter can."
+        "Only the specific uses listed under each area count, not the whole area.",
+        "Many uses only apply when the system assesses people. If it only assesses companies, it's usually outside these uses.",
+        "Some law-enforcement, migration and justice uses only apply to public authorities or those acting for them.",
+        "Areas 1, 6 and 7 only apply where the use is allowed under EU or national law.",
+        "Adding a human check on top does not remove high-risk; only the limited-role exemption can.",
+        "Emotion recognition and biometric sorting may be BANNED rather than high-risk, check that first."
       ],
       "areas": [
         {
           "id": 1,
-          "area": "Biometrics",
-          "condition": "In so far as their use is permitted under relevant Union or national law.",
+          "area": "Biometrics (recognising or categorising people)",
+          "condition": "Only where allowed under EU or national law.",
           "useCases": [
-            { "ref": "Annex III(1)(a)", "label": "Remote biometric identification systems (excluding biometric verification that merely confirms a person is who they claim to be)." },
-            { "ref": "Annex III(1)(b)", "label": "Biometric categorisation according to sensitive or protected attributes/characteristics." },
-            { "ref": "Annex III(1)(c)", "label": "Emotion recognition." }
+            { "ref": "Annex III(1)(a)", "plain": "Identifying people from a distance by their biometrics (not just checking someone is who they claim).", "label": "Remote biometric identification systems (excluding biometric verification that merely confirms a person is who they claim to be)." },
+            { "ref": "Annex III(1)(b)", "plain": "Sorting people into groups by sensitive or protected traits, from their biometrics.", "label": "Biometric categorisation according to sensitive or protected attributes/characteristics.", "impliesTransparency": ["50-3"] },
+            { "ref": "Annex III(1)(c)", "plain": "Recognising people's emotions.", "label": "Emotion recognition.", "impliesTransparency": ["50-3"] }
           ]
         },
         {
           "id": 2,
-          "area": "Critical infrastructure",
+          "area": "Critical infrastructure (keeping essential services running)",
           "useCases": [
-            { "ref": "Annex III(2)", "label": "Safety components in the management and operation of critical digital infrastructure, road traffic, or the supply of water, gas, heating or electricity." }
+            { "ref": "Annex III(2)", "plain": "Keeping critical services safe, like digital infrastructure, road traffic, or water, gas, heating or electricity supply.", "label": "Safety components in the management and operation of critical digital infrastructure, road traffic, or the supply of water, gas, heating or electricity." }
           ]
         },
         {
           "id": 3,
-          "area": "Education and vocational training",
+          "area": "Education and training",
           "useCases": [
-            { "ref": "Annex III(3)(a)", "label": "Determining access, admission, or assignment of persons to education/vocational-training institutions at all levels." },
-            { "ref": "Annex III(3)(b)", "label": "Evaluating learning outcomes, including steering the learning process." },
-            { "ref": "Annex III(3)(c)", "label": "Assessing the appropriate level of education a person will receive or be able to access." },
-            { "ref": "Annex III(3)(d)", "label": "Monitoring and detecting prohibited behaviour of students during tests." }
+            { "ref": "Annex III(3)(a)", "plain": "Deciding who gets into a school or course, or where they're placed.", "label": "Determining access, admission, or assignment of persons to education/vocational-training institutions at all levels." },
+            { "ref": "Annex III(3)(b)", "plain": "Grading learning results or steering how someone learns.", "label": "Evaluating learning outcomes, including steering the learning process." },
+            { "ref": "Annex III(3)(c)", "plain": "Judging the level of education someone should get or can access.", "label": "Assessing the appropriate level of education a person will receive or be able to access." },
+            { "ref": "Annex III(3)(d)", "plain": "Watching students during exams to catch cheating.", "label": "Monitoring and detecting prohibited behaviour of students during tests." }
           ]
         },
         {
           "id": 4,
-          "area": "Employment, workers' management and access to self-employment",
+          "area": "Jobs and managing workers",
           "useCases": [
-            { "ref": "Annex III(4)(a)", "label": "Recruitment or selection of natural persons (e.g. targeted job ads, analysing/filtering applications, evaluating candidates)." },
-            { "ref": "Annex III(4)(b)", "label": "Decisions on terms of work, promotion/termination, task allocation based on behaviour/traits, or monitoring and evaluating performance and behaviour." }
+            { "ref": "Annex III(4)(a)", "plain": "Hiring: targeting job ads, filtering applications, or ranking candidates.", "label": "Recruitment or selection of natural persons (targeted job ads, analysing/filtering applications, evaluating candidates)." },
+            { "ref": "Annex III(4)(b)", "plain": "Managing staff: decisions on pay, promotion, firing, task allocation, or monitoring performance.", "label": "Decisions on terms of work, promotion/termination, task allocation based on behaviour/traits, or monitoring and evaluating performance and behaviour." }
           ]
         },
         {
           "id": 5,
-          "area": "Access to and enjoyment of essential private and public services and benefits",
+          "area": "Access to essential services and benefits",
           "useCases": [
-            { "ref": "Annex III(5)(a)", "label": "Evaluating eligibility for essential public assistance benefits/services, and granting, reducing, revoking or reclaiming them." },
-            { "ref": "Annex III(5)(b)", "label": "Evaluating creditworthiness or establishing a credit score (excluding AI used to detect financial fraud)." },
-            { "ref": "Annex III(5)(c)", "label": "Risk assessment and pricing in life and health insurance for natural persons." },
-            { "ref": "Annex III(5)(d)", "label": "Evaluating and classifying emergency calls, or dispatching / prioritising emergency first-response services (police, firefighters, medical, triage)." }
+            { "ref": "Annex III(5)(a)", "plain": "Deciding who gets public benefits or services (or has them cut or reclaimed).", "label": "Evaluating eligibility for essential public assistance benefits/services, and granting, reducing, revoking or reclaiming them." },
+            { "ref": "Annex III(5)(b)", "plain": "Credit scoring or judging someone's creditworthiness (except fraud detection).", "label": "Evaluating creditworthiness or establishing a credit score (excluding AI used to detect financial fraud)." },
+            { "ref": "Annex III(5)(c)", "plain": "Setting risk and prices for people's life or health insurance.", "label": "Risk assessment and pricing in life and health insurance for natural persons." },
+            { "ref": "Annex III(5)(d)", "plain": "Triaging emergency calls or dispatching emergency services.", "label": "Evaluating/classifying emergency calls, or dispatching/prioritising emergency first-response services." }
           ]
         },
         {
           "id": 6,
           "area": "Law enforcement",
-          "condition": "In so far as permitted under Union or national law; by or on behalf of law-enforcement authorities.",
+          "condition": "Only where allowed under EU or national law; by or for the police.",
           "useCases": [
-            { "ref": "Annex III(6)(a)", "label": "Assessing the risk of a natural person becoming the victim of a criminal offence." },
-            { "ref": "Annex III(6)(b)", "label": "Polygraphs and similar tools." },
-            { "ref": "Annex III(6)(c)", "label": "Evaluating the reliability of evidence during investigation/prosecution." },
-            { "ref": "Annex III(6)(d)", "label": "Assessing the risk of a person offending or re-offending (beyond Art. 5(1)(d) profiling-only prediction), or assessing personality traits/past criminal behaviour." },
-            { "ref": "Annex III(6)(e)", "label": "Profiling of natural persons in the course of detection, investigation or prosecution of criminal offences." }
+            { "ref": "Annex III(6)(a)", "plain": "Judging someone's risk of becoming a crime victim.", "label": "Assessing the risk of a natural person becoming the victim of a criminal offence." },
+            { "ref": "Annex III(6)(b)", "plain": "Lie detectors and similar tools.", "label": "Polygraphs and similar tools." },
+            { "ref": "Annex III(6)(c)", "plain": "Judging how reliable evidence is.", "label": "Evaluating the reliability of evidence during investigation/prosecution." },
+            { "ref": "Annex III(6)(d)", "plain": "Judging someone's risk of (re)offending, or their traits/past record.", "label": "Assessing the risk of a person offending or re-offending, or assessing personality traits/past criminal behaviour." },
+            { "ref": "Annex III(6)(e)", "plain": "Profiling people during criminal investigations.", "label": "Profiling of natural persons in the course of detection, investigation or prosecution of criminal offences." }
           ]
         },
         {
           "id": 7,
-          "area": "Migration, asylum and border control management",
-          "condition": "In so far as permitted under Union or national law; by or on behalf of competent authorities.",
+          "area": "Migration, asylum and borders",
+          "condition": "Only where allowed under EU or national law; by or for the competent authorities.",
           "useCases": [
-            { "ref": "Annex III(7)(a)", "label": "Polygraphs and similar tools." },
-            { "ref": "Annex III(7)(b)", "label": "Assessing risks (security, irregular migration, health) posed by persons seeking to enter or who have entered." },
-            { "ref": "Annex III(7)(c)", "label": "Assisting in examining applications for asylum, visa or residence permits and associated complaints regarding eligibility." },
-            { "ref": "Annex III(7)(d)", "label": "Detecting, recognising or identifying natural persons in migration/asylum/border contexts (excluding verification of travel documents)." }
+            { "ref": "Annex III(7)(a)", "plain": "Lie detectors and similar tools.", "label": "Polygraphs and similar tools." },
+            { "ref": "Annex III(7)(b)", "plain": "Judging security, migration or health risks of people entering or here.", "label": "Assessing risks (security, irregular migration, health) posed by persons seeking to enter or who have entered." },
+            { "ref": "Annex III(7)(c)", "plain": "Helping decide asylum, visa or residence applications.", "label": "Assisting in examining applications for asylum, visa or residence permits and associated complaints regarding eligibility." },
+            { "ref": "Annex III(7)(d)", "plain": "Spotting or identifying people in migration/border settings (not just checking travel documents).", "label": "Detecting, recognising or identifying natural persons in migration/asylum/border contexts (excluding verification of travel documents)." }
           ]
         },
         {
           "id": 8,
-          "area": "Administration of justice and democratic processes",
+          "area": "Justice and elections",
           "useCases": [
-            { "ref": "Annex III(8)(a)", "label": "Assisting a judicial authority in researching/interpreting facts and law and applying the law, or used in alternative dispute resolution." },
-            { "ref": "Annex III(8)(b)", "label": "Influencing the outcome of an election or referendum, or the voting behaviour of natural persons (excluding tools not directly interacting with voters, e.g. campaign admin/logistics)." }
+            { "ref": "Annex III(8)(a)", "plain": "Helping a court research and apply the law, or used in dispute resolution.", "label": "Assisting a judicial authority in researching/interpreting facts and law and applying the law, or used in alternative dispute resolution." },
+            { "ref": "Annex III(8)(b)", "plain": "Swaying how people vote in an election or referendum.", "label": "Influencing the outcome of an election or referendum, or the voting behaviour of natural persons (excluding tools not directly interacting with voters, e.g. campaign admin/logistics)." }
           ]
         }
       ]

@@ -33,9 +33,13 @@ A common mistake is to model the AI Act as one path ending in one leaf. It isn't
 2. **transparency obligations** under Art. 50 (cumulative — they sit on top of high-risk, filtered, or minimal), and
 3. a **GPAI model status** (independent — a model can be a GPAI model *and* the system built on it can be high-risk).
 
-So the tool accumulates **flags** as the user progresses and, at the end, renders **every applicable result card**. This structure is defined in `decision-tree.json → resultModel` and `moduleOrder`.
+On top of these, two **context flags** — `role` (provider / deployer / both) and `fossLicence` (open-source or not) — are captured in an optional first step. They **never change the tier**; they only tailor *which obligations are shown* and *whether the FOSS note appears*.
 
-The flow runs four modules in order: **SPINE → TRANSPARENCY → GPAI → RESULT**, with two short-circuits: if the system is *not an AI system* it stops immediately; if it is *prohibited* the tier spine stops (prohibited overrides everything).
+So the tool accumulates **flags** as the user progresses and, at the end, renders **every applicable result card**, with obligations filtered/high-lighted by role. This structure is defined in `decision-tree.json → resultModel`, `moduleOrder`, `crossLinks` and `notes`.
+
+The flow runs five modules in order: **CONTEXT → SPINE → TRANSPARENCY → GPAI → RESULT**, with two short-circuits: if the system is *not an AI system* it stops immediately; if it is *prohibited* the tier spine stops (prohibited overrides everything, including any FOSS licence).
+
+**Fewer questions via cross-links.** Some answers imply later ones. If the user selects **biometric categorisation (Annex III 1(b))** or **emotion recognition (1(c))** in the spine, the tool **auto-derives** the Art. 50(3) transparency duty and does not ask it again. These inference rules live in `decision-tree.json → crossLinks` and must be applied by the implementer.
 
 ---
 
@@ -47,7 +51,8 @@ The flow runs four modules in order: **SPINE → TRANSPARENCY → GPAI → RESUL
 flowchart TD
     S0{"S0 — Is it an AI system?<br/>(Art. 3(1))"}
     S0 -- No --> OUT["OUT OF SCOPE"]
-    S0 -- Yes --> S1{"S1 — Any prohibited<br/>practice? (Art. 5)"}
+    S0 -- Yes --> C0["C0 — Optional context:<br/>role + FOSS licence<br/>(does not change tier)"]
+    C0 --> S1{"S1 — Any prohibited<br/>practice? (Art. 5)"}
     S1 -- Yes --> PROH["PROHIBITED"]
     S1 -- No --> S2{"S2 — Product / safety component<br/>under Annex I? (Art. 6(1))"}
     S2 -- Yes --> S3{"S3 — Third-party conformity<br/>assessment required?"}
@@ -76,17 +81,19 @@ flowchart TD
 
 The node IDs below map exactly to `decision-tree.json → nodes`.
 
-1. **S0 — Is it an AI system? (Art. 3(1)).** The gate. The decisive element is *inference*: the system derives outputs (predictions, content, recommendations, decisions) from input, rather than executing only rules defined solely by humans. Show the `help.likelyYes` / `help.likelyNo` lists. **No → OUT_OF_SCOPE** (stop).
+0. **C0 — Optional context (`type: "context"`).** After S0 confirms it is an AI system, offer one skippable screen with two dropdowns: **role** (provider / deployer / both / not sure) and **FOSS licence** (yes / no / not sure). Store as `flags.role` and `flags.fossLicence`. This screen does **not** branch and does **not** change the tier; it only tailors the result. Render its two `fields[]` from the node.
+
+1. **S0 — Is it an AI system? (Art. 3(1)).** The gate. The decisive element is *inference*: the system derives outputs (predictions, content, recommendations, decisions) from input, rather than executing only rules defined solely by humans. Show the `help.likelyYes` / `help.likelyNo` lists and the `ai_system_definition` guideline link. **No → OUT_OF_SCOPE** (stop); **Yes → C0**.
 2. **S1 — Prohibited practice? (Art. 5).** Present the eight prohibited practices from `catalog.prohibitedPractices`. Any match → **PROHIBITED** (stop the tier spine).
 3. **S2 — Annex I product or safety component? (Art. 6(1), first condition).** Is the AI itself a regulated product, or a safety component of one, under Annex I harmonisation legislation? Use `catalog.annexI_legislation` as a prompt list and explain the Art. 3(14) safety-component test (failure endangers health/safety, **or** fulfils a safety function; comfort/efficiency alone is not a safety function). **No → S4.**
 4. **S3 — Third-party conformity assessment required? (Art. 6(1), second condition).** Both conditions are cumulative. If the product only needs internal self-assessment, it is **not** high-risk under Art. 6(1). **Yes → HIGH_RISK_ANNEX_I; No → S4.**
-5. **S4 — Annex III use case? (Art. 6(2)).** Present all eight areas and their specific use cases from `catalog.annexIII`. Only the *listed use cases* count, not the broad area. Surface the horizontal notes ('natural persons' limitation, 'on behalf of', 'in so far as permitted…'). **No → T0** (transparency check).
+5. **S4 — Annex III use case? (Art. 6(2)).** Present all eight areas and their specific use cases from `catalog.annexIII`. Only the *listed use cases* count, not the broad area. Surface the horizontal notes ('natural persons' limitation, 'on behalf of', 'in so far as permitted…') and the reminder that emotion recognition / biometric categorisation may be *prohibited* rather than high-risk. **When a selected use case carries `impliesTransparency` (1(b), 1(c)), record those Art. 50 items now** so they are pre-filled and skipped in T0. **No → T0** (transparency check).
 6. **S5 — Profiling of natural persons?** If yes, the system is **always** high-risk and cannot use the filter → **HIGH_RISK_ANNEX_III.**
 7. **S6 — Art. 6(3) filter.** The system is *not* high-risk if it meets at least one of the four conditions in `catalog.filterConditions` **and** does not materially influence the outcome (and is not part of a complex/agentic setup that does). **Yes → NOT_HIGH_RISK_FILTERED; No → HIGH_RISK_ANNEX_III.**
 
 ### 3.3 The TRANSPARENCY module (Art. 50)
 
-**T0** runs for every non-prohibited, in-scope system (including high-risk ones). Present the four Art. 50 triggers from `catalog.transparencyTriggers` as a multi-select. If any is selected, set the `transparency` flag and remember which obligations were triggered. These are **cumulative** with the primary tier.
+**T0** runs for every non-prohibited, in-scope system (including high-risk ones). Present the four Art. 50 triggers from `catalog.transparencyTriggers` as a multi-select. **Any item auto-derived at S4 (via `crossLinks`) is shown pre-ticked and read-only** — the user only answers the remaining items, so an emotion-recognition or biometric-categorisation system never gets asked the Art. 50(3) question twice. Each trigger item carries a `role` (provider or deployer) and an `example`; show both. If any item is set, the `transparency` flag holds the list of triggered items; these obligations are **cumulative** with the primary tier. (Optional nicety: if the user ticks 50(4) deep fakes, hint that 50(2) likely also applies — see `crossLinks:deepfake-implies-synthetic`.)
 
 ### 3.4 The GPAI module (Art. 51–55)
 
@@ -108,27 +115,33 @@ Compile the accumulated flags and render **all** applicable cards from `outcomes
 
 | Key | What it is | How the UI uses it |
 |---|---|---|
-| `meta` | Title, version, regulation, purpose, disclaimer, sources, key dates | Header, footer, about box, disclaimer banner |
-| `resultModel` | The three result dimensions + short-circuit rules | The accumulation/compile logic |
-| `moduleOrder` | `["SPINE","TRANSPARENCY","GPAI","RESULT"]` | Module sequencing |
-| `nodes` | Every question/result node, keyed by ID, with `text`, `explainer`, `help`, `articleRef`, `options[]` (each option has `label`, `value`, `next`), optional `checklist`/`reference` pointing into `catalog`, optional `setsFlag`/`setsGpai` | Renders each screen; `next` is either another node ID or an outcome ID |
-| `outcomes` | Result cards keyed by ID: `tier`, `color`, `title`, `summary`, `obligations[]`, `legalRefs[]` | Result screen cards |
-| `catalog.prohibitedPractices` | The 8 Art. 5 practices | S1 checklist |
+| `meta` | Title, version, changelog, regulation, purpose, disclaimer, key dates | Header, footer, about box, disclaimer banner |
+| `guidelines` | Registry of official Commission guideline links, keyed (e.g. `prohibited_practices`, `gpai_scope`, `transparency`), each `{title, url, status}` | Resolve every `guidelineLinks[]` key to a clickable "Official guidance" link on that screen/card |
+| `notes` | `fossExemption` and `providerVsDeployer` explanatory notes, keyed | Rendered where an outcome's `showNotes[]` (or a context flag) calls for them |
+| `meta.languageStyle` | The three-layer plain-language rule + tone | Governs how every screen is rendered (Section 5.5) |
+| `resultModel` | Six result dimensions (`primaryTier`, `transparency`, `gpai`, `role`, `fossLicence`, `reviewFlags`) + short-circuit rules | The accumulation/compile logic |
+| `moduleOrder` | `["CONTEXT","SPINE","TRANSPARENCY","GPAI","RESULT"]` | Module sequencing |
+| `crossLinks` | Inference rules (`rules[]` with `when`/`then`/`refs`) | Auto-derive transparency, skip duplicate questions, show reminders |
+| `nodes` | Every node keyed by ID. Question nodes: plain `text` + `explainer`, `legalText` `{articleRef, text}` (the "in the words of the law" panel), `help`, `articleRef`, `guidelineLinks[]`, `options[]` (`label`/`value`/`next`, optional `setsGpai`, optional `flagsReview`+`reviewNote`), optional `checklist`/`reference`, `setsFlag`, `prefillFrom`. Context node (`type:"context"`): `optional`, `fields[]` (each with plain `label`, `options[]`, `setsFlag`) and a single `next` | Renders each screen; `next` is a node ID or an outcome ID |
+| `outcomes` | Result cards keyed by ID: `tier`, `color`, plain `title` + `summary`, `obligations[]` (each `{role, text}`), `legalRefs[]`, `guidelineLinks[]`, optional `showNotes[]` | Result screen cards; **filter/high-light `obligations` by `flags.role`** |
+| `catalog.prohibitedPractices` | The 8 Art. 5 practices, each with `plain` (visible) + `label`/`ref` (exact wording on expand) | S1 checklist |
 | `catalog.annexI_legislation` | Annex I Section A + B prompt list | S2 reference panel |
-| `catalog.filterConditions` | The 4 Art. 6(3) conditions + overrides | S6 checklist |
-| `catalog.transparencyTriggers` | The 4 Art. 50 situations + per-item obligation | T0 multi-select |
-| `catalog.annexIII` | 8 areas, each with `useCases[]` + horizontal notes | S4 selection panel |
+| `catalog.filterConditions` | The 4 Art. 6(3) conditions, each with `plain` + `label`/`detail` | S6 checklist |
+| `catalog.transparencyTriggers` | The 4 Art. 50 situations, each with `plain`, `label`, `role`, `obligation`, `example`, `autoDerivedFrom` | T0 multi-select |
+| `catalog.annexIII` | 8 areas, each `useCases[]` carrying `plain` + `label` (some with `impliesTransparency`) + horizontal notes | S4 selection panel |
 
 **Colours** in `outcomes[].color`: `grey` (out of scope), `red` (prohibited), `orange` (high-risk), `yellow` (filtered), `green` (minimal), `blue` (transparency), `purple` (GPAI). Map these to an accessible palette.
+
+**Guideline links (required).** Every question node and result card carries a `guidelineLinks[]` array of keys into `guidelines` (or `notes`). Render each as a clearly-labelled "Official guidance ↗" link, and mark the high-risk one as *draft* (its `status`). This is the colleague-requested addition: prohibited, high-risk, transparency and GPAI screens all now link to the relevant official guideline, and the GPAI and transparency items carry worked `example`s like the Annex III cases do.
 
 ---
 
 ## 5. UX requirements
 
 - **One question per screen**, with a phase-based progress indicator (see **Section 5.1**, which is required) and a clear Back button. Keep the whole assessment to well under a dozen clicks for a typical system.
-- Every screen shows: the question, a short plain-language `explainer`, the **article reference** (e.g. "Art. 6(2); Annex III"), and — where present — the `help.likelyYes` / `help.likelyNo` hints in a collapsible "Examples / how to decide" panel.
-- **S1, S4, S6, T0 are list/checklist screens.** Render the catalog items with their legal refs. For S4 (Annex III) group by the eight areas and let the user expand each; selecting any use case = "Yes". For T0 allow multiple selections (they map to different obligations).
-- **"I'm not sure" is a first-class answer.** Where a question is judgement-heavy (S0 inference, S2 safety component, S6 filter), offer a neutral path that treats uncertainty conservatively (assume the higher-risk branch) and flags the point for expert review in the result.
+- Every screen shows **three layers** (see Section 5.5): (1) the plain-language question `text` + `explainer` — always visible; (2) an **"In the words of the law"** collapsible holding `node.legalText` (near-verbatim regulation wording + its `articleRef`) — collapsed by default; (3) an **"Examples / how to decide"** collapsible holding `help.likelyYes` / `help.likelyNo` — collapsed by default. A small article-reference chip stays visible.
+- **S1, S4, S6, T0 are list/checklist screens.** Render each catalog item's plain summary (`item.plain`) as the visible line, with the exact legal wording (`item.label`) and reference (`item.ref`) available on expand. For S4 (Annex III) group by the eight areas and let the user expand each; selecting any use case = "Yes". For T0 allow multiple selections.
+- **"I'm not sure" is a real, data-level answer.** Judgement-heavy questions (S0, S2, S3, S4, S5, S6, G0, G1) carry an explicit `"I'm not sure"` option in `options[]`, with `flagsReview: true` and a `reviewNote`. Selecting it routes conservatively (toward keeping more obligations in view) and appends `{node, note}` to `flags.reviewFlags`, which the result screen shows in a **"Worth double-checking with an expert"** box. It never changes the tier by itself.
 - **Result screen**: show all applicable cards, colour-coded, each with title, summary, the obligations list, legal references, and the relevant application date. Add a "what this means / next steps" note and prominent links to the AI Act Service Desk.
 - **Answer trail**: show the path taken (question → answer) so the result is explainable and auditable.
 - **Export**: let the user download a PDF/printable summary of their answers + result (useful evidence for the Art. 6(4) documentation duty in the filtered case). No account, no server storage.
@@ -176,6 +189,28 @@ All three progress components are pure functions of state already defined in Sec
 - **Verdict-so-far panel** reads `flags` (`primaryTier`, `transparency[]`, `gpai`) plus a running list of resolved milestones.
 - **Answer-path timeline** reads the `answers[]` trail.
 
+### 5.4 Cross-links, role filtering, FOSS note and guideline links (colleague feedback)
+
+These four behaviours were added in v1.1.0 and are **required**:
+
+- **Cross-links / fewer questions.** Apply `crossLinks.rules`. Concretely: when S4 records use case 1(b) or 1(c), pre-set the Art. 50(3) transparency item and render it in T0 as pre-ticked, read-only, with a small "determined from your earlier answer" tag. Never ask an implied question twice. Also surface the two reminders (emotion/biometric can be *prohibited*; deep fakes imply synthetic-content marking).
+- **Role filtering.** On the result screen, use `flags.role` to filter/high-light each card's `obligations[]` (each item is `{role, text}`). Provider sees provider + both; deployer sees deployer + both; "both"/"unknown" shows everything grouped under **For the provider** / **For the deployer**. Always offer a "show all roles" toggle so nothing is hidden. Include the `providerVsDeployer` note and the Art. 25 warning that a deployer can become a provider.
+- **FOSS note.** Show the `notes.fossExemption` text as an information panel on the MINIMAL_RISK and both GPAI cards, and whenever `flags.fossLicence === "yes"`. Critical rule: a FOSS licence **must not** downgrade a prohibited, high-risk, or transparency outcome — display the note but keep the tier. For GPAI, explain the Art. 53(2) relaxation and that it does not apply to systemic-risk models, and that the copyright policy + training-content summary always apply.
+- **Guideline links + examples.** Resolve `guidelineLinks[]` on every screen and card to the official Commission URLs in `guidelines`, labelled "Official guidance ↗" (flag the high-risk one as *draft*). Show the `example` field on GPAI and transparency items, mirroring how the Annex III use cases are illustrated.
+
+### 5.5 Plain-language layering (required, added in v1.1's successor v1.2)
+
+The tool must read like plain guidance, not a statute. The data already carries this split; the UI must honour it. Governing note: `meta.languageStyle`.
+
+- **Layer 1 — plain (always visible).** `node.text` is a short, direct question in the second person; `node.explainer` is a friendly paragraph. No article numbers in this layer (they sit in a small chip and in Layer 2). Option labels are plain ("Yes, it is an artificial intelligence tool", not "Yes, it meets Art. 3(1)").
+- **Layer 2 — "In the words of the law" (collapsed).** `node.legalText` = `{articleRef, text}`, the near-verbatim regulation wording, for users who want precision. This is where the legal phrasing the reviewer wanted moved out of the main flow now lives.
+- **Layer 3 — "Examples / how to decide" (collapsed).** `node.help.likelyYes` / `likelyNo`.
+- **Checklists** follow the same pattern: show `item.plain`; reveal `item.label` (exact legal wording) + `item.ref` on expand. This applies to prohibited practices, filter conditions, transparency triggers and the Annex III use cases.
+- **Result cards** are already written plainly (`summary`, and each obligation's `text`); keep the tone consistent.
+- **Review flags.** Accumulate `flags.reviewFlags` from any `"I'm not sure"` answer and render a calm "Worth double-checking with an expert" box on the result screen, listing each `reviewNote`. Frame it as helpful, not alarming.
+
+Design intent: a first-time reader should be able to complete the whole assessment without reading a single article number, while a lawyer can expand Layer 2 anywhere to see the exact basis.
+
 ---
 
 ## 6. Technical guidance
@@ -193,25 +228,35 @@ All three progress components are pure functions of state already defined in Sec
 
 ```js
 let node = "S0_ai_system";
-const flags = { primaryTier: null, transparency: [], gpai: "none" };
+const flags = {
+  primaryTier: null,
+  transparency: [],      // list of Art. 50 item ids (some auto-derived)
+  gpai: "none",
+  role: "unknown",       // set by C0 context (does not affect tier)
+  fossLicence: "unknown",// set by C0 context (does not affect tier)
+  reviewFlags: []        // {node, note} pushed whenever an "I'm not sure" option is chosen
+};
 
-while (nodes[node].type === "question") {
-  const answer = ask(nodes[node]);           // user picks an option (or multi-select)
-  applySideEffects(nodes[node], answer, flags); // setsFlag / setsGpai / record transparency items
-  node = resolveNext(nodes[node], answer);   // an outcome ID or the next node ID
-  if (isOutcome(node)) {                       // SPINE reached a terminal tier
-    flags.primaryTier = node;                  // e.g. HIGH_RISK_ANNEX_III
-    if (node === "OUT_OF_SCOPE") return render([outcomes.OUT_OF_SCOPE]);
-    if (node === "PROHIBITED")  { node = "G0_gpai"; continue; } // still note GPAI, skip transparency
-    node = "T0_transparency";                  // continue into overlays
+while (nodes[node].type === "question" || nodes[node].type === "context") {
+  const answer = ask(nodes[node]);              // option, multi-select, or the two context fields
+  applySideEffects(nodes[node], answer, flags); // setsFlag / setsGpai; record transparency items;
+                                                // if option.flagsReview → flags.reviewFlags.push({node, note: option.reviewNote})
+  // CROSS-LINK: if S4 recorded 1(b)/1(c), pre-add implied Art. 50 items so T0 skips them
+  applyCrossLinks(nodes[node], answer, flags, data.crossLinks, data.catalog.annexIII);
+  node = resolveNext(nodes[node], answer);      // an outcome ID or the next node ID
+  if (isOutcome(node)) {                          // SPINE reached a terminal tier
+    flags.primaryTier = node;                     // e.g. HIGH_RISK_ANNEX_III
+    if (node === "OUT_OF_SCOPE") return render(compileCards(flags)); // stop
+    if (node === "PROHIBITED")  { node = "G0_gpai"; continue; }      // note GPAI, skip transparency
+    node = "T0_transparency";                     // continue into overlays
   }
 }
-// node === "RESULT": if no primaryTier set by SPINE terminal, it is MINIMAL_RISK
+// node === "RESULT": if no primaryTier set by a SPINE terminal, it is MINIMAL_RISK
 if (!flags.primaryTier) flags.primaryTier = "MINIMAL_RISK";
-render(compileCards(flags));                   // primary + transparency? + gpai?
+render(compileCards(flags));                      // primary + transparency? + gpai? + FOSS note?
 ```
 
-`compileCards` returns the primary card, plus `TRANSPARENCY` if `flags.transparency.length` and tier ∉ {out_of_scope, prohibited}, plus the matching GPAI card if `flags.gpai !== "none"`.
+`compileCards` returns the primary card, plus `TRANSPARENCY` if `flags.transparency.length` and tier ∉ {out_of_scope, prohibited}, plus the matching GPAI card if `flags.gpai !== "none"`. For each card, it **filters `obligations[]` by `flags.role`** (provider → provider+both; deployer → deployer+both; both/unknown → all, grouped) and renders any `showNotes` (plus the FOSS note whenever `flags.fossLicence === "yes"`). In T0, items in `flags.transparency` that were auto-derived render pre-ticked and read-only. Finally, if `flags.reviewFlags.length`, render the **"Worth double-checking with an expert"** box listing each `note`.
 
 ---
 
@@ -224,10 +269,13 @@ Build these as sanity checks; each lists inputs → expected result cards.
 3. **Customer-service chatbot (general)** — not Annex III; T0 50(1) yes → **MINIMAL_RISK + TRANSPARENCY**.
 4. **Document-deduplication step inside a visa-processing pipeline** — Annex III 7(c) area, but S6 filter 6(3)(a) narrow procedural task, no profiling, no material influence → **NOT_HIGH_RISK_FILTERED** (+ Art. 6(4) documentation reminder).
 5. **AI lane-assistance in a car** — Annex I (vehicles), safety component, third-party CA required → **HIGH_RISK_ANNEX_I**.
-6. **Emotion recognition in a workplace** — S1 Art. 5(1)(f) → **PROHIBITED**.
-7. **Large language model provider, >10^25 FLOP** — G0 yes, G1 yes → GPAI overlay = **GPAI_MODEL_SYSTEMIC** (plus whatever tier its offered system has).
-8. **Spreadsheet with fixed formulas** — S0 no → **OUT_OF_SCOPE**.
-9. **Text-to-image generator, general use** — not Annex III; T0 50(2) yes → **MINIMAL_RISK + TRANSPARENCY**; if the provider is also the model provider, add GPAI overlay.
+6. **Emotion recognition in a workplace** — S1 Art. 5(1)(f) → **PROHIBITED** (a FOSS licence does not change this).
+7. **Emotion recognition in a permitted, non-workplace/education context** — not prohibited; Annex III 1(c): yes; no profiling; no filter → **HIGH_RISK_ANNEX_III + TRANSPARENCY(50-3)**, where the 50(3) item is **auto-derived** and never asked again in T0 (verifies the cross-link).
+8. **Large language model provider, >10^25 FLOP** — G0 yes, G1 yes → GPAI overlay = **GPAI_MODEL_SYSTEMIC** (plus whatever tier its offered system has; Art. 53(2) FOSS relaxation does NOT apply).
+9. **Spreadsheet with fixed formulas** — S0 no → **OUT_OF_SCOPE**.
+10. **Text-to-image generator, general use** — not Annex III; T0 50(2) yes → **MINIMAL_RISK + TRANSPARENCY**; if the provider is also the model provider, add GPAI overlay.
+11. **Open-source recruitment-screening model** — Annex III 4(a), profiling yes → **HIGH_RISK_ANNEX_III**; `fossLicence = yes` shows the FOSS note but the tier stays high-risk (verifies FOSS does not downgrade).
+12. **Role filtering: deployer of a recruitment tool** — same tier as #1, but with `role = deployer` the result card foregrounds the **Art. 26 / Art. 27** deployer obligations and offers "show all roles" (verifies role split).
 
 ---
 
@@ -237,26 +285,36 @@ Build these as sanity checks; each lists inputs → expected result cards.
 - State clearly that this is based on the **draft** Commission classification guidelines (stakeholder-consultation versions) plus the AI Act text, and that details may change. Show `meta.lastUpdated`.
 - Show the **application dates** from `meta.keyDates` on the relevant result cards (note the AI Omnibus postponements: Annex III high-risk → 2 Dec 2027; Annex I high-risk → 2 Aug 2028; prohibitions already apply since Feb 2025; GPAI rules since Aug 2025; transparency from Aug 2026). Flag these as indicative and subject to change.
 - Link to the **AI Act Service Desk / Single Information Platform** and recommend expert/legal review for borderline cases (especially S0 inference, S2 safety component, and the S6 filter).
+- Surface the **official Commission guideline** for each module from `guidelines` (prohibited practices, AI-system definition, GPAI scope of obligations + Code of Practice + training-summary template, transparency + Code of Practice). Mark the high-risk classification guideline as **draft**.
+- Show the `notes.fossExemption` note where relevant, and never let a FOSS licence downgrade a prohibited / high-risk / transparency outcome.
 
 ---
 
 ## 10. Sources encoded in the tool
 
-- Regulation (EU) 2024/1689 (AI Act): Arts. 3, 5, 6, 7, 50, 51, 53, 55; Annexes I, III.
-- Commission Guidelines on the definition of an AI system, C(2025) 5053.
-- Draft Commission guidelines on the classification of high-risk AI systems under Article 6 (general principles; Annex I; Annex III) — stakeholder-consultation drafts.
+- Regulation (EU) 2024/1689 (AI Act): Arts. 2(12), 3, 5, 6, 7, 25, 26, 27, 49, 50, 51, 52, 53, 55; Annexes I, III, XI, XII.
+- Commission Guidelines on the definition of an AI system (C(2025) 5053): https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-ai-system-definition-facilitate-first-ai-acts-rules-application
+- Commission Guidelines on prohibited AI practices (Art. 5): https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-prohibited-artificial-intelligence-ai-practices-defined-ai-act
+- Guidelines on the scope of obligations for providers of GPAI models: https://digital-strategy.ec.europa.eu/en/library/guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act
+- GPAI Code of Practice: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+- Training-content summary template: https://digital-strategy.ec.europa.eu/en/library/explanatory-notice-and-template-public-summary-training-content-general-purpose-ai-models
+- Guidelines on transparency obligations (Art. 50): https://digital-strategy.ec.europa.eu/en/library/guidelines-transparency-obligations-providers-and-deployers-ai-systems
+- Code of Practice on AI-generated content: https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content
+- Draft Commission guidelines on high-risk classification under Art. 6 (general principles; Annex I; Annex III) — stakeholder-consultation drafts: https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
 - Annex III reference: https://artificialintelligenceact.eu/annex/3/
+
+> **Note on the FOSS gap the reviewer flagged:** v1.1.0 adds the Art. 2(12) exemption as an explicit `notes.fossExemption`, a context flag (C0), and a note surfaced on the relevant cards — with the guardrail that open-source never exempts prohibited, high-risk, or Art. 50 systems, and that for GPAI it only relaxes the Art. 53(2) documentation duties (never for systemic-risk models, and never the copyright policy or training-summary).
 
 ---
 
 ### Build order suggestion for the coding agent
 
 1. Load and validate `decision-tree.json` against the contract in Section 4.
-2. Implement the node-driven screen renderer (question / checklist / result screen types).
-3. Implement the flag accumulation + `compileCards` logic (Section 7).
-4. Wire the catalog-driven checklists (S1, S2, S4, S6, T0).
+2. Implement the node-driven screen renderer (context / question / checklist / result screen types).
+3. Implement the flag accumulation + cross-link + `compileCards` logic (Section 7), including the C0 context step.
+4. Wire the catalog-driven checklists (S1, S2, S4, S6, T0) and the `impliesTransparency` auto-derivation into T0.
 5. Build the three progress components from Section 5.1 (phase stepper, live verdict-so-far panel, answer-path timeline), all driven from `module` / `flags` / `answers[]`.
-6. Build the result screen with multi-card rendering, answer trail and PDF export.
+6. Build the result screen with multi-card rendering, **role-filtered obligations**, FOSS note, guideline links, answer trail and PDF export (Section 5.4).
 7. Apply the Section 5.2 visual design language (colour system, motion, layout).
 8. Add the disclaimer, sources, application dates and Service Desk links.
 9. Run the Section 8 scenarios as tests, including that the stepper skips/marks phases correctly on the out-of-scope and prohibited short-circuits.

@@ -1,40 +1,43 @@
 # EU AI Act – Risk Tier Self-Assessment (build)
 
 A browser-based triage tool: the owner of an algorithm or AI application answers a short,
-branching series of questions and gets **every applicable AI Act status** — a primary risk
-tier, the cumulative Article 50 transparency duties, and the GPAI model overlay — with the
-article references, application dates, an auditable answer trail and a printable summary.
+branching series of plain-language questions and gets **every AI Act status that applies** —
+a primary risk tier, the cumulative Article 50 transparency duties, and the GPAI model
+overlay — with the duties filtered to their role, the article references, application dates,
+an auditable answer trail and a printable summary.
 
-Built to `AI-Act-Tier-Assessment-SPEC.md`. **All questions, branching logic, reference lists,
-result cards and interface strings live in `decision-tree.json`.** The code renders whatever
-that file describes; it hard-codes no legal content.
+Built to `AI-Act-Tier-Assessment-SPEC.md` (spec v1.2, data v1.2.0).
 
-## Files
+## Two data files, deliberately separate
 
-| File | Purpose |
-|---|---|
-| `index.html` | The whole tool: inline CSS + JS, no build step, no back-end, no storage. Carries an embedded copy of the JSON so it also works offline from disk. |
-| `decision-tree.json` | Single source of truth: `meta`, `resultModel`, `phases`, `ui`, `nodes`, `outcomes`, `catalog`. |
-| `sync-embedded-json.mjs` | Copies `decision-tree.json` into the embedded block of `index.html`. Run after every content edit. |
-| `test-scenarios.mjs` | 61 acceptance checks, including the nine SPEC §8 scenarios. Extracts the engine out of `index.html`, so it tests the code that actually ships. |
+| File | Holds | Who owns it |
+|---|---|---|
+| `decision-tree.json` | Legal content: questions, routing, catalogs, result cards, `guidelines`, `notes`, `crossLinks` | Regenerated from the spec — overwrite it freely |
+| `ui.json` | Presentation layer: interface strings (`ui`), the phase stepper (`phases`), per-tier icons / short labels / application dates (`presentation`), and `locale` | Stable, rarely changes |
+
+This split exists because a fresh `decision-tree.json` used to wipe the interface strings and
+icons. Now it cannot. If `decision-tree.json` does contain a `ui` block, its keys win over
+`ui.json`, so a one-off override is still possible.
+
+`index.html` is the whole tool: inline CSS + JS, no build step, no back-end, no storage, no
+tracking. It carries embedded copies of both JSON files so it also works from disk.
 
 ## Running it
 
-Double-click `index.html` — it works straight from disk using the embedded copy of the JSON.
+Double-click `index.html` — it works offline using the embedded copies.
 
-To serve it (so the tool reads the *external* `decision-tree.json`, and content edits need no
-re-embedding), any static host will do:
+To serve it (so the tool reads the *external* JSON and content edits need no re-embedding):
 
 ```bash
 python -m http.server 8765
 ```
 
-Then open `http://localhost:8765`. The footer always states which copy of the data is in use.
+Then open `http://localhost:8765`. The footer states which copies are in use.
 
 ## Editing the content
 
-1. Edit `decision-tree.json` (question text, help lists, catalog items, obligations, dates…).
-2. Run the sync so the offline copy inside `index.html` follows:
+1. Edit `decision-tree.json` (or `ui.json`).
+2. Refresh the embedded offline copies:
 
 ```bash
 node sync-embedded-json.mjs
@@ -46,61 +49,84 @@ node sync-embedded-json.mjs
 node test-scenarios.mjs
 ```
 
-The page validates the JSON against the contract on load and shows a red banner listing any
-problem (unknown `next` target, missing catalog reference, unsupported `selectionRule`, …)
-instead of failing silently.
+94 checks, including the twelve SPEC §8 scenarios. The suite extracts the engine out of
+`index.html`, so it tests the code that actually ships. It fails if the embedded copies have
+drifted, if the code asks for a `ui` key the JSON lacks, or if a tier has no `presentation`
+entry.
+
+The page also validates the data on load and shows a red banner listing any problem — an
+unknown `next` target, a `guidelineLinks` key in neither `guidelines` nor `notes`, an
+`impliesTransparency` id that is not a transparency trigger, a `crossLinks` rule the engine
+has no handler for, an obligation that is not `{role, text}`.
 
 ### What the data controls
 
-- **Routing** — each `options[].next` is either another node ID or an outcome ID. The four
-  short-circuit rules (out of scope stops; prohibited skips transparency but still asks about
-  GPAI) are implemented once, in the engine, exactly as SPEC §7 describes.
-- **Checklist screens** — `checklist` / `reference` point into `catalog`; `selectionRule`
-  decides how ticks become a yes/no answer: `anySelected` (S1, S4, T0) or
-  `anySelectedAndSubNo` (S6: at least one Article 6(3) condition **and** no material influence
-  on the outcome, asked as a `subQuestion`).
-- **Uncertainty** — an option with `"uncertain": true` routes to the more conservative branch
-  and its `reviewNote` is collected into the "points to have reviewed by an expert" box on the
-  result screen. Currently on S0, S2, S3 and the S6 sub-question.
-- **Progress** — `phases` maps node IDs to the four stepper segments. Phases the run never
-  visits are marked *n/a* rather than left blank.
-- **Result cards** — `outcomes[].color` / `icon` / `applicationDate` / `shortTitle` drive the
-  card styling, the legend, the verdict panel and the decision map. Colour is never the only
-  signal: every tier also carries an icon and a text label.
+- **Routing** — `options[].next` is a node ID or an outcome ID. The short-circuits are
+  implemented once, in the engine: out-of-scope stops immediately; **banned** stops the tier
+  spine, skips transparency, but still asks about GPAI.
+- **The optional context step (C0)** — `type: "context"` with `fields[]` renders the two
+  dropdowns (role, open-source licence) and a **Skip this step** button. It never changes the
+  tier; it only tailors which duties are shown and whether the FOSS note appears.
+- **Three language layers** — `text` + `explainer` are always visible; `legalText` sits behind
+  *In the words of the law*; `help.likelyYes/likelyNo` behind *Examples / how to decide*.
+  Checklist items show `item.plain`, with `item.label` + `ref` + `detail` behind *Exact
+  wording*. A first-time reader never has to see an article number; a lawyer can expand any of
+  it.
+- **Cross-links** — each `crossLinks.rules[].id` has a handler in the engine, and validation
+  fails on a rule that has none, so a new rule can never be silently ignored:
+  - `biometrics-to-transparency` — ticking Annex III 1(b) or 1(c) auto-derives the Art. 50(3)
+    duty; T0 shows it pre-ticked, locked, tagged "worked out from your earlier answer", and it
+    survives even if the form omits it.
+  - `biometrics-emotion-prohibition-reminder` — reminds the reader those uses may be *banned*
+    rather than high-risk.
+  - `deepfake-implies-synthetic` — ticking 50(4) points out that 50(2) probably applies too.
+    Suggested, never forced.
+  > Note: `rules[].then` is written as an instruction to the implementer, so it is **not** shown
+  > to users. The reader-facing sentence lives in `ui.json` as `crosslink.<id>.text`.
+- **Role filtering** — obligations are `{role, text}`. A provider sees provider + both, a
+  deployer sees deployer + both, both/unknown sees everything. Groups are always labelled, and
+  a **Show all roles** toggle appears whenever something is filtered out, so nothing is ever
+  hidden without a way back. The `providerVsDeployer` note (including the Art. 25 warning that
+  a deployer can become a provider) is shown alongside.
+- **FOSS note** — shown on both GPAI cards, and on the tier card when the user says the system
+  is open-source. It never downgrades a banned, high-risk or transparency outcome; the tier
+  stays and the note explains why.
+- **"I'm not sure"** — an option with `flagsReview: true` records its `reviewNote` in
+  `flags.reviewFlags` and follows whatever route the data specifies. The result screen lists
+  them in a calm *Worth double-checking with an expert* box. It never changes the tier by itself.
+- **Progress** — `ui.json → phases` maps node IDs to the four stepper segments (C0 sits in the
+  first one). A node missing from that list joins the first phase of its module automatically,
+  so the stepper cannot go blank. Phases a run never visits are marked *n/a*, never left blank.
 
 ## Translating
 
-Copy `decision-tree.json` to `decision-tree.nl.json`, translate `meta`, `ui`, `nodes`,
-`outcomes` and `catalog` (leave the keys, node IDs, `value`s and `next` targets untouched),
-put it next to `index.html` and open `index.html?lang=nl`. No code changes. `?lang=` falls back
-to the English file if the translated one is missing or fails validation.
-
-The `ui` block holds every string the interface renders itself. `test-scenarios.mjs` fails if
-the code asks for a key the JSON does not have, or if the JSON carries a key nothing uses.
+Copy both files to `decision-tree.nl.json` and `ui.nl.json`, translate them (leave keys, node
+IDs, `value`s and `next` targets untouched), and open `index.html?lang=nl`. No code changes.
+`?lang=` falls back to the English files if a translated one is missing or fails validation.
 
 ## Export
 
-- **Print / save as PDF** — a print stylesheet drops the chrome and keeps the result cards,
-  the review points, the answer trail and the disclaimer. All collapsed panels are expanded
-  before printing so nothing is silently missing.
-- **Download summary (.md)** — the same content as a Markdown file, generated in the browser.
+- **Print / save as PDF** — a print stylesheet drops the chrome and keeps the cards, the review
+  points, the trail and the disclaimer. Collapsed panels are expanded first so nothing is
+  silently missing from the PDF.
+- **Download summary (.md)** — the same content as Markdown, generated in the browser,
+  including your role, the FOSS note and every duty grouped by role.
 
-Both are useful as the starting point for the Article 6(4) documentation duty in the filtered
-case. Nothing is transmitted or stored: no account, no server, no `localStorage`.
+Nothing is transmitted or stored: no account, no server, no `localStorage`.
 
 ## Accessibility
 
-Keyboard navigable throughout; focus moves to the question heading on every screen change;
-the stepper exposes each phase's state as text (`current step` / `completed` / `not applicable`)
-next to the visual state; checklists are grouped in `fieldset`/`legend`; the verdict panel is an
-`aria-live` region; `prefers-reduced-motion` disables all non-essential animation; light and
-dark themes both meet AA contrast.
+Keyboard navigable throughout; focus moves to the question heading on every screen change; the
+stepper exposes each phase's state as text; checklists are grouped in `fieldset`/`legend`; the
+verdict panel is an `aria-live` region; `prefers-reduced-motion` disables non-essential
+animation; light and dark themes both meet AA contrast; every tier colour is paired with an
+icon and a label. Verified free of horizontal overflow down to 375 px.
 
 ## Caveats to keep in view
 
-- The tool encodes the AI Act plus the Commission's **draft** classification guidelines
-  (stakeholder-consultation versions). `meta.version` and `meta.lastUpdated` are shown in the
-  footer and on the result screen for exactly that reason.
+- The tool encodes the AI Act plus the Commission's guidance, of which the **high-risk
+  classification part is still a draft**. That guideline is labelled *draft* everywhere it is
+  linked. `meta.version` and `meta.lastUpdated` are shown in the footer and on the result.
 - Application dates reflect the AI Omnibus postponements and are labelled indicative.
 - It is triage, not compliance advice. The disclaimer appears on the start screen, the result
   screen and in the export.
