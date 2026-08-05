@@ -11,7 +11,7 @@
       "1.0.0 – Initial decision tree."
     ],
     "regulation": "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
-    "purpose": "Help the owner of an algorithm or AI application find out, in plain language, which risk category of the EU AI Act their system falls into: out of scope, prohibited, high-risk (Annex I or Annex III), limited-risk (transparency) or minimal-risk. A separate overlay covers general-purpose AI (GPAI) models.",
+    "purpose": "Find out which risk category of the EU AI Act your algorithm or AI application falls into: out of scope, prohibited, high-risk (Annex I or Annex III), limited-risk (transparency) or minimal-risk.",
     "disclaimer": "This tool gives you a first, indicative answer. It is not legal advice and it is not binding. It is based on the AI Act and the European Commission's guidance (the high-risk classification guidance is still a draft). The final call is the provider's responsibility, checked by the market surveillance authority, and only the Court of Justice of the EU can give a binding interpretation. When in doubt, ask the AI Act Service Desk, your authority, or a lawyer.",
     "languageStyle": {
       "note": "Every screen has three layers. Show them in this priority: (1) the plain-language question + explainer (node.text, node.explainer) — always visible; (2) an 'In the words of the law' collapsible holding the exact/near-verbatim regulation wording (node.legalText) — collapsed by default; (3) an 'Examples / how to decide' collapsible holding node.help (likelyYes / likelyNo) — collapsed by default. Checklist items follow the same idea: item.plain is the visible line, item.label + item.ref are the exact wording shown on expand.",
