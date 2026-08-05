@@ -127,6 +127,8 @@ def main() -> int:
         ("muted on page", "--text-muted", "--surface-subtle", 4.5),
         ("muted on card", "--text-muted", "--surface-card", 4.5),
         ("link on card", "--text-link", "--surface-card", 4.5),
+        ("disclaimer on its teal tint", "--tier-green-fg", "--teal-50", 4.5),
+        ("review note on its gold tint", "--fari-gold-700", "--fari-gold-50", 4.5),
         ("white on primary button", "--text-on-brand", "--action-primary", 4.5),
         ("white on hover button", "--text-on-brand", "--action-primary-hover", 4.5),
     ]:

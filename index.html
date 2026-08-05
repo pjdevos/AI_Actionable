@@ -323,13 +323,19 @@ details.disclosure.legal blockquote {
   padding: 5px 12px 5px 9px; font-size: .85rem; background: var(--surface);
 }
 .tier-legend .item svg { width: 15px; height: 15px; }
+/* The disclaimer is information, not a warning, so it takes FARI's teal rather than the
+   gold used for "check this". Gold now means only the review box and the filtered tier. */
 .disclaimer {
-  border: 1px solid var(--fari-gold-100); border-left: 4px solid var(--tier-gold-accent);
-  background: var(--fari-gold-50); color: var(--fari-gold-700);
+  border: 1px solid var(--teal-100); border-left: 4px solid var(--teal-800);
+  background: var(--teal-50); color: var(--tier-green-fg);
   border-radius: var(--radius-md); padding: var(--space-4) var(--space-5);
   font-size: var(--text-sm); margin: var(--space-6) 0;
 }
-.disclaimer strong { display: block; margin-bottom: 4px; color: var(--fari-gold-700); }
+.disclaimer strong {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 4px; color: var(--tier-green-fg);
+}
+.disclaimer strong .ico { color: var(--teal-800); }
 .facts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin: 26px 0 30px; }
 .facts .f { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
 .facts .f b { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 600; }
@@ -2409,7 +2415,7 @@ function renderStart(sources) {
     img.addEventListener("error", () => { img.remove(); });
   });
   $("#start-purpose").textContent = m.purpose;
-  $("#start-disclaimer").innerHTML = `<strong>${esc(t("start.disclaimerLabel"))}</strong>${esc(m.disclaimer)}`;
+  $("#start-disclaimer").innerHTML = `<strong>${icon("info")}${esc(t("start.disclaimerLabel"))}</strong>${esc(m.disclaimer)}`;
   $("#start-legend").setAttribute("aria-label", t("start.legendLabel"));
   $("#progress-nav").setAttribute("aria-label", t("progress.label"));
   $("#verdict-h").textContent = t("verdict.title");
@@ -2868,7 +2874,7 @@ function renderResult() {
       </div>
     </div>
 
-    <div class="disclaimer"><strong>${esc(t("start.disclaimerLabel"))}</strong>${esc(m.disclaimer)}</div>
+    <div class="disclaimer"><strong>${icon("info")}${esc(t("start.disclaimerLabel"))}</strong>${esc(m.disclaimer)}</div>
     <p style="font-size:.85rem; color:var(--text-muted)">${esc(t("result.draftNote", { version: m.version, date: m.lastUpdated, regulation: m.regulation }))}</p>
   </div>`;
 
