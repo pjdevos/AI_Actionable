@@ -28,15 +28,15 @@ digraph decision_tree {
     "G1_systemic" [label="G1_systemic\nIs your model one of the most powerful,\n'systemic-risk' models?\nArt. 51; Art. 55", shape=box];
   }
   "RESULT" [label="RESULT\nResult\nall applicable cards are compiled here"];
-  "OUT_OF_SCOPE" [label="Not an AI system\nArt. 3(1)", shape=box3d, fillcolor="#eef0f3", color="#4b5563", penwidth=2];
-  "PROHIBITED" [label="Banned\nArt. 5 · applies: 2 February 2025", shape=box3d, fillcolor="#fdeceb", color="#c81e1e", penwidth=2];
-  "HIGH_RISK_ANNEX_I" [label="High-risk — safety product\nArt. 6(1) · Art. 8-15 · Art. 16-27 · applies:\noriginally 2 August 2027, postponed by the AI\nOmnibus to 2 August 2028", shape=box3d, fillcolor="#fdefe4", color="#b3450b", penwidth=2];
-  "HIGH_RISK_ANNEX_III" [label="High-risk — listed use\nArt. 6(2) · Art. 8-15 · Art. 16-27 · applies:\noriginally 2 August 2026, postponed by the AI\nOmnibus to 2 December 2027", shape=box3d, fillcolor="#fdefe4", color="#b3450b", penwidth=2];
-  "NOT_HIGH_RISK_FILTERED" [label="Not high-risk (exempt)\nArt. 6(3) · Art. 6(4) · Art. 49(2) · applies:\noriginally 2 August 2026, postponed by the AI\nOmnibus to 2 December 2027", shape=box3d, fillcolor="#fdf3d7", color="#8a6100", penwidth=2];
-  "TRANSPARENCY" [label="Transparency duties\nArt. 50 · applies: 2 August 2026", shape=box3d, fillcolor="#e8eeff", color="#1d4ed8", penwidth=2];
-  "GPAI_MODEL" [label="GPAI model\nArt. 53 · Art. 2(12) · Annexes XI, XII ·\napplies: 2 August 2025", shape=box3d, fillcolor="#f1e9fe", color="#6528c4", penwidth=2];
-  "MINIMAL_RISK" [label="Minimal risk\nArt. 95 · Art. 2(12)", shape=box3d, fillcolor="#e6f5ea", color="#11703a", penwidth=2];
-  "GPAI_MODEL_SYSTEMIC" [label="GPAI model — systemic risk\nArt. 51 · Art. 52 · Art. 53 · applies: 2\nAugust 2025", shape=box3d, fillcolor="#f1e9fe", color="#6528c4", penwidth=2];
+  "OUT_OF_SCOPE" [label="Not an AI system\nArt. 3(1)", shape=box3d, fillcolor="#EFF1F4", color="#44474D", penwidth=2];
+  "PROHIBITED" [label="Banned\nArt. 5 · applies: 2 February 2025", shape=box3d, fillcolor="#FBEAEA", color="#B32A2D", penwidth=2];
+  "HIGH_RISK_ANNEX_I" [label="High-risk — safety product\nArt. 6(1) · Art. 8-15 · Art. 16-27 · applies:\noriginally 2 August 2027, postponed by the AI\nOmnibus to 2 August 2028", shape=box3d, fillcolor="#FBEAD7", color="#B85A1B", penwidth=2];
+  "HIGH_RISK_ANNEX_III" [label="High-risk — listed use\nArt. 6(2) · Art. 8-15 · Art. 16-27 · applies:\noriginally 2 August 2026, postponed by the AI\nOmnibus to 2 December 2027", shape=box3d, fillcolor="#FBEAD7", color="#B85A1B", penwidth=2];
+  "NOT_HIGH_RISK_FILTERED" [label="Not high-risk (exempt)\nArt. 6(3) · Art. 6(4) · Art. 49(2) · applies:\noriginally 2 August 2026, postponed by the AI\nOmnibus to 2 December 2027", shape=box3d, fillcolor="#FBF3D6", color="#8A7017", penwidth=2];
+  "TRANSPARENCY" [label="Transparency duties\nArt. 50 · applies: 2 August 2026", shape=box3d, fillcolor="#EDF1FB", color="#2E4FBF", penwidth=2];
+  "GPAI_MODEL" [label="GPAI model\nArt. 53 · Art. 2(12) · Annexes XI, XII ·\napplies: 2 August 2025", shape=box3d, fillcolor="#F0EBFA", color="#6E50B6", penwidth=2];
+  "MINIMAL_RISK" [label="Minimal risk\nArt. 95 · Art. 2(12)", shape=box3d, fillcolor="#EAFBF6", color="#00897F", penwidth=2];
+  "GPAI_MODEL_SYSTEMIC" [label="GPAI model — systemic risk\nArt. 51 · Art. 52 · Art. 53 · applies: 2\nAugust 2025", shape=box3d, fillcolor="#F0EBFA", color="#6E50B6", penwidth=2];
   "S0_ai_system" -> "C0_context" [label="Yes, it is an artificial intelligence tool", style=solid];
   "S0_ai_system" -> "OUT_OF_SCOPE" [label="No, it only runs pre-written code / fixed rules", style=solid];
   "S0_ai_system" -> "C0_context" [label="I'm not sure whether it 'infers'", style=dashed];

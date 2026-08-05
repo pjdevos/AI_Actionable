@@ -8,6 +8,49 @@ an auditable answer trail and a printable summary.
 
 Built to `AI-Act-Tier-Assessment-SPEC.md` (spec v1.2, data v1.2.0).
 
+## Theming — the FARI design system
+
+The tool is styled with the **FARI design system** (SPEC §11). The tokens, the tier mapping and
+the two fonts are inlined into `index.html`, so it stays one self-contained file that makes no
+external requests — no Google Fonts, no CDN.
+
+| Source | Role |
+|---|---|
+| `Exporting design systems between accounts/_ds/fari-design-system-*/` | The design-system export: `tokens/*.css`, `assets/fonts/*.woff2`, `readme.md`. Treat as read-only upstream. |
+| `fari-theme.css` | This project's layer: the two added warm colours and the seven-tier mapping. Kept as a file for review; its contents are inlined in `index.html`. |
+| `theme-preview.html` | Static design review of the target look. |
+| `check-theme.py` | Re-verifies contrast, brand rules and token resolution. |
+| `embed-fonts.py` | Re-inlines the woff2 files as base64 after a font change. |
+
+```bash
+python check-theme.py     # contrast + brand rules + token resolution
+python embed-fonts.py     # after changing the font files
+```
+
+**Seven tiers on a cool palette.** FARI has three status colours and no orange or yellow, so
+amber (high-risk) and gold (filtered) were added as functional colours, per SPEC §11. Every tier
+exposes `--tier-<c>-accent` (keyline, icon, large label), `--tier-<c>-bg` (tint) and
+`--tier-<c>-fg` (text on that tint). Result cards carry `data-tier`. `check-theme.py` verifies
+all of it: text on tint 5.74–12.68:1 and accent on white 4.30–9.32:1, so every pair clears AA and
+the accents also clear 4.5:1 except teal — which is why body text on a tint always uses `-fg`.
+
+**Decisions worth knowing:**
+
+- **Light theme only.** FARI ships no dark palette and its `base.css` sets `color-scheme: light`,
+  so the previous dark theme was removed rather than invented. Re-add it only if FARI defines
+  dark tokens; the tier mapping would need a second contrast run.
+- **Fonts.** Montserrat everywhere, Open Sans for the genuinely long-form places (explainers,
+  card summaries, the verbatim legal panel, notes) — the split the brand book asks for. Anton
+  ships in the export but is for certificates and is not used.
+- **Icons.** Lucide 0.460.0, inlined as SVG paths. The Lucide CDN `<script>` is deliberately not
+  loaded (SPEC §11 is explicit about this, and it would break a file:// or sandboxed page). Five
+  paths come verbatim from `theme-preview.html`; all 21 were rendered and eyeballed.
+- **ERDF attribution is mandatory,** so the footer carries the funding line in EN, NL and FR plus
+  a link to the ERDF site, and it is one of the few footer parts that still prints. **The logos
+  are not in the export**: drop `fari-logo-color.png` and `vub-ulb-logo.png` next to `index.html`
+  and they appear automatically; until then the logo row stays hidden rather than showing broken
+  images. Get them from the FARI communication kit.
+
 ## Two data files, deliberately separate
 
 | File | Holds | Who owns it |

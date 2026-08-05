@@ -1,0 +1,59 @@
+/* ============================================================
+   FARI — Spacing, radii, shadows, layout tokens
+   Clean, geometric, generous whitespace. 4px base unit.
+   ============================================================ */
+
+:root {
+  /* ---- Spacing scale (4px base) ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* ---- Radii — geometric, gently rounded (echoes Montserrat) ---- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* ---- Borders ---- */
+  --border-width: 1px;
+  --border-width-strong: 2px;
+
+  /* ---- Shadows — soft, cool-tinted, never harsh ---- */
+  --shadow-xs: 0 1px 2px rgba(24, 62, 145, 0.06);
+  --shadow-sm: 0 1px 3px rgba(24, 62, 145, 0.08), 0 1px 2px rgba(24, 62, 145, 0.06);
+  --shadow-md: 0 4px 12px rgba(24, 62, 145, 0.10), 0 2px 4px rgba(24, 62, 145, 0.06);
+  --shadow-lg: 0 12px 28px rgba(24, 62, 145, 0.12), 0 4px 10px rgba(24, 62, 145, 0.07);
+  --shadow-xl: 0 24px 56px rgba(24, 62, 145, 0.16);
+  --shadow-focus: 0 0 0 3px var(--focus-ring);
+
+  /* ---- Motion — calm, confident, no bounce ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1); /* @kind other */
+  --duration-fast: 120ms; /* @kind other */
+  --duration-base: 200ms; /* @kind other */
+  --duration-slow: 320ms; /* @kind other */
+
+  /* ---- Layout ---- */
+  --container-sm: 640px;
+  --container-md: 880px;
+  --container-lg: 1120px;
+  --container-xl: 1320px;
+  --gutter: var(--space-6);
+}

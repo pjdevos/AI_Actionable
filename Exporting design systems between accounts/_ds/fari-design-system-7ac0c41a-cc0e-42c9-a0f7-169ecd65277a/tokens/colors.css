@@ -1,0 +1,120 @@
+/* ============================================================
+   FARI — Color tokens
+   The palette balances deep institutional blues with a fresh
+   teal "Lighthouse" accent. Purple is a strategic accent for
+   precise moments of emphasis. Status/support colors are for
+   DEMO UI only — never official documents.
+   ============================================================ */
+
+:root {
+  /* ---- Primary brand ---- */
+  --fari-blue: #183E91;            /* FARI Blue — deep, institutional */
+  --fari-web-blue: #2E4FBF;        /* FARI Web Blue — brighter digital blue */
+  --fari-lighthouse: #64D8BF;      /* FARI Lighthouse Blue — teal accent */
+
+  /* ---- Secondary ---- */
+  --fari-white: #FFFFFF;
+  --fari-black: #181716;           /* near-black, warm */
+
+  /* ---- Accent (use sparingly) ---- */
+  --fari-purple: #8161CC;
+
+  /* ---- Teal scale (derived from Lighthouse + logo gradient) ---- */
+  --teal-50:  #EAFBF6;
+  --teal-100: #C9F4E9;
+  --teal-200: #A6F3E8;
+  --teal-300: #7AEDDD;
+  --teal-400: #64D8BF;
+  --teal-500: #22E1C7;
+  --teal-600: #00DCBE;
+  --teal-700: #00BAB5;
+  --teal-800: #00897F;
+
+  /* ---- Blue scale (derived from logo gradient + web blue) ---- */
+  --blue-50:  #EDF1FB;
+  --blue-100: #D4DEF4;
+  --blue-200: #A6BCDA;
+  --blue-300: #6E8BCB;
+  --blue-400: #2E4FBF;   /* web blue */
+  --blue-500: #1D4590;
+  --blue-600: #183E91;   /* fari blue */
+  --blue-700: #143476;
+  --blue-800: #003F96;
+  --blue-900: #00295E;
+
+  /* ---- Neutral / ink scale ---- */
+  --ink-900: #181716;   /* fari black */
+  --ink-800: #2A2A2A;
+  --ink-700: #44474D;
+  --ink-600: #5E626B;
+  --ink-500: #7A7F88;
+  --ink-400: #A1A6AF;
+  --ink-300: #C8CCD3;
+  --ink-200: #E2E5EA;
+  --ink-100: #EFF1F4;
+  --ink-50:  #F7F8FA;
+
+  /* ---- Status / support (DEMO ONLY) ---- */
+  --status-ok: #1DA587;        /* Status: OK */
+  --status-gather: #43B7DE;    /* Gathering: OK */
+  --status-error: #B32A2D;     /* NOT OK */
+
+  /* ==========================================================
+     Semantic aliases — prefer these in components
+     ========================================================== */
+
+  /* Text */
+  --text-strong: var(--ink-900);
+  --text-body: var(--ink-800);
+  --text-muted: var(--ink-600);
+  --text-subtle: var(--ink-500);
+  --text-on-brand: var(--fari-white);
+  --text-brand: var(--fari-blue);
+  --text-link: var(--fari-web-blue);
+
+  /* Surfaces */
+  --surface-page: var(--fari-white);
+  --surface-subtle: var(--ink-50);
+  --surface-card: var(--fari-white);
+  --surface-sunken: var(--ink-100);
+  --surface-brand: var(--fari-blue);
+  --surface-brand-strong: var(--blue-900);
+  --surface-accent: var(--fari-lighthouse);
+  --surface-inverse: var(--ink-900);
+
+  /* Borders */
+  --border-subtle: var(--ink-200);
+  --border-default: var(--ink-300);
+  --border-strong: var(--ink-400);
+  --border-brand: var(--fari-web-blue);
+  --border-focus: var(--fari-web-blue);
+
+  /* Interactive — primary (blue) */
+  --action-primary: var(--fari-web-blue);
+  --action-primary-hover: var(--fari-blue);
+  --action-primary-active: var(--blue-700);
+
+  /* Interactive — accent (purple, emphasis) */
+  --action-accent: var(--fari-purple);
+  --action-accent-hover: #6E50B6;
+
+  /* Interactive — teal */
+  --action-teal: var(--teal-700);
+  --action-teal-hover: var(--teal-800);
+
+  /* Focus ring */
+  --focus-ring: color-mix(in srgb, var(--fari-web-blue) 45%, transparent);
+
+  /* ==========================================================
+     Brand gradients — abstracted from the FARI logos.
+     Use as overlays, backgrounds or fills.
+     ========================================================== */
+  --gradient-1: linear-gradient(135deg, #00DCBE 0%, #00BAB5 25%, #00639F 75%, #1D4590 100%); /* @kind color */
+  --gradient-2: linear-gradient(135deg, #A6F3E8 0%, #00DCBE 100%); /* @kind color */
+  --gradient-3: linear-gradient(135deg, #00DCBE 0%, #22E1C7 15%, #7AEDDD 50%, #FFFFFF 100%); /* @kind color */
+  --gradient-4: linear-gradient(135deg, #A6BCDA 0%, #003F96 100%); /* @kind color */
+
+  /* Accent (purple) gradients — small, intentional emphasis only */
+  --gradient-accent-1: linear-gradient(135deg, #2E4FBF 0%, #8161CC 100%); /* @kind color */
+  --gradient-accent-2: linear-gradient(135deg, #FFFFFF 0%, #8161CC 100%); /* @kind color */
+}

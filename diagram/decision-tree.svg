@@ -1,184 +1,184 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="822" height="1585" viewBox="0 0 822 1585" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="822" height="1585" viewBox="0 0 822 1585" font-family="Montserrat, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
 <rect width="822" height="1585" fill="#ffffff"/>
-<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#5b6472"/></marker><marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#1d4ed8"/></marker></defs>
-<rect x="60" y="74" width="358" height="294" rx="12" fill="#f7f8fa" stroke="#dce0e6" stroke-dasharray="3 3"/>
-<text x="68" y="89" font-size="11" font-weight="700" fill="#5b6472" letter-spacing=".06em">SCOPE &amp; BASICS</text>
-<rect x="60" y="374" width="358" height="558" rx="12" fill="#f1f3f6" stroke="#dce0e6" stroke-dasharray="3 3"/>
-<text x="68" y="389" font-size="11" font-weight="700" fill="#5b6472" letter-spacing=".06em">RISK TIER</text>
-<rect x="60" y="938" width="358" height="112" rx="12" fill="#f7f8fa" stroke="#dce0e6" stroke-dasharray="3 3"/>
-<text x="68" y="953" font-size="11" font-weight="700" fill="#5b6472" letter-spacing=".06em">TRANSPARENCY</text>
-<rect x="60" y="1056" width="358" height="204" rx="12" fill="#f1f3f6" stroke="#dce0e6" stroke-dasharray="3 3"/>
-<text x="68" y="1071" font-size="11" font-weight="700" fill="#5b6472" letter-spacing=".06em">GPAI</text>
-<path d="M 239.0 165 L 239.0 201" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="186.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / not sure</text>
-<path d="M 404 130.5 C 449.0 130.5, 449.0 121.0, 494 121.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="486" y="115.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
-<path d="M 239.0 255 L 239.0 291" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="276.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">continue</text>
-<path d="M 404 325.5 C 449.0 325.5, 449.0 316.0, 494 316.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="486" y="310.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
-<path d="M 239.0 360 L 239.0 396" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="381.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
-<path d="M 239.0 465 L 239.0 501" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="486.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / not sure</text>
-<path d="M 74 430.5 C 48 430.5, 48 653.5, 74 653.5" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="52" y="542.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
-<path d="M 404 535.5 C 449.0 535.5, 449.0 539.0, 494 539.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="486" y="533.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
-<path d="M 239.0 570 L 239.0 606" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="591.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
-<path d="M 239.0 701 L 239.0 737" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="722.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / not sure</text>
-<path d="M 74 653.5 C 48 653.5, 48 1001.0, 74 1001.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="52" y="827.25" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
-<path d="M 404 771.5 C 449.0 771.5, 449.0 775.0, 494 775.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="486" y="769.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
-<path d="M 239.0 806 L 239.0 842" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="827.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
-<path d="M 404 883.0 C 449.0 883.0, 449.0 880.0, 494 880.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="486" y="874.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
-<path d="M 404 883.0 C 449.0 883.0, 449.0 775.0, 494 775.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="486" y="769.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
-<path d="M 239.0 1042 L 239.0 1078" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="1063.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">continue</text>
-<path d="M 239.0 1147 L 239.0 1183" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="1168.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
-<path d="M 74 1112.5 C 48 1112.5, 48 1315.0, 74 1315.0" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="52" y="1213.75" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
-<path d="M 239.0 1252 L 239.0 1288" fill="none" stroke="#5b6472" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
-<text x="248.0" y="1273.0" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / no / not sure</text>
-<path d="M 494 316.0 C 449.0 316.0, 449.0 1112.5, 404 1112.5" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="708.25" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 539.0 C 449.0 539.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="764.0" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 775.0 C 449.0 775.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="882.0" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 880.0 C 449.0 880.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="934.5" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 1313.0 C 449.0 1313.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="1151.0" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 985.0 C 449.0 985.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="987.0" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 1214.5 C 449.0 1214.5, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="1101.75" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 494 1457.5 C 449.0 1457.5, 449.0 1001.0, 404 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="449.0" y="1223.25" font-size="10.5" fill="#5b6472" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
-<path d="M 404 1217.5 C 449.0 1217.5, 449.0 1457.5, 494 1457.5" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="486" y="1451.5" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">adds this card</text>
-<path d="M 404 1217.5 C 449.0 1217.5, 449.0 1214.5, 494 1214.5" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="486" y="1208.5" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">adds this card</text>
-<path d="M 404 1001.0 C 449.0 1001.0, 449.0 985.0, 494 985.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="486" y="979.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">if any item applies</text>
-<path d="M 404 1315.0 C 449.0 1315.0, 449.0 1313.0, 494 1313.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
-<text x="486" y="1307.0" font-size="10.5" fill="#5b6472" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no tier was set</text>
-<path d="M 74 653.5 C 30 653.5, 30 1001.0, 74 1001.0" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-dasharray="1 5" marker-end="url(#ae)" opacity="0.95"/>
-<text x="32" y="839.25" font-size="10.5" fill="#5b6472" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">auto-derives 50-3</text>
-<rect x="74" y="96" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="113" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S0_ai_system</text>
-<text x="86" y="130" font-size="12.5" fill="#14181f">Is your system an artificial intelligence</text>
-<text x="86" y="145" font-size="12.5" fill="#14181f">tool?</text>
-<text x="86" y="160" font-size="10.5" fill="#5b6472">Art. 3(1)</text>
-<rect x="74" y="201" width="330" height="54" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.8" stroke-dasharray="6 4"/>
-<text x="86" y="218" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">C0_context</text>
-<text x="86" y="235" font-size="12.5" fill="#14181f">First, a little about you (optional)</text>
-<text x="86" y="250" font-size="10.5" fill="#5b6472">optional, never changes the tier</text>
-<rect x="74" y="291" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="308" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S1_prohibited</text>
-<text x="86" y="325" font-size="12.5" fill="#14181f">Does your system do any of the things the AI</text>
-<text x="86" y="340" font-size="12.5" fill="#14181f">Act bans outright?</text>
-<text x="86" y="355" font-size="10.5" fill="#5b6472">Art. 5 · 8 items to tick (prohibitedPractices)</text>
-<rect x="74" y="396" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="413" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S2_annex_i_product</text>
-<text x="86" y="430" font-size="12.5" fill="#14181f">Is your system part of a physical product</text>
-<text x="86" y="445" font-size="12.5" fill="#14181f">that already has EU safety rules?</text>
-<text x="86" y="460" font-size="10.5" fill="#5b6472">Art. 6(1); Art. 3(14); Annex I</text>
-<rect x="74" y="501" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="518" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S3_annex_i_tpca</text>
-<text x="86" y="535" font-size="12.5" fill="#14181f">Does that product need to be checked by an</text>
-<text x="86" y="550" font-size="12.5" fill="#14181f">independent body before it&#x27;s sold?</text>
-<text x="86" y="565" font-size="10.5" fill="#5b6472">Art. 6(1)(b)</text>
-<rect x="74" y="606" width="330" height="95" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="623" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S4_annex_iii_area</text>
-<text x="86" y="640" font-size="12.5" fill="#14181f">Is your system used for one of the sensitive</text>
-<text x="86" y="655" font-size="12.5" fill="#14181f">purposes on the AI Act&#x27;s high-risk list?</text>
-<text x="86" y="670" font-size="10.5" fill="#5b6472">Art. 6(2); Annex III · 25 items for reference</text>
-<text x="86" y="683" font-size="10.5" fill="#5b6472">(annexIII)</text>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#5E626B"/></marker><marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#2E4FBF"/></marker></defs>
+<rect x="60" y="74" width="358" height="294" rx="12" fill="#F7F8FA" stroke="#E2E5EA" stroke-dasharray="3 3"/>
+<text x="68" y="89" font-size="11" font-weight="700" fill="#5E626B" letter-spacing=".06em">SCOPE &amp; BASICS</text>
+<rect x="60" y="374" width="358" height="558" rx="12" fill="#EFF1F4" stroke="#E2E5EA" stroke-dasharray="3 3"/>
+<text x="68" y="389" font-size="11" font-weight="700" fill="#5E626B" letter-spacing=".06em">RISK TIER</text>
+<rect x="60" y="938" width="358" height="112" rx="12" fill="#F7F8FA" stroke="#E2E5EA" stroke-dasharray="3 3"/>
+<text x="68" y="953" font-size="11" font-weight="700" fill="#5E626B" letter-spacing=".06em">TRANSPARENCY</text>
+<rect x="60" y="1056" width="358" height="204" rx="12" fill="#EFF1F4" stroke="#E2E5EA" stroke-dasharray="3 3"/>
+<text x="68" y="1071" font-size="11" font-weight="700" fill="#5E626B" letter-spacing=".06em">GPAI</text>
+<path d="M 239.0 165 L 239.0 201" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="186.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / not sure</text>
+<path d="M 404 130.5 C 449.0 130.5, 449.0 121.0, 494 121.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="486" y="115.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
+<path d="M 239.0 255 L 239.0 291" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="276.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">continue</text>
+<path d="M 404 325.5 C 449.0 325.5, 449.0 316.0, 494 316.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="486" y="310.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M 239.0 360 L 239.0 396" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="381.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
+<path d="M 239.0 465 L 239.0 501" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="486.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / not sure</text>
+<path d="M 74 430.5 C 48 430.5, 48 653.5, 74 653.5" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="52" y="542.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
+<path d="M 404 535.5 C 449.0 535.5, 449.0 539.0, 494 539.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="486" y="533.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M 239.0 570 L 239.0 606" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="591.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
+<path d="M 239.0 701 L 239.0 737" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="722.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / not sure</text>
+<path d="M 74 653.5 C 48 653.5, 48 1001.0, 74 1001.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="52" y="827.25" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no</text>
+<path d="M 404 771.5 C 449.0 771.5, 449.0 775.0, 494 775.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="486" y="769.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M 239.0 806 L 239.0 842" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="827.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
+<path d="M 404 883.0 C 449.0 883.0, 449.0 880.0, 494 880.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="486" y="874.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M 404 883.0 C 449.0 883.0, 449.0 775.0, 494 775.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="486" y="769.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
+<path d="M 239.0 1042 L 239.0 1078" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="1063.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">continue</text>
+<path d="M 239.0 1147 L 239.0 1183" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="1168.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M 74 1112.5 C 48 1112.5, 48 1315.0, 74 1315.0" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="52" y="1213.75" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no / not sure</text>
+<path d="M 239.0 1252 L 239.0 1288" fill="none" stroke="#5E626B" stroke-width="1.6" stroke-dasharray="none" marker-end="url(#a)" opacity="0.95"/>
+<text x="248.0" y="1273.0" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">yes / no / not sure</text>
+<path d="M 494 316.0 C 449.0 316.0, 449.0 1112.5, 404 1112.5" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="708.25" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 539.0 C 449.0 539.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="764.0" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 775.0 C 449.0 775.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="882.0" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 880.0 C 449.0 880.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="934.5" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 1313.0 C 449.0 1313.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="1151.0" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 985.0 C 449.0 985.0, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="987.0" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 1214.5 C 449.0 1214.5, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="1101.75" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 494 1457.5 C 449.0 1457.5, 449.0 1001.0, 404 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="449.0" y="1223.25" font-size="10.5" fill="#5E626B" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">then</text>
+<path d="M 404 1217.5 C 449.0 1217.5, 449.0 1457.5, 494 1457.5" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="486" y="1451.5" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">adds this card</text>
+<path d="M 404 1217.5 C 449.0 1217.5, 449.0 1214.5, 494 1214.5" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="486" y="1208.5" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">adds this card</text>
+<path d="M 404 1001.0 C 449.0 1001.0, 449.0 985.0, 494 985.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="486" y="979.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">if any item applies</text>
+<path d="M 404 1315.0 C 449.0 1315.0, 449.0 1313.0, 494 1313.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="2 4" marker-end="url(#ae)" opacity="0.95"/>
+<text x="486" y="1307.0" font-size="10.5" fill="#5E626B" text-anchor="end" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">no tier was set</text>
+<path d="M 74 653.5 C 30 653.5, 30 1001.0, 74 1001.0" fill="none" stroke="#2E4FBF" stroke-width="1.6" stroke-dasharray="1 5" marker-end="url(#ae)" opacity="0.95"/>
+<text x="32" y="839.25" font-size="10.5" fill="#5E626B" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">auto-derives 50-3</text>
+<rect x="74" y="96" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="113" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S0_ai_system</text>
+<text x="86" y="130" font-size="12.5" fill="#181716">Is your system an artificial intelligence</text>
+<text x="86" y="145" font-size="12.5" fill="#181716">tool?</text>
+<text x="86" y="160" font-size="10.5" fill="#5E626B">Art. 3(1)</text>
+<rect x="74" y="201" width="330" height="54" rx="10" fill="#ffffff" stroke="#2E4FBF" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="86" y="218" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">C0_context</text>
+<text x="86" y="235" font-size="12.5" fill="#181716">First, a little about you (optional)</text>
+<text x="86" y="250" font-size="10.5" fill="#5E626B">optional, never changes the tier</text>
+<rect x="74" y="291" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="308" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S1_prohibited</text>
+<text x="86" y="325" font-size="12.5" fill="#181716">Does your system do any of the things the AI</text>
+<text x="86" y="340" font-size="12.5" fill="#181716">Act bans outright?</text>
+<text x="86" y="355" font-size="10.5" fill="#5E626B">Art. 5 · 8 items to tick (prohibitedPractices)</text>
+<rect x="74" y="396" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="413" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S2_annex_i_product</text>
+<text x="86" y="430" font-size="12.5" fill="#181716">Is your system part of a physical product</text>
+<text x="86" y="445" font-size="12.5" fill="#181716">that already has EU safety rules?</text>
+<text x="86" y="460" font-size="10.5" fill="#5E626B">Art. 6(1); Art. 3(14); Annex I</text>
+<rect x="74" y="501" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="518" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S3_annex_i_tpca</text>
+<text x="86" y="535" font-size="12.5" fill="#181716">Does that product need to be checked by an</text>
+<text x="86" y="550" font-size="12.5" fill="#181716">independent body before it&#x27;s sold?</text>
+<text x="86" y="565" font-size="10.5" fill="#5E626B">Art. 6(1)(b)</text>
+<rect x="74" y="606" width="330" height="95" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="623" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S4_annex_iii_area</text>
+<text x="86" y="640" font-size="12.5" fill="#181716">Is your system used for one of the sensitive</text>
+<text x="86" y="655" font-size="12.5" fill="#181716">purposes on the AI Act&#x27;s high-risk list?</text>
+<text x="86" y="670" font-size="10.5" fill="#5E626B">Art. 6(2); Annex III · 25 items for reference</text>
+<text x="86" y="683" font-size="10.5" fill="#5E626B">(annexIII)</text>
 <text x="86" y="696" font-size="10.5" fill="#8a6100">! Check the ban first</text>
-<rect x="74" y="737" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="754" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S5_profiling</text>
-<text x="86" y="771" font-size="12.5" fill="#14181f">Does your system build a profile of</text>
-<text x="86" y="786" font-size="12.5" fill="#14181f">individual people?</text>
-<text x="86" y="801" font-size="10.5" fill="#5b6472">Art. 6(3), third sub-paragraph; Art. 4(4) GDPR</text>
-<rect x="74" y="842" width="330" height="82" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="859" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">S6_filter</text>
-<text x="86" y="876" font-size="12.5" fill="#14181f">Could your system be exempt because it only</text>
-<text x="86" y="891" font-size="12.5" fill="#14181f">plays a limited, supporting role?</text>
-<text x="86" y="906" font-size="10.5" fill="#5b6472">Art. 6(3)(a)-(d); Recital 53 · 4 items to tick</text>
-<text x="86" y="919" font-size="10.5" fill="#5b6472">(filterConditions)</text>
-<rect x="74" y="960" width="330" height="82" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="977" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">T0_transparency</text>
-<text x="86" y="994" font-size="12.5" fill="#14181f">Does your system need to be open with people</text>
-<text x="86" y="1009" font-size="12.5" fill="#14181f">in any of these ways?</text>
-<text x="86" y="1024" font-size="10.5" fill="#5b6472">Art. 50 · 4 items to tick (transparencyTriggers)</text>
+<rect x="74" y="737" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="754" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S5_profiling</text>
+<text x="86" y="771" font-size="12.5" fill="#181716">Does your system build a profile of</text>
+<text x="86" y="786" font-size="12.5" fill="#181716">individual people?</text>
+<text x="86" y="801" font-size="10.5" fill="#5E626B">Art. 6(3), third sub-paragraph; Art. 4(4) GDPR</text>
+<rect x="74" y="842" width="330" height="82" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="859" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">S6_filter</text>
+<text x="86" y="876" font-size="12.5" fill="#181716">Could your system be exempt because it only</text>
+<text x="86" y="891" font-size="12.5" fill="#181716">plays a limited, supporting role?</text>
+<text x="86" y="906" font-size="10.5" fill="#5E626B">Art. 6(3)(a)-(d); Recital 53 · 4 items to tick</text>
+<text x="86" y="919" font-size="10.5" fill="#5E626B">(filterConditions)</text>
+<rect x="74" y="960" width="330" height="82" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="977" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">T0_transparency</text>
+<text x="86" y="994" font-size="12.5" fill="#181716">Does your system need to be open with people</text>
+<text x="86" y="1009" font-size="12.5" fill="#181716">in any of these ways?</text>
+<text x="86" y="1024" font-size="10.5" fill="#5E626B">Art. 50 · 4 items to tick (transparencyTriggers)</text>
 <text x="86" y="1037" font-size="10.5" fill="#8a6100">! One more duty probably applies</text>
-<rect x="74" y="1078" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="1095" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">G0_gpai</text>
-<text x="86" y="1112" font-size="12.5" fill="#14181f">Did you build a general-purpose</text>
-<text x="86" y="1127" font-size="12.5" fill="#14181f">(&#x27;foundation&#x27;) AI model?</text>
-<text x="86" y="1142" font-size="10.5" fill="#5b6472">Art. 3(63); Art. 53</text>
-<rect x="74" y="1183" width="330" height="69" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="1200" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">G1_systemic</text>
-<text x="86" y="1217" font-size="12.5" fill="#14181f">Is your model one of the most powerful,</text>
-<text x="86" y="1232" font-size="12.5" fill="#14181f">&#x27;systemic-risk&#x27; models?</text>
-<text x="86" y="1247" font-size="10.5" fill="#5b6472">Art. 51; Art. 55</text>
-<rect x="74" y="1288" width="330" height="54" rx="10" fill="#ffffff" stroke="#14181f" stroke-width="1.8"/>
-<text x="86" y="1305" font-size="10" font-weight="700" fill="#1d4ed8" letter-spacing=".05em">RESULT</text>
-<text x="86" y="1322" font-size="12.5" fill="#14181f">Result</text>
-<text x="86" y="1337" font-size="10.5" fill="#5b6472">all applicable cards are compiled here</text>
-<rect x="494" y="96" width="300" height="50" rx="10" fill="#eef0f3" stroke="#4b5563" stroke-width="2"/>
-<text x="506" y="116" font-size="12.5" font-weight="700" fill="#4b5563">Not an AI system</text>
-<text x="506" y="131" font-size="10.5" fill="#5b6472">Art. 3(1)</text>
-<rect x="494" y="291" width="300" height="50" rx="10" fill="#fdeceb" stroke="#c81e1e" stroke-width="2"/>
-<text x="506" y="311" font-size="12.5" font-weight="700" fill="#c81e1e">Banned</text>
-<text x="506" y="326" font-size="10.5" fill="#5b6472">Art. 5 · applies: 2 February 2025</text>
-<rect x="494" y="501" width="300" height="76" rx="10" fill="#fdefe4" stroke="#b3450b" stroke-width="2"/>
-<text x="506" y="521" font-size="12.5" font-weight="700" fill="#b3450b">High-risk — safety product</text>
-<text x="506" y="536" font-size="10.5" fill="#5b6472">Art. 6(1) · Art. 8-15 · Art. 16-27 · applies:</text>
-<text x="506" y="549" font-size="10.5" fill="#5b6472">originally 2 August 2027, postponed by the AI</text>
-<text x="506" y="562" font-size="10.5" fill="#5b6472">Omnibus to 2 August 2028</text>
-<rect x="494" y="737" width="300" height="76" rx="10" fill="#fdefe4" stroke="#b3450b" stroke-width="2"/>
-<text x="506" y="757" font-size="12.5" font-weight="700" fill="#b3450b">High-risk — listed use</text>
-<text x="506" y="772" font-size="10.5" fill="#5b6472">Art. 6(2) · Art. 8-15 · Art. 16-27 · applies:</text>
-<text x="506" y="785" font-size="10.5" fill="#5b6472">originally 2 August 2026, postponed by the AI</text>
-<text x="506" y="798" font-size="10.5" fill="#5b6472">Omnibus to 2 December 2027</text>
-<rect x="494" y="842" width="300" height="76" rx="10" fill="#fdf3d7" stroke="#8a6100" stroke-width="2"/>
-<text x="506" y="862" font-size="12.5" font-weight="700" fill="#8a6100">Not high-risk (exempt)</text>
-<text x="506" y="877" font-size="10.5" fill="#5b6472">Art. 6(3) · Art. 6(4) · Art. 49(2) · applies:</text>
-<text x="506" y="890" font-size="10.5" fill="#5b6472">originally 2 August 2026, postponed by the AI</text>
-<text x="506" y="903" font-size="10.5" fill="#5b6472">Omnibus to 2 December 2027</text>
-<rect x="494" y="960" width="300" height="50" rx="10" fill="#e8eeff" stroke="#1d4ed8" stroke-width="2"/>
-<text x="506" y="980" font-size="12.5" font-weight="700" fill="#1d4ed8">Transparency duties</text>
-<text x="506" y="995" font-size="10.5" fill="#5b6472">Art. 50 · applies: 2 August 2026</text>
-<rect x="494" y="1183" width="300" height="63" rx="10" fill="#f1e9fe" stroke="#6528c4" stroke-width="2"/>
-<text x="506" y="1203" font-size="12.5" font-weight="700" fill="#6528c4">GPAI model</text>
-<text x="506" y="1218" font-size="10.5" fill="#5b6472">Art. 53 · Art. 2(12) · Annexes XI, XII ·</text>
-<text x="506" y="1231" font-size="10.5" fill="#5b6472">applies: 2 August 2025</text>
-<rect x="494" y="1288" width="300" height="50" rx="10" fill="#e6f5ea" stroke="#11703a" stroke-width="2"/>
-<text x="506" y="1308" font-size="12.5" font-weight="700" fill="#11703a">Minimal risk</text>
-<text x="506" y="1323" font-size="10.5" fill="#5b6472">Art. 95 · Art. 2(12)</text>
-<rect x="494" y="1426" width="300" height="63" rx="10" fill="#f1e9fe" stroke="#6528c4" stroke-width="2"/>
-<text x="506" y="1446" font-size="12.5" font-weight="700" fill="#6528c4">GPAI model — systemic risk</text>
-<text x="506" y="1461" font-size="10.5" fill="#5b6472">Art. 51 · Art. 52 · Art. 53 · applies: 2</text>
-<text x="506" y="1474" font-size="10.5" fill="#5b6472">August 2025</text>
-<text x="28" y="30" font-size="15" font-weight="700" fill="#14181f">EU AI Act – Risk Tier Self-Assessment</text>
-<text x="28" y="49" font-size="11" fill="#5b6472">EU AI Act – Risk Tier Self-Assessment — v1.2.0 · plain wording · generated from decision-tree.json</text>
-<path d="M 28 1529 l 26 0" stroke="#5b6472" stroke-width="1.8" stroke-dasharray="none"/>
-<text x="60" y="1533" font-size="10.5" fill="#5b6472">an answer</text>
-<path d="M 118.4 1529 l 26 0" stroke="#5b6472" stroke-width="1.8" stroke-dasharray="5 4"/>
-<text x="150.4" y="1533" font-size="10.5" fill="#5b6472">“I&#x27;m not sure” (routes conservatively, flags a review)</text>
-<path d="M 460.79999999999995 1529 l 26 0" stroke="#1d4ed8" stroke-width="1.8" stroke-dasharray="2 4"/>
-<text x="492.79999999999995" y="1533" font-size="10.5" fill="#5b6472">what the engine does after a tier is reached</text>
-<path d="M 28 1547 l 26 0" stroke="#1d4ed8" stroke-width="1.8" stroke-dasharray="1 5"/>
-<text x="60" y="1551" font-size="10.5" fill="#5b6472">cross-link: an answer that decides a later question</text>
-<text x="28" y="1567" font-size="10" fill="#5b6472">Dashed box = optional step. Coloured box = result card, in its tier colour.</text>
+<rect x="74" y="1078" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="1095" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">G0_gpai</text>
+<text x="86" y="1112" font-size="12.5" fill="#181716">Did you build a general-purpose</text>
+<text x="86" y="1127" font-size="12.5" fill="#181716">(&#x27;foundation&#x27;) AI model?</text>
+<text x="86" y="1142" font-size="10.5" fill="#5E626B">Art. 3(63); Art. 53</text>
+<rect x="74" y="1183" width="330" height="69" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="1200" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">G1_systemic</text>
+<text x="86" y="1217" font-size="12.5" fill="#181716">Is your model one of the most powerful,</text>
+<text x="86" y="1232" font-size="12.5" fill="#181716">&#x27;systemic-risk&#x27; models?</text>
+<text x="86" y="1247" font-size="10.5" fill="#5E626B">Art. 51; Art. 55</text>
+<rect x="74" y="1288" width="330" height="54" rx="10" fill="#ffffff" stroke="#181716" stroke-width="1.8"/>
+<text x="86" y="1305" font-size="10" font-weight="700" fill="#2E4FBF" letter-spacing=".05em">RESULT</text>
+<text x="86" y="1322" font-size="12.5" fill="#181716">Result</text>
+<text x="86" y="1337" font-size="10.5" fill="#5E626B">all applicable cards are compiled here</text>
+<rect x="494" y="96" width="300" height="50" rx="10" fill="#EFF1F4" stroke="#44474D" stroke-width="2"/>
+<text x="506" y="116" font-size="12.5" font-weight="700" fill="#44474D">Not an AI system</text>
+<text x="506" y="131" font-size="10.5" fill="#5E626B">Art. 3(1)</text>
+<rect x="494" y="291" width="300" height="50" rx="10" fill="#FBEAEA" stroke="#B32A2D" stroke-width="2"/>
+<text x="506" y="311" font-size="12.5" font-weight="700" fill="#B32A2D">Banned</text>
+<text x="506" y="326" font-size="10.5" fill="#5E626B">Art. 5 · applies: 2 February 2025</text>
+<rect x="494" y="501" width="300" height="76" rx="10" fill="#FBEAD7" stroke="#B85A1B" stroke-width="2"/>
+<text x="506" y="521" font-size="12.5" font-weight="700" fill="#B85A1B">High-risk — safety product</text>
+<text x="506" y="536" font-size="10.5" fill="#5E626B">Art. 6(1) · Art. 8-15 · Art. 16-27 · applies:</text>
+<text x="506" y="549" font-size="10.5" fill="#5E626B">originally 2 August 2027, postponed by the AI</text>
+<text x="506" y="562" font-size="10.5" fill="#5E626B">Omnibus to 2 August 2028</text>
+<rect x="494" y="737" width="300" height="76" rx="10" fill="#FBEAD7" stroke="#B85A1B" stroke-width="2"/>
+<text x="506" y="757" font-size="12.5" font-weight="700" fill="#B85A1B">High-risk — listed use</text>
+<text x="506" y="772" font-size="10.5" fill="#5E626B">Art. 6(2) · Art. 8-15 · Art. 16-27 · applies:</text>
+<text x="506" y="785" font-size="10.5" fill="#5E626B">originally 2 August 2026, postponed by the AI</text>
+<text x="506" y="798" font-size="10.5" fill="#5E626B">Omnibus to 2 December 2027</text>
+<rect x="494" y="842" width="300" height="76" rx="10" fill="#FBF3D6" stroke="#8A7017" stroke-width="2"/>
+<text x="506" y="862" font-size="12.5" font-weight="700" fill="#8A7017">Not high-risk (exempt)</text>
+<text x="506" y="877" font-size="10.5" fill="#5E626B">Art. 6(3) · Art. 6(4) · Art. 49(2) · applies:</text>
+<text x="506" y="890" font-size="10.5" fill="#5E626B">originally 2 August 2026, postponed by the AI</text>
+<text x="506" y="903" font-size="10.5" fill="#5E626B">Omnibus to 2 December 2027</text>
+<rect x="494" y="960" width="300" height="50" rx="10" fill="#EDF1FB" stroke="#2E4FBF" stroke-width="2"/>
+<text x="506" y="980" font-size="12.5" font-weight="700" fill="#2E4FBF">Transparency duties</text>
+<text x="506" y="995" font-size="10.5" fill="#5E626B">Art. 50 · applies: 2 August 2026</text>
+<rect x="494" y="1183" width="300" height="63" rx="10" fill="#F0EBFA" stroke="#6E50B6" stroke-width="2"/>
+<text x="506" y="1203" font-size="12.5" font-weight="700" fill="#6E50B6">GPAI model</text>
+<text x="506" y="1218" font-size="10.5" fill="#5E626B">Art. 53 · Art. 2(12) · Annexes XI, XII ·</text>
+<text x="506" y="1231" font-size="10.5" fill="#5E626B">applies: 2 August 2025</text>
+<rect x="494" y="1288" width="300" height="50" rx="10" fill="#EAFBF6" stroke="#00897F" stroke-width="2"/>
+<text x="506" y="1308" font-size="12.5" font-weight="700" fill="#00897F">Minimal risk</text>
+<text x="506" y="1323" font-size="10.5" fill="#5E626B">Art. 95 · Art. 2(12)</text>
+<rect x="494" y="1426" width="300" height="63" rx="10" fill="#F0EBFA" stroke="#6E50B6" stroke-width="2"/>
+<text x="506" y="1446" font-size="12.5" font-weight="700" fill="#6E50B6">GPAI model — systemic risk</text>
+<text x="506" y="1461" font-size="10.5" fill="#5E626B">Art. 51 · Art. 52 · Art. 53 · applies: 2</text>
+<text x="506" y="1474" font-size="10.5" fill="#5E626B">August 2025</text>
+<text x="28" y="30" font-size="15" font-weight="700" fill="#181716">EU AI Act – Risk Tier Self-Assessment</text>
+<text x="28" y="49" font-size="11" fill="#5E626B">EU AI Act – Risk Tier Self-Assessment — v1.2.0 · plain wording · generated from decision-tree.json</text>
+<path d="M 28 1529 l 26 0" stroke="#5E626B" stroke-width="1.8" stroke-dasharray="none"/>
+<text x="60" y="1533" font-size="10.5" fill="#5E626B">an answer</text>
+<path d="M 118.4 1529 l 26 0" stroke="#5E626B" stroke-width="1.8" stroke-dasharray="5 4"/>
+<text x="150.4" y="1533" font-size="10.5" fill="#5E626B">“I&#x27;m not sure” (routes conservatively, flags a review)</text>
+<path d="M 460.79999999999995 1529 l 26 0" stroke="#2E4FBF" stroke-width="1.8" stroke-dasharray="2 4"/>
+<text x="492.79999999999995" y="1533" font-size="10.5" fill="#5E626B">what the engine does after a tier is reached</text>
+<path d="M 28 1547 l 26 0" stroke="#2E4FBF" stroke-width="1.8" stroke-dasharray="1 5"/>
+<text x="60" y="1551" font-size="10.5" fill="#5E626B">cross-link: an answer that decides a later question</text>
+<text x="28" y="1567" font-size="10" fill="#5E626B">Dashed box = optional step. Coloured box = result card, in its tier colour.</text>
 </svg>

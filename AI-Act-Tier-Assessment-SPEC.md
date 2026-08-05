@@ -176,7 +176,7 @@ Use the tier colours from `outcomes[].color` for each line's marker so the panel
 
 ### 5.2 Visual design language
 
-- **Colour system:** use `outcomes[].color` as the semantic spine. Suggested accessible mapping (WCAG AA contrast, tune as needed): grey `#6B7280` (out of scope), red `#DC2626` (prohibited), orange `#EA580C` (high-risk), amber/yellow `#CA8A04` (filtered), green `#16A34A` (minimal), blue `#2563EB` (transparency), purple `#7C3AED` (GPAI). Always pair each colour with a text label and an icon (e.g. shield, ban, warning triangle, filter, check, eye, cube) so colour is never the only signal.
+- **Colour system:** use `outcomes[].color` as the semantic spine. **The project ships a FARI-branded theme — use it (see Section 11 and `fari-theme.css`); the palette below is only a fallback if no theme is supplied.** Fallback mapping (WCAG AA, tune as needed): grey `#6B7280` (out of scope), red `#DC2626` (prohibited), orange `#EA580C` (high-risk), amber/yellow `#CA8A04` (filtered), green `#16A34A` (minimal), blue `#2563EB` (transparency), purple `#7C3AED` (GPAI). Always pair each colour with a text label and an icon (e.g. shield, ban, warning triangle, filter, check, eye, cube) so colour is never the only signal.
 - **Motion:** short, calm transitions between screens (a 150 to 250 ms slide/fade), an ease on the stepper segment fill, and a gentle highlight when a new line appears in the verdict-so-far panel. Respect `prefers-reduced-motion` and disable non-essential animation when it is set.
 - **Layout:** generous whitespace, one clear primary action per screen, a persistent Back control, and a two-column layout on desktop (question left, verdict-so-far panel right) collapsing to a single column with a drawer on mobile.
 - **Typography & tone:** large readable question text, secondary muted explainer text, monospace or chip styling for article references (e.g. a small `Art. 6(2)` chip). Plain, calm, professional.
@@ -307,6 +307,34 @@ Build these as sanity checks; each lists inputs → expected result cards.
 
 ---
 
+## 11. Theming — the FARI design system
+
+The tool is styled with the **FARI design system** (FARI, AI for the Common Good Institute, Brussels). Two files carry it: the FARI tokens (the design-system export: `tokens/colors.css`, `typography.css`, `spacing.css`, `base.css`, `fonts.css`, aggregated by its `styles.css`) and **`fari-theme.css`** (this project's layer, which maps the tool's needs onto those tokens). A static preview, `theme-preview.html`, shows the result for design review.
+
+**Load order.** (1) FARI tokens, (2) `fari-theme.css`. For the single-file HTML build, inline the FARI token `:root` blocks first, then `fari-theme.css`, then the app markup. Fonts: Montserrat and Open Sans are exact Google Fonts — either self-host the supplied `.woff2` files (base64-inline them for a true single file) or load them from Google Fonts. Icons: **Lucide** (pinned `0.460.0`), FARI's chosen substitute; swap in FARI's own icon set if provided. **Inline the Lucide SVGs directly in the markup — do not load the Lucide CDN `<script>`.** The Cowork/artifact render sandbox blocks external scripts, which throws `Uncaught ReferenceError: lucide is not defined` and leaves icons unrendered; inline SVG paths (as `theme-preview.html` now does) keep the file self-contained and error-free. The same applies to any other JS/CSS dependency: inline it.
+
+**Tier colour mapping (the design decision).** FARI is a cool palette (institutional blues, a teal "Lighthouse" accent, one purple accent) with only three status colours, none of them orange or yellow. The tool needs seven distinguishable tiers. With the user's approval, two **functional warm colours** were introduced — **amber** for high-risk and **gold** for filtered — defined in `fari-theme.css` as `--fari-amber-*` / `--fari-gold-*`. Every tier exposes three roles: `--tier-<c>-accent` (keyline/icon/large label on white), `--tier-<c>-bg` (soft tint), `--tier-<c>-fg` (text on the tint). Result cards read them via `data-tier="grey|red|orange|yellow|green|blue|purple"`.
+
+| JSON `color` | Tier | FARI source | accent | on-tint text | tint |
+|---|---|---|---|---|---|
+| grey | out of scope | ink neutrals | `#44474D` | `#2A2A2A` | `#EFF1F4` |
+| red | prohibited | status-error | `#B32A2D` | `#8F2224` | `#FBEAEA` |
+| orange | high-risk | **amber (new)** | `#B85A1B` | `#8A3D0B` | `#FBEAD7` |
+| yellow | filtered | **gold (new)** | `#8A7017` | `#6E5806` | `#FBF3D6` |
+| green | minimal | teal-800 | `#00897F` | `#0A6E62` | `#EAFBF6` |
+| blue | transparency | web blue | `#2E4FBF` | `#1D3F8F` | `#EDF1FB` |
+| purple | GPAI | purple accent | `#6E50B6` | `#573F94` | `#F0EBFA` |
+
+**Contrast (WCAG 2.1 AA).** All pairs verified programmatically: on-tint text ≥ 4.5:1 (range 5.7–12.7) and accent-on-white ≥ 3.0:1 (range 4.3–9.3). The two user-set warm accents (`#B85A1B` amber, `#8A7017` gold) even clear 4.5:1 on white (4.65 and 4.76), so they are safe as normal-size text too. The `-accent` colour is primarily for keylines, icons and large/bold labels; for text on a tint use `-fg`. Re-run the check if any value changes.
+
+**Brand rules to honour** (from the FARI brand book): sentence case for headings and UI labels; **no emoji** anywhere; British/European English spelling ("categorise", "programme", "human-centred"); don't put one brand colour as text on another brand-colour background; Montserrat for everything (Open Sans only for long-form); pill buttons, 16px card radius, cool blue-tinted shadows (never harsh grey/black), calm motion (no bounce), always-visible focus ring. Buttons use the FARI blue action colours; purple is reserved (here it carries the GPAI tier only).
+
+**Mandatory ERDF attribution.** FARI communications must carry the funding line and logos. Put in the footer: *"Funded by the ERDF and the Brussels Capital-Region"* (with NL/FR equivalents) plus a link to the ERDF site and the FARI + VUB–ULB logos from the communication kit. This is a compliance requirement, not decoration.
+
+**Flagged substitutions (from the DS readme):** the certificate display font "Amsterdam Four" is substituted by Anton (not needed by this tool); the icon set is Lucide; no photography ships (not needed here). Swap in the real assets if FARI provides them.
+
+---
+
 ### Build order suggestion for the coding agent
 
 1. Load and validate `decision-tree.json` against the contract in Section 4.
@@ -315,7 +343,7 @@ Build these as sanity checks; each lists inputs → expected result cards.
 4. Wire the catalog-driven checklists (S1, S2, S4, S6, T0) and the `impliesTransparency` auto-derivation into T0.
 5. Build the three progress components from Section 5.1 (phase stepper, live verdict-so-far panel, answer-path timeline), all driven from `module` / `flags` / `answers[]`.
 6. Build the result screen with multi-card rendering, **role-filtered obligations**, FOSS note, guideline links, answer trail and PDF export (Section 5.4).
-7. Apply the Section 5.2 visual design language (colour system, motion, layout).
+7. Apply the theme (Section 11): inline the FARI tokens + `fari-theme.css`, wire `outcomes[].color` to `data-tier` / `--tier-*`, add the ERDF footer. `theme-preview.html` shows the target look.
 8. Add the disclaimer, sources, application dates and Service Desk links.
 9. Run the Section 8 scenarios as tests, including that the stepper skips/marks phases correctly on the out-of-scope and prohibited short-circuits.
 10. Polish accessibility (`prefers-reduced-motion`, ARIA for stepper and checklists) and styling; keep it a single static file if possible.

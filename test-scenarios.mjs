@@ -318,8 +318,10 @@ scenario("C0 context step", () => {
   ]);
   check("skipping leaves both flags unknown",
     [skipped.flags.role, skipped.flags.fossLicence], ["unknown", "unknown"]);
-  check("skipping still records a trail entry",
-    skipped.E.state.answers.find(a => a.nodeId === "C0_context").value, "skipped");
+  const skipEntry = skipped.E.state.answers.find(a => a.nodeId === "C0_context");
+  check("skipping still records a trail entry", skipEntry.value, "skipped");
+  check("and reads as skipped rather than repeating the field labels",
+    skipEntry.answerLabel, UI["context.skipped"]);
   check("context never changes the tier", skipped.cards, ["MINIMAL_RISK"]);
   check("context step is optional in the data", tree.nodes.C0_context.optional, true);
 

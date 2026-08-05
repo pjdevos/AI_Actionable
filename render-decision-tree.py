@@ -51,20 +51,22 @@ ENGINE_ROUTING = {
     "__other_tiers__": ("T0_transparency", "carries on into the overlays"),
 }
 
-# outcomes[].color -> hex. Same palette as the tool, keyed by the colour names the
-# JSON uses, so a new outcome reusing a known colour needs no change here.
+# outcomes[].color -> (accent, tint). The FARI tier mapping from SPEC §11, keyed by the
+# colour names the JSON uses, so a new outcome reusing a known colour needs no change
+# here. Contrast for every pair is verified by check-theme.py; keep the two in step.
 PALETTE = {
-    "grey": ("#4b5563", "#eef0f3"),
-    "red": ("#c81e1e", "#fdeceb"),
-    "orange": ("#b3450b", "#fdefe4"),
-    "yellow": ("#8a6100", "#fdf3d7"),
-    "green": ("#11703a", "#e6f5ea"),
-    "blue": ("#1d4ed8", "#e8eeff"),
-    "purple": ("#6528c4", "#f1e9fe"),
+    "grey": ("#44474D", "#EFF1F4"),     # ink
+    "red": ("#B32A2D", "#FBEAEA"),      # FARI status-error
+    "orange": ("#B85A1B", "#FBEAD7"),   # amber (added for high-risk)
+    "yellow": ("#8A7017", "#FBF3D6"),   # gold (added for filtered)
+    "green": ("#00897F", "#EAFBF6"),    # teal-800
+    "blue": ("#2E4FBF", "#EDF1FB"),     # FARI web blue
+    "purple": ("#6E50B6", "#F0EBFA"),   # FARI purple accent
 }
-FALLBACK_COLOR = ("#4b5563", "#eef0f3")
-INK, MUTED, RULE, ACCENT = "#14181f", "#5b6472", "#dce0e6", "#1d4ed8"
-PHASE_BANDS = ["#f7f8fa", "#f1f3f6"]
+FALLBACK_COLOR = ("#44474D", "#EFF1F4")
+INK, MUTED, RULE, ACCENT = "#181716", "#5E626B", "#E2E5EA", "#2E4FBF"
+PHASE_BANDS = ["#F7F8FA", "#EFF1F4"]
+FONT_STACK = "Montserrat, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
 
 
 # ---------------------------------------------------------------------------
@@ -420,7 +422,7 @@ def emit_svg(g: Graph) -> str:
     width = X1 + COL_W - 30 + PAD
     height = max(flow_bottom, max(b["y"] + b["h"] for b in boxes.values())) + 96
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-           f'viewBox="0 0 {width} {height}" font-family="system-ui, -apple-system, Segoe UI, sans-serif">',
+           f'viewBox="0 0 {width} {height}" font-family="{FONT_STACK}">',
            f'<rect width="{width}" height="{height}" fill="#ffffff"/>',
            '<defs>'
            f'<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="{MUTED}"/></marker>'

@@ -24,6 +24,13 @@
   },
 
   "ui": {
+    "brand.eyebrow": "FARI · AI for the Common Good",
+
+    "funding.en": "Funded by the ERDF and the Brussels Capital-Region.",
+    "funding.nl": "Gefinancierd door het EFRO en het Brussels Hoofdstedelijk Gewest.",
+    "funding.fr": "Financé par le FEDER et la Région de Bruxelles-Capitale.",
+    "funding.linkLabel": "About the European Regional Development Fund",
+
     "chrome.restart": "Start over",
     "chrome.dataSource": "Data: {files}",
     "chrome.versionLine": "Version {version} · content last updated {date}",
@@ -124,6 +131,7 @@
     "context.skip": "Skip this step",
     "context.optional": "Optional — it does not change your result",
     "context.choose": "Choose…",
+    "context.skipped": "Skipped — no role or licence given",
 
     "result.heading.fallback": "Result",
     "result.kicker.primary": "Your category",

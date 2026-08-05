@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FARI theme preview — AI Act Tier tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ===== FARI tokens (inlined from the design system) ===== */
+:root{
+  --fari-blue:#183E91; --fari-web-blue:#2E4FBF; --fari-lighthouse:#64D8BF;
+  --fari-white:#FFFFFF; --fari-black:#181716; --fari-purple:#8161CC;
+  --teal-50:#EAFBF6; --teal-100:#C9F4E9; --teal-400:#64D8BF; --teal-600:#00DCBE; --teal-700:#00BAB5; --teal-800:#00897F;
+  --blue-50:#EDF1FB; --blue-100:#D4DEF4; --blue-400:#2E4FBF; --blue-600:#183E91; --blue-700:#143476; --blue-900:#00295E;
+  --ink-900:#181716; --ink-800:#2A2A2A; --ink-700:#44474D; --ink-600:#5E626B; --ink-500:#7A7F88; --ink-400:#A1A6AF; --ink-300:#C8CCD3; --ink-200:#E2E5EA; --ink-100:#EFF1F4; --ink-50:#F7F8FA;
+  --status-ok:#1DA587; --status-gather:#43B7DE; --status-error:#B32A2D;
+  --text-strong:var(--ink-900); --text-body:var(--ink-800); --text-muted:var(--ink-600); --text-on-brand:#fff; --text-link:var(--fari-web-blue);
+  --surface-page:#fff; --surface-subtle:var(--ink-50); --surface-card:#fff; --surface-sunken:var(--ink-100);
+  --border-subtle:var(--ink-200); --border-default:var(--ink-300); --border-brand:var(--fari-web-blue); --border-focus:var(--fari-web-blue);
+  --action-primary:var(--fari-web-blue); --action-primary-hover:var(--fari-blue); --action-primary-active:var(--blue-700);
+  --action-accent:var(--fari-purple); --action-accent-hover:#6E50B6;
+  --focus-ring:color-mix(in srgb, var(--fari-web-blue) 45%, transparent);
+  --font-sans:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --font-demo:"Open Sans",system-ui,sans-serif;
+  --weight-regular:400; --weight-medium:500; --weight-semibold:600; --weight-bold:700; --weight-extrabold:800; --weight-black:900;
+  --text-display:41.47px; --text-h1:41.47px; --text-h2:28.8px; --text-h3:24px; --text-lg:20px; --text-base:16.67px; --text-sm:13.89px; --text-xs:11.57px;
+  --leading-tight:1.12; --leading-snug:1.3; --leading-normal:1.5;
+  --tracking-tight:-0.02em; --tracking-snug:-0.01em; --tracking-wide:0.04em;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  --radius-xs:4px; --radius-sm:6px; --radius-md:10px; --radius-lg:16px; --radius-xl:24px; --radius-pill:999px; --radius-round:50%;
+  --shadow-xs:0 1px 2px rgba(24,62,145,.06); --shadow-sm:0 1px 3px rgba(24,62,145,.08),0 1px 2px rgba(24,62,145,.06); --shadow-md:0 4px 12px rgba(24,62,145,.10),0 2px 4px rgba(24,62,145,.06); --shadow-lg:0 12px 28px rgba(24,62,145,.12),0 4px 10px rgba(24,62,145,.07); --shadow-focus:0 0 0 3px var(--focus-ring);
+  --ease-standard:cubic-bezier(0.4,0,0.2,1); --duration-fast:120ms; --duration-base:200ms;
+  --container-md:880px;
+}
+body{margin:0;font-family:var(--font-sans);font-size:var(--text-base);line-height:var(--leading-normal);color:var(--text-body);background:var(--surface-subtle);-webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:var(--font-sans);color:var(--text-strong);line-height:var(--leading-tight);margin:0 0 var(--space-4);text-wrap:balance;}
+a{color:var(--text-link);text-decoration:none;} a:hover{text-decoration:underline;}
+
+/* ===== fari-theme.css (tier mapping + components) ===== */
+:root{
+  --fari-amber-700:#8A3D0B; --fari-amber-600:#B85A1B; --fari-amber-100:#F6D9BC; --fari-amber-50:#FBEAD7;
+  --fari-gold-700:#6E5806; --fari-gold-600:#8A7017; --fari-gold-100:#F4E7AE; --fari-gold-50:#FBF3D6;
+  --tier-grey-fg:var(--ink-800); --tier-grey-bg:var(--ink-100); --tier-grey-accent:var(--ink-700);
+  --tier-red-fg:#8F2224; --tier-red-bg:#FBEAEA; --tier-red-accent:var(--status-error);
+  --tier-amber-fg:var(--fari-amber-700); --tier-amber-bg:var(--fari-amber-50); --tier-amber-accent:var(--fari-amber-600);
+  --tier-gold-fg:var(--fari-gold-700); --tier-gold-bg:var(--fari-gold-50); --tier-gold-accent:var(--fari-gold-600);
+  --tier-green-fg:#0A6E62; --tier-green-bg:var(--teal-50); --tier-green-accent:var(--teal-800);
+  --tier-blue-fg:#1D3F8F; --tier-blue-bg:var(--blue-50); --tier-blue-accent:var(--fari-web-blue);
+  --tier-purple-fg:#573F94; --tier-purple-bg:#F0EBFA; --tier-purple-accent:var(--action-accent-hover);
+}
+.app{max-width:var(--container-md);margin:0 auto;padding:var(--space-10) var(--space-6) var(--space-16);}
+.eyebrow{font-size:var(--text-sm);font-weight:600;letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--text-link);margin:0 0 var(--space-2);}
+.chip{display:inline-block;font-size:var(--text-xs);font-weight:600;letter-spacing:var(--tracking-wide);color:var(--text-muted);background:var(--ink-100);border:1px solid var(--border-subtle);border-radius:var(--radius-pill);padding:2px 10px;}
+.card{background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-8);}
+.qtitle{font-size:var(--text-h3);font-weight:700;color:var(--text-strong);letter-spacing:var(--tracking-snug);margin:var(--space-2) 0 var(--space-3);text-wrap:balance;}
+.qexpl{color:var(--text-body);margin:0 0 var(--space-5);}
+.btn{font-family:var(--font-sans);font-weight:600;font-size:var(--text-base);border-radius:var(--radius-pill);padding:12px 22px;border:1.5px solid transparent;cursor:pointer;transition:background var(--duration-base) var(--ease-standard),transform var(--duration-fast) var(--ease-standard);}
+.btn-primary{background:var(--action-primary);color:#fff;box-shadow:var(--shadow-xs);}
+.btn-primary:hover{background:var(--action-primary-hover);transform:translateY(-1px);}
+.opt{display:block;width:100%;text-align:left;background:#fff;color:var(--text-strong);border:1.5px solid var(--border-default);border-radius:var(--radius-md);padding:14px 16px;margin:0 0 var(--space-3);font-size:var(--text-base);font-family:var(--font-sans);cursor:pointer;transition:border-color var(--duration-base) var(--ease-standard),background var(--duration-base) var(--ease-standard);}
+.opt:hover{border-color:var(--border-brand);background:var(--blue-50);}
+.opt.sel{border-color:var(--action-primary);background:var(--blue-50);box-shadow:inset 3px 0 0 var(--action-primary);}
+.opt--unsure{color:var(--text-muted);border-style:dashed;}
+details{border-top:1px solid var(--border-subtle);margin-top:var(--space-4);}
+summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) 0;font-weight:600;font-size:var(--text-sm);color:var(--text-link);}
+summary::-webkit-details-marker{display:none;}
+.legaltext{background:var(--surface-sunken);border-left:3px solid var(--border-default);border-radius:var(--radius-sm);padding:var(--space-4);font-size:var(--text-sm);color:var(--text-muted);line-height:var(--leading-normal);margin-bottom:var(--space-4);}
+.stepper{display:flex;gap:var(--space-2);margin:0 0 var(--space-4);}
+.seg{flex:1;height:6px;border-radius:var(--radius-pill);background:var(--ink-200);}
+.seg.cur{background:var(--action-primary);} .seg.done{background:var(--teal-600);}
+.seg.skip{background:repeating-linear-gradient(45deg,var(--ink-200),var(--ink-200) 4px,var(--ink-100) 4px,var(--ink-100) 8px);}
+.steplabels{display:flex;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-8);}
+.steplabels span{flex:1;}
+.grid2{display:grid;grid-template-columns:1fr 300px;gap:var(--space-6);align-items:start;}
+@media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+.verdict{background:#fff;border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:var(--space-6);}
+.vrow{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) 0;font-size:var(--text-sm);}
+.vmark{width:10px;height:10px;border-radius:var(--radius-round);flex:none;}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-4);}
+.sw{border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-xs);}
+.sw__accent{height:52px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:var(--text-sm);}
+.sw__tint{padding:10px 12px;font-size:var(--text-sm);font-weight:600;}
+.sw__meta{padding:8px 12px;font-size:var(--text-xs);color:var(--text-muted);background:#fff;}
+.result{border-radius:var(--radius-lg);border:1px solid var(--border-subtle);box-shadow:var(--shadow-md);overflow:hidden;margin-bottom:var(--space-6);}
+.ico{width:1.1em;height:1.1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;flex:none;}
+.rhead{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-5) var(--space-6);border-left:6px solid var(--_accent);background:var(--_bg);color:var(--_fg);}
+.rhead .ico{width:24px;height:24px;stroke:var(--_accent);}
+.rtitle{font-weight:800;font-size:var(--text-lg);letter-spacing:var(--tracking-snug);}
+.rbody{padding:var(--space-5) var(--space-6);background:#fff;}
+.rsum{margin:0 0 var(--space-4);}
+.oglabel{font-size:var(--text-sm);font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:var(--tracking-wide);margin:var(--space-4) 0 var(--space-2);}
+.og{padding:var(--space-2) 0 var(--space-2) var(--space-5);position:relative;font-size:var(--text-sm);}
+.og::before{content:"";position:absolute;left:4px;top:14px;width:6px;height:6px;border-radius:var(--radius-round);background:var(--_accent);}
+.result[data-tier="orange"]{--_fg:var(--tier-amber-fg);--_bg:var(--tier-amber-bg);--_accent:var(--tier-amber-accent);}
+.result[data-tier="yellow"]{--_fg:var(--tier-gold-fg);--_bg:var(--tier-gold-bg);--_accent:var(--tier-gold-accent);}
+.result[data-tier="blue"]{--_fg:var(--tier-blue-fg);--_bg:var(--tier-blue-bg);--_accent:var(--tier-blue-accent);}
+.result[data-tier="purple"]{--_fg:var(--tier-purple-fg);--_bg:var(--tier-purple-bg);--_accent:var(--tier-purple-accent);}
+.result[data-tier="red"]{--_fg:var(--tier-red-fg);--_bg:var(--tier-red-bg);--_accent:var(--tier-red-accent);}
+.glink{display:inline-flex;align-items:center;gap:6px;color:var(--text-link);font-weight:600;font-size:var(--text-sm);}
+.glink[data-draft]::after{content:"draft";font-size:var(--text-xs);color:var(--fari-amber-700);background:var(--fari-amber-50);border-radius:var(--radius-pill);padding:1px 8px;margin-left:2px;}
+.note{border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);font-size:var(--text-sm);margin-bottom:var(--space-4);}
+.note--review{background:var(--fari-gold-50);border:1px solid var(--fari-gold-100);color:var(--fari-gold-700);}
+.note--foss{background:var(--teal-50);border:1px solid var(--teal-100);color:var(--tier-green-fg);}
+.section{margin:var(--space-16) 0 var(--space-8);}
+.section h2{font-size:var(--text-h2);letter-spacing:var(--tracking-snug);}
+.previewbar{background:var(--blue-900);color:#fff;font-size:var(--text-sm);padding:10px var(--space-6);text-align:center;}
+.footer{margin-top:var(--space-16);padding-top:var(--space-6);border-top:1px solid var(--border-subtle);color:var(--text-muted);font-size:var(--text-sm);}
+:focus-visible{outline:2px solid var(--border-focus);outline-offset:2px;box-shadow:var(--shadow-focus);}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="previewbar">Static style preview — FARI theme applied to the AI Act Tier tool. Not the working tool; for design review only.</div>
+<div class="app">
+
+  <p class="eyebrow">FARI · AI for the Common Good</p>
+  <h1 style="font-size:var(--text-h1);font-weight:800;letter-spacing:var(--tracking-tight);">EU AI Act — risk tier self-assessment</h1>
+  <p style="color:var(--text-muted);max-width:60ch;">Find out, in plain language, which category of the EU AI Act your system falls into. This is indicative guidance, not legal advice.</p>
+
+  <!-- Stepper -->
+  <div class="section" style="margin-top:var(--space-10);">
+    <div class="stepper" aria-label="Progress">
+      <span class="seg done"></span><span class="seg cur"></span><span class="seg"></span><span class="seg"></span>
+    </div>
+    <div class="steplabels"><span>✓ Scope &amp; bans</span><span>Risk tier</span><span>Transparency</span><span>GPAI</span></div>
+
+    <!-- Sample question with 3 layers + verdict panel -->
+    <div class="grid2">
+      <div class="card">
+        <span class="chip">Art. 6(2) · Annex III</span>
+        <h2 class="qtitle">Is your system used for one of the sensitive purposes on the AI Act's high-risk list?</h2>
+        <p class="qexpl">The AI Act singles out certain uses, across eight areas, as high-risk because they can seriously affect people's lives. Only the specific uses listed under each area count, not the whole area. Tick anything that matches what your system is actually meant to do.</p>
+        <button class="opt sel">Yes, it matches at least one listed use</button>
+        <button class="opt">No, none of these match</button>
+        <button class="opt opt--unsure">I'm not sure</button>
+
+        <details>
+          <summary><svg class="ico" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg> In the words of the law</summary>
+          <div class="legaltext">AI systems referred to in Annex III shall be considered high-risk. Annex III lists eight areas and, under each, an exhaustive list of specific use cases. <span class="chip" style="margin-top:8px;">Art. 6(2); Annex III</span></div>
+        </details>
+        <details>
+          <summary><svg class="ico" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg> Examples / how to decide</summary>
+          <div class="legaltext" style="border-left-color:var(--teal-400);">Likely yes: hiring or staff-management tools, credit scoring for people, exam monitoring. Likely no: a system that only assesses companies, not people.</div>
+        </details>
+
+        <div style="margin-top:var(--space-6);display:flex;gap:var(--space-3);">
+          <button class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+
+      <aside class="verdict" aria-label="Result so far">
+        <p class="eyebrow" style="margin-bottom:var(--space-3);">Your result so far</p>
+        <div class="vrow"><span class="vmark" style="background:var(--tier-green-accent);"></span> Is an AI system</div>
+        <div class="vrow"><span class="vmark" style="background:var(--tier-green-accent);"></span> Not a banned practice</div>
+        <div class="vrow"><span class="vmark" style="background:var(--tier-amber-accent);"></span> Checking high-risk (Annex III)…</div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Tier swatches -->
+  <div class="section">
+    <h2>The seven risk-tier colours</h2>
+    <p style="color:var(--text-muted);max-width:62ch;">Mapped onto FARI. Amber (high-risk) and gold (filtered) are the two functional warm colours added to the cool FARI palette, with your approval. Every pair is WCAG AA contrast-checked.</p>
+    <div class="swatches">
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-grey-accent);">Out of scope</div><div class="sw__tint" style="background:var(--tier-grey-bg);color:var(--tier-grey-fg);">Not an AI system</div><div class="sw__meta">grey · ink</div></div>
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-red-accent);">Prohibited</div><div class="sw__tint" style="background:var(--tier-red-bg);color:var(--tier-red-fg);">Banned use</div><div class="sw__meta">red · status-error</div></div>
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-amber-accent);">High-risk</div><div class="sw__tint" style="background:var(--tier-amber-bg);color:var(--tier-amber-fg);">Annex I / III</div><div class="sw__meta">amber · NEW</div></div>
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-gold-accent);">Filtered</div><div class="sw__tint" style="background:var(--tier-gold-bg);color:var(--tier-gold-fg);">Not high-risk</div><div class="sw__meta">gold · NEW</div></div>
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-green-accent);">Minimal</div><div class="sw__tint" style="background:var(--tier-green-bg);color:var(--tier-green-fg);">No duties</div><div class="sw__meta">green · teal-800</div></div>
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-blue-accent);">Transparency</div><div class="sw__tint" style="background:var(--tier-blue-bg);color:var(--tier-blue-fg);">Art. 50</div><div class="sw__meta">blue · web-blue</div></div>
+      <div class="sw"><div class="sw__accent" style="background:var(--tier-purple-accent);">GPAI</div><div class="sw__tint" style="background:var(--tier-purple-bg);color:var(--tier-purple-fg);">Model duties</div><div class="sw__meta">purple · FARI accent</div></div>
+    </div>
+  </div>
+
+  <!-- Sample result cards -->
+  <div class="section">
+    <h2>Result cards</h2>
+
+    <div class="result" data-tier="orange">
+      <div class="rhead"><svg class="ico" viewBox="0 0 24 24"><path d="m10.29 3.86-8.47 14.14A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="rtitle">High-risk: a sensitive, listed use</span></div>
+      <div class="rbody">
+        <p class="rsum">Your system is used for one of the sensitive purposes on the high-risk list and doesn't qualify for an exemption. These duties are due to start on 2 December 2027.</p>
+        <a class="glink" data-draft href="#"><svg class="ico" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Draft guidance: is my system high-risk?</a>
+        <div class="oglabel">For the provider</div>
+        <div class="og">Manage risks, use good-quality data, keep documentation and logs, keep a human in the loop, make it accurate and secure.</div>
+        <div class="og">Register it in the EU database and CE-mark it before launch.</div>
+        <div class="oglabel">For the deployer</div>
+        <div class="og">Use it as instructed, oversee it, and run a fundamental-rights impact check where required.</div>
+      </div>
+    </div>
+
+    <div class="result" data-tier="blue">
+      <div class="rhead"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span class="rtitle">Be transparent with people</span></div>
+      <div class="rbody">
+        <p class="rsum">One or more transparency situations apply. These stack on top of your main category. They start on 2 August 2026.</p>
+        <div class="og">Tell people they're dealing with an AI, and mark AI-made content so machines can detect it.</div>
+      </div>
+    </div>
+
+    <div class="note note--review"><strong>Worth double-checking with an expert:</strong> you answered "I'm not sure" on profiling. If your system profiles people, it is automatically high-risk and the exemptions don't apply.</div>
+    <div class="note note--foss"><strong>Open-source note:</strong> a free/open-source licence doesn't remove high-risk, banned or transparency duties. It only lightens some documentation duties for general-purpose models.</div>
+  </div>
+
+  <footer class="footer">
+    <p><strong>Funded by the ERDF and the Brussels Capital-Region.</strong> Gefinancierd door het EFRO en het Brussels Hoofdstedelijk Gewest. Financé par le FEDER et la Région de Bruxelles-Capitale.</p>
+    <p>Indicative guidance based on the AI Act and the European Commission's guidelines (high-risk classification guidance is still a draft). Not legal advice.</p>
+  </footer>
+</div>
+</body>
+</html>

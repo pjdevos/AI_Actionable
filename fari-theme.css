@@ -1,0 +1,305 @@
+/* ============================================================
+   FARI theme for the EU AI Act Risk-Tier Self-Assessment tool
+   ------------------------------------------------------------
+   Layer on TOP of the FARI design system tokens. Load order:
+     1) FARI: tokens/fonts.css, colors.css, typography.css,
+        spacing.css, base.css  (i.e. the FARI styles.css)
+     2) this file (fari-theme.css)
+   For the single-file HTML build, inline the FARI token :root
+   blocks first, then this file.
+
+   This file adds ONLY what the tool needs on top of FARI:
+   - two functional warm colours the cool FARI palette lacks
+     (amber = high-risk, gold = filtered) — introduced with the
+     user's approval; FARI status colours are permitted in UI.
+   - a mapping from the 7 semantic tier colours used in
+     decision-tree.json (outcomes[].color) to accessible pairs.
+   - component styling for the tool's screens.
+   All values are WCAG 2.1 AA contrast-checked (see SPEC §11).
+   ============================================================ */
+
+:root {
+  /* ---- NEW functional warm colours (not in the cool FARI palette) ---- */
+  /* Amber = HIGH-RISK. Gold = FILTERED (not high-risk). Distinct hues,
+     tuned to sit beside FARI blue/teal without clashing. */
+  --fari-amber-700: #8A3D0B;   /* text on amber tint */
+  --fari-amber-600: #B85A1B;   /* accent / icon / keyline / large text (user-set) */
+  --fari-amber-100: #F6D9BC;
+  --fari-amber-50:  #FBEAD7;   /* soft background tint */
+
+  --fari-gold-700:  #6E5806;   /* text on gold tint */
+  --fari-gold-600:  #8A7017;   /* accent / icon / keyline / large text (user-set) */
+  --fari-gold-100:  #F4E7AE;
+  --fari-gold-50:   #FBF3D6;   /* soft background tint */
+
+  /* ==========================================================
+     TIER MAPPING — decision-tree.json outcomes[].color -> FARI
+     Each tier has three roles:
+       --tier-*-fg      text/icon on the tint (AA >= 4.5)
+       --tier-*-bg      soft background tint for cards/markers
+       --tier-*-accent  keyline / icon / large label on white (AA >= 3.0)
+     Never use -accent for small body text on white; use -fg on a tint,
+     or the ink text tokens on white.
+     ========================================================== */
+
+  /* grey — out of scope */
+  --tier-grey-fg:     var(--ink-800);      /* #2A2A2A */
+  --tier-grey-bg:     var(--ink-100);      /* #EFF1F4 */
+  --tier-grey-accent: var(--ink-700);      /* #44474D */
+
+  /* red — prohibited (FARI status-error) */
+  --tier-red-fg:      #8F2224;
+  --tier-red-bg:      #FBEAEA;
+  --tier-red-accent:  var(--status-error); /* #B32A2D */
+
+  /* amber — high-risk (Annex I & Annex III) — NEW */
+  --tier-amber-fg:      var(--fari-amber-700);
+  --tier-amber-bg:      var(--fari-amber-50);
+  --tier-amber-accent:  var(--fari-amber-600);
+
+  /* gold — not high-risk / filtered — NEW */
+  --tier-gold-fg:       var(--fari-gold-700);
+  --tier-gold-bg:       var(--fari-gold-50);
+  --tier-gold-accent:   var(--fari-gold-600);
+
+  /* green — minimal risk (FARI teal-800 / status-ok family) */
+  --tier-green-fg:      #0A6E62;
+  --tier-green-bg:      var(--teal-50);    /* #EAFBF6 */
+  --tier-green-accent:  var(--teal-800);   /* #00897F */
+
+  /* blue — transparency (FARI web blue) */
+  --tier-blue-fg:       #1D3F8F;
+  --tier-blue-bg:       var(--blue-50);    /* #EDF1FB */
+  --tier-blue-accent:   var(--fari-web-blue); /* #2E4FBF */
+
+  /* purple — GPAI (FARI purple accent) */
+  --tier-purple-fg:     #573F94;
+  --tier-purple-bg:     #F0EBFA;
+  --tier-purple-accent: var(--action-accent-hover); /* #6E50B6 */
+
+  /* Convenience: aliases used by decision-tree.json colour keys.
+     JSON uses: grey | red | orange | yellow | green | blue | purple.
+     'orange' -> amber ; 'yellow' -> gold. */
+  --tier-orange-fg: var(--tier-amber-fg);
+  --tier-orange-bg: var(--tier-amber-bg);
+  --tier-orange-accent: var(--tier-amber-accent);
+  --tier-yellow-fg: var(--tier-gold-fg);
+  --tier-yellow-bg: var(--tier-gold-bg);
+  --tier-yellow-accent: var(--tier-gold-accent);
+
+  /* ---- App-level roles built on FARI semantics ---- */
+  --app-bg:            var(--surface-subtle);   /* very light page */
+  --app-card:          var(--surface-card);
+  --app-text:          var(--text-body);
+  --app-text-strong:   var(--text-strong);
+  --app-text-muted:    var(--text-muted);
+  --app-link:          var(--text-link);
+  --app-border:        var(--border-subtle);
+  --app-focus:         var(--border-focus);
+}
+
+/* ============================================================
+   Base app shell
+   ============================================================ */
+.app {
+  font-family: var(--font-sans);
+  color: var(--app-text);
+  background: var(--app-bg);
+  max-width: var(--container-md);
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-6) var(--space-16);
+}
+
+.app__eyebrow {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-link);
+  margin: 0 0 var(--space-2);
+}
+
+/* Article-reference chip (kept small; legal detail lives in the collapsible) */
+.chip {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-muted);
+  background: var(--ink-100);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 2px 10px;
+}
+
+/* ============================================================
+   Cards (question surface + result cards)
+   ============================================================ */
+.card {
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-8);
+}
+
+.card--interactive { transition: box-shadow var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-standard); }
+.card--interactive:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+
+.question__title {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-bold);
+  color: var(--app-text-strong);
+  letter-spacing: var(--tracking-snug);
+  margin: var(--space-2) 0 var(--space-3);
+  text-wrap: balance;
+}
+.question__explainer { color: var(--app-text); line-height: var(--leading-normal); margin: 0 0 var(--space-5); }
+
+/* ============================================================
+   Buttons — pill, calm hover, no bounce (FARI motion)
+   ============================================================ */
+.btn {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  border-radius: var(--radius-pill);
+  padding: 12px 22px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-base) var(--ease-standard);
+}
+.btn-primary {
+  background: var(--action-primary);
+  color: var(--text-on-brand);
+  box-shadow: var(--shadow-xs);
+}
+.btn-primary:hover { background: var(--action-primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.btn-primary:active { background: var(--action-primary-active); transform: none; }
+
+/* Answer options — outlined, become branded on hover/selected */
+.btn-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--app-card);
+  color: var(--app-text-strong);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-base);
+}
+.btn-option:hover { border-color: var(--border-brand); background: var(--blue-50); }
+.btn-option[aria-pressed="true"], .btn-option.is-selected {
+  border-color: var(--action-primary);
+  background: var(--blue-50);
+  box-shadow: inset 3px 0 0 var(--action-primary);
+}
+/* The neutral "I'm not sure" option reads calmer */
+.btn-option--unsure { color: var(--text-muted); border-style: dashed; }
+
+/* ============================================================
+   Collapsibles: "In the words of the law" + "Examples / how to decide"
+   ============================================================ */
+.collapsible { border-top: 1px solid var(--border-subtle); margin-top: var(--space-4); }
+.collapsible__summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) 0;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-link);
+}
+.collapsible__summary::-webkit-details-marker { display: none; }
+.collapsible__body { padding: 0 0 var(--space-4); color: var(--app-text); }
+/* Legal-text panel: quieter, serif-free, slightly sunken to signal "verbatim" */
+.legaltext {
+  background: var(--surface-sunken);
+  border-left: 3px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-normal);
+}
+
+/* ============================================================
+   Checklists (prohibited practices, filter, transparency, Annex III)
+   plain line visible; exact wording on expand
+   ============================================================ */
+.check-item { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-2); }
+.check-item__plain { font-weight: var(--weight-medium); }
+.check-item__legal { font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-2); }
+.check-item.is-locked { opacity: .85; background: var(--surface-subtle); }
+
+/* ============================================================
+   Phase stepper (Section 5.1)
+   ============================================================ */
+.stepper { display: flex; gap: var(--space-2); margin: 0 0 var(--space-8); }
+.stepper__seg { flex: 1; height: 6px; border-radius: var(--radius-pill); background: var(--ink-200); position: relative; transition: background var(--duration-base) var(--ease-standard); }
+.stepper__seg.is-current { background: var(--action-primary); }
+.stepper__seg.is-done { background: var(--teal-600); }
+.stepper__seg.is-skipped { background: repeating-linear-gradient(45deg, var(--ink-200), var(--ink-200) 4px, var(--ink-100) 4px, var(--ink-100) 8px); }
+.stepper__label { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-2); }
+
+/* ============================================================
+   Verdict-so-far panel (Section 5.1B)
+   ============================================================ */
+.verdict { background: var(--app-card); border: 1px solid var(--app-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: var(--space-6); }
+.verdict__row { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; font-size: var(--text-sm); }
+.verdict__marker { width: 10px; height: 10px; border-radius: var(--radius-round); flex: none; }
+
+/* ============================================================
+   Result cards — coloured by tier via a left keyline + tint header
+   Set data-tier="grey|red|orange|yellow|green|blue|purple" and the
+   card picks up the matching --tier-* variables.
+   ============================================================ */
+.result { border-radius: var(--radius-lg); border: 1px solid var(--app-border); box-shadow: var(--shadow-md); overflow: hidden; margin-bottom: var(--space-6); }
+.result__head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-5) var(--space-6); border-left: 6px solid var(--_accent); background: var(--_bg); color: var(--_fg); }
+.result__title { font-weight: var(--weight-extrabold); font-size: var(--text-lg); letter-spacing: var(--tracking-snug); }
+.result__icon { width: 24px; height: 24px; color: var(--_accent); flex: none; }
+.result__body { padding: var(--space-5) var(--space-6); background: var(--app-card); }
+.result__summary { margin: 0 0 var(--space-4); }
+.result__ob-group { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--text-muted); text-transform: uppercase; letter-spacing: var(--tracking-wide); margin: var(--space-4) 0 var(--space-2); }
+.result__ob { padding: var(--space-2) 0 var(--space-2) var(--space-5); position: relative; }
+.result__ob::before { content: ""; position: absolute; left: 4px; top: 14px; width: 6px; height: 6px; border-radius: var(--radius-round); background: var(--_accent); }
+
+.result[data-tier="grey"]   { --_fg: var(--tier-grey-fg);   --_bg: var(--tier-grey-bg);   --_accent: var(--tier-grey-accent); }
+.result[data-tier="red"]    { --_fg: var(--tier-red-fg);    --_bg: var(--tier-red-bg);    --_accent: var(--tier-red-accent); }
+.result[data-tier="orange"] { --_fg: var(--tier-amber-fg);  --_bg: var(--tier-amber-bg);  --_accent: var(--tier-amber-accent); }
+.result[data-tier="yellow"] { --_fg: var(--tier-gold-fg);   --_bg: var(--tier-gold-bg);   --_accent: var(--tier-gold-accent); }
+.result[data-tier="green"]  { --_fg: var(--tier-green-fg);  --_bg: var(--tier-green-bg);  --_accent: var(--tier-green-accent); }
+.result[data-tier="blue"]   { --_fg: var(--tier-blue-fg);   --_bg: var(--tier-blue-bg);   --_accent: var(--tier-blue-accent); }
+.result[data-tier="purple"] { --_fg: var(--tier-purple-fg); --_bg: var(--tier-purple-bg); --_accent: var(--tier-purple-accent); }
+
+/* Guidance link */
+.guidance-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-link); font-weight: var(--weight-semibold); font-size: var(--text-sm); }
+.guidance-link[data-draft="true"]::after { content: "draft"; font-size: var(--text-xs); color: var(--fari-amber-700); background: var(--fari-amber-50); border-radius: var(--radius-pill); padding: 1px 8px; }
+
+/* Review + FOSS notes */
+.note { border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); font-size: var(--text-sm); }
+.note--review { background: var(--fari-gold-50); border: 1px solid var(--fari-gold-100); color: var(--fari-gold-700); }
+.note--foss { background: var(--teal-50); border: 1px solid var(--teal-100); color: var(--tier-green-fg); }
+
+/* ============================================================
+   Footer — mandatory ERDF / Brussels Capital-Region attribution
+   ============================================================ */
+.app__footer { margin-top: var(--space-16); padding-top: var(--space-6); border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: var(--text-sm); }
+.app__footer a { color: var(--text-link); }
+
+/* ============================================================
+   Focus + reduced motion (accessibility)
+   ============================================================ */
+:where(.btn, .btn-option, .collapsible__summary, a, input, select):focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  .card--interactive:hover, .btn-primary:hover { transform: none; }
+}

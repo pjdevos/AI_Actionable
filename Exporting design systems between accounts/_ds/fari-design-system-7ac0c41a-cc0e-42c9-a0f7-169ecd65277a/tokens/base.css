@@ -1,0 +1,56 @@
+/* ============================================================
+   FARI — Base element defaults (consumed via styles.css)
+   Light-touch resets that wire the tokens to real elements.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  --base-font-size: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  color: var(--text-strong);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--text-h1); font-weight: var(--weight-extrabold); letter-spacing: var(--tracking-tight); }
+h2 { font-size: var(--text-h2); font-weight: var(--weight-bold); letter-spacing: var(--tracking-snug); }
+h3 { font-size: var(--text-h3); font-weight: var(--weight-bold); }
+
+p { margin: 0 0 var(--space-4); text-wrap: pretty; }
+
+a { color: var(--text-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Eyebrow / all-caps label utility */
+.fari-eyebrow {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-link);
+}
+
+::selection {
+  background: var(--fari-lighthouse);
+  color: var(--fari-blue);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}

@@ -1,0 +1,57 @@
+/* ============================================================
+   FARI — Typography tokens
+   Primary typeface: Montserrat (geometric sans — friendly yet
+   professional). Open Sans for demo/long-form. FARI Display
+   (Anton substitute for Amsterdam Four) for rare certificate use.
+
+   Type scale follows the brand book's 1.200 (minor-third)
+   modular ladder. The brand book is authored on a 20px root;
+   exact px values are preserved as tokens below.
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-sans: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-demo: "Open Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "FARI Display", "Montserrat", sans-serif; /* certificates only */
+  --font-brand: var(--font-sans);
+
+  /* ---- Weights (Montserrat) ---- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  --weight-black: 900;
+
+  /* ---- Modular scale (1.200 ratio) — exact brand px ---- */
+  --text-display: 41.47px;  /* 2.074rem — page titles / hero */
+  --text-h1: 41.47px;
+  --text-h2: 28.80px;       /* 1.440rem */
+  --text-h3: 24.00px;       /* 1.200rem */
+  --text-lg: 20.00px;       /* 1.000rem — lead / large body */
+  --text-base: 16.67px;     /* 0.833rem — body */
+  --text-sm: 13.89px;       /* 0.694rem — small / labels */
+  --text-xs: 11.57px;       /* 0.579rem — caption / legal */
+
+  /* ---- Line heights ---- */
+  --leading-tight: 1.12;    /* display / headings */
+  --leading-snug: 1.3;      /* subheads */
+  --leading-normal: 1.5;    /* body */
+  --leading-relaxed: 1.65;  /* long-form (Open Sans) */
+
+  /* ---- Letter spacing ---- */
+  --tracking-tight: -0.02em;   /* large display */
+  --tracking-snug: -0.01em;    /* headings */
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;     /* eyebrows / all-caps labels */
+  --tracking-wider: 0.12em;    /* small caps tags */
+
+  /* ---- Semantic roles ---- */
+  --title-font: var(--font-sans);
+  --title-weight: var(--weight-extrabold);
+  --heading-weight: var(--weight-bold);
+  --eyebrow-weight: var(--weight-semibold);
+  --body-font: var(--font-sans);
+  --body-weight: var(--weight-regular);
+}
