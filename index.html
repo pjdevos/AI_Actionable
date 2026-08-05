@@ -440,7 +440,10 @@ aside.verdict { position: sticky; top: 88px; }
 .timeline .uncertain-tag { color: var(--c-yellow); font-family: var(--mono); font-size: .74rem; }
 
 /* decision map */
-.map-wrap { overflow-x: auto; }
+/* the map is wider than a phone: it scrolls inside its own box and must never widen
+   the page. min-width:0 is what lets it shrink inside the grid on the start screen. */
+.map-wrap { overflow-x: auto; max-width: 100%; min-width: 0; }
+.start-disclosures > details, details.disclosure > .body { min-width: 0; }
 .map { min-width: 640px; }
 .map text { font: 11px system-ui, sans-serif; fill: var(--text-muted); }
 .map .box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
@@ -1227,6 +1230,23 @@ footer.site .meta-line { margin-top: 22px; padding-top: 14px; border-top: 1px so
     "start.modelSummary": "How this tool models the AI Act (and why there is more than one answer)",
     "start.shortCircuitsLabel": "Short-circuits",
     "start.changelogSummary": "What changed in this version",
+    "start.mapSummary": "See the whole decision tree before you start",
+
+    "map.notSure": "not sure",
+    "map.addsCard": "adds this card",
+    "map.then": "then",
+    "map.thenLong": "carries on into the overlay questions",
+    "map.ifAnyItem": "if any item applies",
+    "map.ifAnyItemLong": "if at least one item applies, this card stacks on the tier",
+    "map.noTier": "no tier was set",
+    "map.noTierLong": "no tier was set along the way, so the result is minimal risk",
+    "map.autoDerives": "auto-derives {items}",
+    "map.autoDerivesLong": "an earlier answer settles this one: {items} is filled in and locked",
+    "map.legend.answer": "an answer",
+    "map.legend.unsure": "“I'm not sure” (routes conservatively, flags a review)",
+    "map.legend.engine": "what happens once a category is reached",
+    "map.legend.crosslink": "an earlier answer that settles a later question",
+    "map.download": "Download the diagram (.svg)",
 
     "progress.label": "Progress",
     "progress.state.current": "current step",
@@ -1411,6 +1431,10 @@ footer.site .meta-line { margin-top: 22px; padding-top: 14px; border-top: 1px so
       <details class="disclosure">
         <summary id="start-model-summary"></summary>
         <div class="body" id="start-model"></div>
+      </details>
+      <details class="disclosure" id="start-map-toggle">
+        <summary id="start-map-summary"></summary>
+        <div class="body"><div class="map-wrap" id="start-map-holder"></div></div>
       </details>
       <details class="disclosure">
         <summary id="start-changelog-summary"></summary>
@@ -1655,6 +1679,20 @@ function createEngine(tree, opts = {}) {
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const node = (id) => tree.nodes[id];
 
+  /* Where the flow goes once the spine reaches a tier (SPEC §7). The JSON cannot
+     express this, so it lives here — in one place, used by both submit() and the
+     decision map, so the two can never disagree. null means "stop". */
+  function nextAfterOutcome(outcomeId) {
+    if (outcomeId === "OUT_OF_SCOPE") return null;
+    return outcomeId === "PROHIBITED" ? "G0_gpai" : "T0_transparency";  // banned skips transparency
+  }
+  const outcomeWithTier = (tier) =>
+    Object.keys(tree.outcomes).find(id => tree.outcomes[id].tier === tier) || null;
+  const transparencyCollector = () =>
+    Object.keys(tree.nodes).find(id => tree.nodes[id].setsFlag === "transparency") || null;
+  const resultNodeId = () =>
+    Object.keys(tree.nodes).find(id => tree.nodes[id].type === "result") || null;
+
   /* flatten a catalog (flat items, or Annex III areas) and resolve ticked ids */
   function catalogItems(n) {
     const cat = tree.catalog[n.checklist] || tree.catalog[n.reference];
@@ -1759,8 +1797,9 @@ function createEngine(tree, opts = {}) {
     let next = option.next;
     if (outcomeIds.has(next)) {
       state.flags.primaryTier = next;
-      if (next === "OUT_OF_SCOPE") { state.currentNodeId = "RESULT"; state.finished = true; return state; }
-      next = next === "PROHIBITED" ? "G0_gpai" : "T0_transparency";   // banned skips transparency
+      const after = nextAfterOutcome(next);
+      if (after === null) { state.currentNodeId = "RESULT"; state.finished = true; return state; }
+      next = after;
     }
     state.currentNodeId = next;
     if (next === "RESULT" || node(next).type === "result") {
@@ -1858,6 +1897,156 @@ function createEngine(tree, opts = {}) {
     });
   }
 
+  /* ---- decision map ----------------------------------------------------
+     The graph the map is drawn from. It lives in the engine because it encodes
+     routing, not looks: four result cards (minimal risk, the transparency overlay
+     and the two GPAI cards) are never an option's `next` — the engine derives them
+     from the accumulated flags, and without these arrows they would sit on the map
+     unexplained. render-decision-tree.py builds the same model in Python for the
+     static diagram in diagram/; keep the two in step. */
+  function mapGraph() {
+    const nodes = [], edges = [];
+    const addEdge = (src, dst, label, short, style) => {
+      if (!src || !dst || !(src in tree.nodes || src in tree.outcomes)) return;
+      if (!(dst in tree.nodes || dst in tree.outcomes)) return;
+      edges.push({ src, dst, label, short, style });
+    };
+
+    for (const [id, n] of Object.entries(tree.nodes)) {
+      const kind = n.type || "question";
+      const cat = tree.catalog[n.checklist] || tree.catalog[n.reference];
+      const count = cat ? (cat.items ? cat.items.length
+        : (cat.areas || []).reduce((sum, a) => sum + (a.useCases || []).length, 0)) : 0;
+      const sub = [
+        (n.legalText || {}).articleRef || n.articleRef,
+        count ? `${count} items` : "",
+        n.optional ? "optional" : ""
+      ].filter(Boolean).join(" · ");
+      nodes.push({ key: id, kind, title: kind === "result" ? tt("result.pathResultLabel") : n.text, sub });
+    }
+    for (const [id, oc] of Object.entries(tree.outcomes)) {
+      nodes.push({ key: id, kind: "outcome", title: shortOf(oc),
+        sub: (oc.legalRefs || []).slice(0, 2).join(" · "), color: oc.color, icon: pres(oc).icon });
+    }
+
+    for (const [id, n] of Object.entries(tree.nodes)) {
+      if ((n.type || "question") === "context") {
+        addEdge(id, n.next, tt("context.saveContinue"), tt("question.continue").toLowerCase(), "answer");
+        continue;
+      }
+      for (const o of n.options || []) {
+        const unsure = !!o.flagsReview;
+        addEdge(id, o.next, o.label, unsure ? tt("map.notSure") : String(o.value), unsure ? "unsure" : "answer");
+        if (o.setsGpai) {
+          addEdge(id, outcomeWithTier(o.setsGpai), o.label, tt("map.addsCard"), "engine");
+        }
+      }
+    }
+    for (const id of Object.keys(tree.outcomes)) {
+      const after = nextAfterOutcome(id);
+      if (after) addEdge(id, after, tt("map.thenLong"), tt("map.then"), "engine");
+    }
+    addEdge(transparencyCollector(), outcomeWithTier("transparency"),
+      tt("map.ifAnyItemLong"), tt("map.ifAnyItem"), "engine");
+    addEdge(resultNodeId(), outcomeWithTier("minimal_risk"),
+      tt("map.noTierLong"), tt("map.noTier"), "engine");
+
+    /* cross-links: found in the data, not assumed */
+    const rules = (tree.crossLinks || {}).rules || [];
+    if (rules.some(r => r.id === "biometrics-to-transparency")) {
+      const collector = transparencyCollector();
+      for (const [id, n] of Object.entries(tree.nodes)) {
+        const cat = tree.catalog[n.reference] || tree.catalog[n.checklist];
+        const implied = ((cat || {}).areas || []).flatMap(a =>
+          (a.useCases || []).flatMap(u => u.impliesTransparency || []));
+        if (implied.length && collector && collector !== id) {
+          const ids = [...new Set(implied)];
+          addEdge(id, collector, tt("map.autoDerivesLong", { items: ids.join(", ") }),
+            tt("map.autoDerives", { items: ids.join(", ") }), "crosslink");
+        }
+      }
+    }
+
+    /* order: by phase, then by distance from the start (depth alone interleaves the
+       phases, because T0 and G0 are reachable earlier than the last tier question) */
+    const flowEdges = edges.filter(e => ["answer", "unsure", "engine"].includes(e.style));
+    const outOf = {};
+    for (const e of flowEdges) (outOf[e.src] = outOf[e.src] || []).push(e.dst);
+    const start = tree.nodes.S0_ai_system ? "S0_ai_system" : Object.keys(tree.nodes)[0];
+    const depth = { [start]: 0 };
+    const queue = [start];
+    while (queue.length) {
+      const cur = queue.shift();
+      for (const nxt of outOf[cur] || []) {
+        if (!(nxt in depth)) { depth[nxt] = depth[cur] + 1; queue.push(nxt); }
+      }
+    }
+    const maxDepth = Math.max(0, ...Object.values(depth));
+    const phaseIndex = {};
+    (phaseDefs || []).forEach((p, i) => (p.nodes || []).forEach(k => { phaseIndex[k] = i; }));
+    const lastPhase = (phaseDefs || []).length;
+
+    const flow = nodes.filter(n => n.kind !== "outcome").sort((a, b) =>
+      (phaseIndex[a.key] ?? lastPhase) - (phaseIndex[b.key] ?? lastPhase)
+      || (depth[a.key] ?? maxDepth + 1) - (depth[b.key] ?? maxDepth + 1)
+      || a.key.localeCompare(b.key));
+    flow.forEach((n, i) => { n.col = 0; n.row = i; });
+
+    /* each result card sits beside the earliest box that can produce it */
+    const rowOf = {};
+    flow.forEach(n => { rowOf[n.key] = n.row; });
+    const taken = new Set();
+    for (const card of nodes.filter(n => n.kind === "outcome")
+      .sort((a, b) => (depth[a.key] ?? 99) - (depth[b.key] ?? 99))) {
+      const sources = edges.filter(e => e.dst === card.key && e.src in rowOf).map(e => rowOf[e.src]);
+      let row = sources.length ? Math.min(...sources) : 0;
+      while (taken.has(row)) row += 1;
+      taken.add(row);
+      card.col = 1; card.row = row;
+    }
+    return { nodes, edges, phases: phaseDefs || [] };
+  }
+
+  /* which boxes and arrows the user actually went through */
+  function pathTaken() {
+    const nodeKeys = new Set(state.answers.map(a => a.nodeId));
+    const edgeKeys = new Set();
+    for (const a of state.answers) {
+      const n = node(a.nodeId);
+      if (!n) continue;
+      let target = null;
+      if ((n.type || "question") === "context") target = n.next;
+      else {
+        const opt = (n.options || []).find(o => o.value === a.value);
+        target = opt ? opt.next : null;
+        if (opt && opt.setsGpai) {
+          const card = outcomeWithTier(opt.setsGpai);
+          if (card) { edgeKeys.add(`${a.nodeId}>${card}`); nodeKeys.add(card); }
+        }
+      }
+      if (!target) continue;
+      edgeKeys.add(`${a.nodeId}>${target}`);
+      if (tree.outcomes[target]) {
+        nodeKeys.add(target);
+        const after = nextAfterOutcome(target);
+        if (after) edgeKeys.add(`${target}>${after}`);
+      }
+    }
+    if (state.finished) {
+      const cards = compileCards().map(c => c.id);
+      cards.forEach(id => nodeKeys.add(id));
+      if (cards.includes("TRANSPARENCY")) {
+        const c = transparencyCollector();
+        if (c) edgeKeys.add(`${c}>${outcomeWithTier("transparency")}`);
+      }
+      if (state.flags.primaryTier === "MINIMAL_RISK") {
+        nodeKeys.add(resultNodeId());
+        edgeKeys.add(`${resultNodeId()}>${outcomeWithTier("minimal_risk")}`);
+      }
+    }
+    return { nodes: nodeKeys, edges: edgeKeys };
+  }
+
   function verdict() {
     const lines = [];
     const byNode = {};
@@ -1927,6 +2116,7 @@ function createEngine(tree, opts = {}) {
     submit, back, editFrom,
     compileCards, groupObligations, hasHiddenObligations, notesFor,
     phases, verdict, selectedItems, catalogItems, shortOf, pres,
+    mapGraph, pathTaken, nextAfterOutcome,
     reset() { state = freshState(); stack = []; return state; }
   };
 }
@@ -2044,6 +2234,14 @@ function renderStart(sources) {
   $("#btn-restart-label").textContent = t("chrome.restart");
   $("#start-model-summary").textContent = t("start.modelSummary");
   $("#start-changelog-summary").textContent = t("start.changelogSummary");
+  $("#start-map-summary").textContent = t("start.mapSummary");
+  /* drawn on first open, not on load: it is a big SVG and most readers head straight
+     into the questions. SPEC §5.1 keeps the full tree out of the assessment itself. */
+  $("#start-map-toggle").addEventListener("toggle", (e) => {
+    if (e.target.open && !$("#start-map-holder").innerHTML) {
+      $("#start-map-holder").innerHTML = mapPanel({ highlight: false });
+    }
+  });
   $("#btn-start").innerHTML = `${esc(t("start.button"))}${icon("arrowRight")}`;
   $("#start-facts").innerHTML = [1, 2, 3].map(i =>
     `<div class="f"><b>${esc(t(`start.fact${i}.label`))}</b><span>${esc(t(`start.fact${i}.text`))}</span></div>`).join("");
@@ -2506,76 +2704,243 @@ function renderResult() {
   const roles = $("#btn-roles");
   if (roles) roles.onclick = () => { showAllRoles = !showAllRoles; renderResult(); };
   $("#map-toggle").addEventListener("toggle", (e) => {
-    if (e.target.open && !$("#map-holder").innerHTML) $("#map-holder").innerHTML = decisionMapSVG();
+    if (e.target.open && !$("#map-holder").innerHTML) $("#map-holder").innerHTML = mapPanel({ highlight: true });
   });
   $("#result-h").focus();
 }
 
-/* ---------- decision map ---------- */
-function decisionMapSVG() {
-  const flow = Object.entries(TREE.nodes).filter(([, n]) => n.type !== "result").map(([id]) => id);
-  const taken = new Set(E.state.answers.map(a => a.nodeId));
-  const takenEdges = new Set(E.state.answers.map(a => {
-    const n = TREE.nodes[a.nodeId];
-    if (n.type === "context") return `${a.nodeId}>${n.next}`;
-    const o = (n.options || []).find(x => x.value === a.value);
-    return `${a.nodeId}>${o ? o.next : ""}`;
-  }));
+/* ---------- decision map ----------------------------------------------------
+   Drawn at runtime from E.mapGraph(), so it always matches the JSON that is loaded
+   (including a translated one) and can highlight the path the user actually took.
+   render-decision-tree.py produces the same picture as a static file for the repo;
+   the layout rules are deliberately identical. */
+const MAP = {
+  pad: 22, gutter: 44, colW: 320, gap: 86, boxMinH: 40,
+  titleH: 15, subH: 12.5, vGap: 36, wrapTitle: 42, wrapSub: 48,
+  bandHead: 22, bandFoot: 8   // headroom so the phase label is not behind a box
+};
 
-  const rowH = 58, boxW = 250, boxH = 38, x1 = 10, x2 = 330, pad = 18;
-  const rows = {};
-  flow.forEach((id, i) => { rows[id] = i; });
-  const outcomeRows = {};
-  flow.forEach(id => {
-    for (const o of TREE.nodes[id].options || []) {
-      if (TREE.outcomes[o.next] && outcomeRows[o.next] === undefined) outcomeRows[o.next] = rows[id];
-    }
-  });
-  const used = new Set();
-  for (const k of Object.keys(outcomeRows)) {
-    let r = outcomeRows[k];
-    while (used.has(r)) r += 1;
-    outcomeRows[k] = r; used.add(r);
+function wrapText(text, width) {
+  const words = String(text == null ? "" : text).split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = "";
+  for (const w of words) {
+    if (!line.length) line = w;
+    else if ((line + " " + w).length <= width) line += " " + w;
+    else { lines.push(line); line = w; }
   }
-  const maxRow = Math.max(...Object.values(rows), ...Object.values(outcomeRows));
-  const h = (maxRow + 1) * rowH + pad;
-  const cy = (r) => pad + r * rowH + boxH / 2;
-  const parts = [];
+  if (line) lines.push(line);
+  return lines.length ? lines : [""];
+}
 
-  flow.forEach(id => {
-    const n = TREE.nodes[id];
-    const targets = n.type === "context" ? [{ next: n.next }] : (n.options || []);
-    targets.forEach(o => {
-      const on = takenEdges.has(`${id}>${o.next}`);
-      const fromY = cy(rows[id]);
-      if (TREE.outcomes[o.next]) {
-        const toY = cy(outcomeRows[o.next]);
-        parts.push(`<path class="edge ${on ? "on" : ""}" d="M ${x1 + boxW} ${fromY} C ${x1 + boxW + 40} ${fromY}, ${x2 - 40} ${toY}, ${x2} ${toY}"/>`);
-      } else if (rows[o.next] !== undefined) {
-        const toY = cy(rows[o.next]);
-        parts.push(`<path class="edge ${on ? "on" : ""}" d="M ${x1 + boxW / 2} ${fromY + boxH / 2} L ${x1 + boxW / 2} ${toY - boxH / 2}"/>`);
-      } else {
-        parts.push(`<path class="edge ${on ? "on" : ""}" d="M ${x1 + boxW / 2} ${fromY + boxH / 2} L ${x1 + boxW / 2} ${h - 6}"/>`);
+/* palette: CSS variables when drawn in the page (so it follows the theme), resolved
+   hex when exported to a standalone file where those variables do not exist */
+function mapPalette(resolve) {
+  const css = getComputedStyle(document.documentElement);
+  const pick = (name, fallback) => {
+    if (!resolve) return `var(${name})`;
+    const v = css.getPropertyValue(name).trim();
+    return v || fallback;
+  };
+  return {
+    ink: pick("--text", "#14181f"),
+    muted: pick("--text-muted", "#5b6472"),
+    rule: pick("--border", "#dce0e6"),
+    accent: pick("--accent", "#1d4ed8"),
+    surface: pick("--surface", "#ffffff"),
+    band: pick("--surface-2", "#f1f3f6"),
+    bg: pick("--bg", "#ffffff"),
+    tier: (c) => pick(`--c-${c || "grey"}`, "#4b5563"),
+    tierBg: (c) => pick(`--c-${c || "grey"}-bg`, "#eef0f3")
+  };
+}
+
+function decisionMapSVG({ highlight = true, resolveColors = false } = {}) {
+  const g = E.mapGraph();
+  const path = highlight ? E.pathTaken() : { nodes: new Set(), edges: new Set() };
+  const P = mapPalette(resolveColors);
+  const M = MAP;
+  const X0 = M.pad + M.gutter;
+  const X1 = X0 + M.colW + M.gap;
+  const outW = M.colW - 40;
+
+  /* measure and place */
+  const box = {};
+  let y = M.pad + M.bandHead;
+  for (const n of g.nodes.filter(n => n.col === 0).sort((a, b) => a.row - b.row)) {
+    const title = wrapText(n.title, M.wrapTitle);
+    const sub = n.sub ? wrapText(n.sub, M.wrapSub) : [];
+    const h = Math.max(M.boxMinH, 30 + title.length * M.titleH + sub.length * M.subH);
+    box[n.key] = { x: X0, y, w: M.colW, h, title, sub, node: n };
+    y += h + M.vGap;
+  }
+  for (const n of g.nodes.filter(n => n.col === 1).sort((a, b) => a.row - b.row)) {
+    const title = wrapText(n.title, 34);
+    const sub = n.sub ? wrapText(n.sub, 40) : [];
+    const h = Math.max(34, 24 + title.length * M.titleH + sub.length * M.subH);
+    const sources = g.edges.filter(e => e.dst === n.key && box[e.src]).map(e => box[e.src].y);
+    let top = sources.length ? Math.min(...sources) : M.pad + 6;
+    while (Object.values(box).some(b => b.x === X1 && Math.abs(b.y - top) < h + 14)) top += h + 16;
+    box[n.key] = { x: X1, y: top, w: outW, h, title, sub, node: n, outcome: true };
+  }
+
+  const width = X1 + outW + M.pad;
+  const height = Math.max(...Object.values(box).map(b => b.y + b.h)) + 58;
+  const out = [];
+
+  /* phase bands */
+  g.phases.forEach((phase, i) => {
+    const members = (phase.nodes || []).map(k => box[k]).filter(Boolean);
+    if (!members.length) return;
+    const top = Math.min(...members.map(b => b.y)) - M.bandHead;
+    const bot = Math.max(...members.map(b => b.y + b.h)) + M.bandFoot;
+    out.push(`<rect x="${X0 - 12}" y="${top}" width="${M.colW + 24}" height="${bot - top}" rx="12"
+      fill="${P.band}" stroke="${P.rule}" stroke-dasharray="3 3" opacity="${i % 2 ? "1" : ".55"}"/>`);
+    out.push(`<text x="${X0 - 4}" y="${top + 14}" font-size="10" font-weight="700" fill="${P.muted}"
+      letter-spacing=".06em">${esc(String(phase.label || "").toUpperCase())}</text>`);
+  });
+
+  /* arrows: merge parallel answers, route around skipped rows, label with a halo */
+  const order = g.nodes.filter(n => n.col === 0).sort((a, b) => a.row - b.row).map(n => n.key);
+  const rowIndex = {};
+  order.forEach((k, i) => { rowIndex[k] = i; });
+  const mergeClass = (style) => (style === "answer" || style === "unsure" ? "answer" : style);
+
+  const merged = new Map();
+  for (const e of g.edges) {
+    const key = `${e.src}|${e.dst}|${mergeClass(e.style)}`;
+    const slot = merged.get(key) || { src: e.src, dst: e.dst, cls: mergeClass(e.style), labels: [], styles: new Set(), on: false };
+    if (!slot.labels.includes(e.short)) slot.labels.push(e.short);
+    slot.styles.add(e.style);
+    slot.on = slot.on || path.edges.has(`${e.src}>${e.dst}`);
+    merged.set(key, slot);
+  }
+
+  for (const s of merged.values()) {
+    const a = box[s.src], b = box[s.dst];
+    if (!a || !b) continue;
+    const isFlowPair = a.x === b.x;
+    const skips = isFlowPair && Math.abs((rowIndex[s.dst] ?? 0) - (rowIndex[s.src] ?? 0)) > 1;
+    const stroke = s.on ? P.accent : (s.cls === "answer" ? P.muted : P.accent);
+    const dash = s.cls === "crosslink" ? "1 5" : s.cls === "engine" ? "2 4"
+      : (s.styles.has("answer") ? "none" : "5 4");
+    const w = s.on ? 2.6 : 1.5;
+    let d, lx, ly, anchor;
+
+    if (skips) {
+      const ya = a.y + a.h / 2, yb = b.y + b.h / 2;
+      const bulge = X0 - M.gutter + (s.cls === "crosslink" ? 2 : 20);
+      d = `M ${a.x} ${ya} C ${bulge} ${ya}, ${bulge} ${yb}, ${b.x} ${yb}`;
+      lx = X0 - M.gutter + (s.cls === "crosslink" ? 3 : 22);
+      ly = (ya + yb) / 2 + (s.cls === "crosslink" ? 11 : 0);
+      anchor = "start";
+    } else if (isFlowPair) {
+      const x = a.x + a.w / 2;
+      d = `M ${x} ${a.y + a.h} L ${x} ${b.y}`;
+      lx = x + 8; ly = (a.y + a.h + b.y) / 2 + 3; anchor = "start";
+    } else if (b.x > a.x) {
+      const y1 = a.y + a.h / 2, y2 = b.y + b.h / 2, mx = (a.x + a.w + b.x) / 2;
+      d = `M ${a.x + a.w} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${b.x} ${y2}`;
+      lx = b.x - 7; ly = y2 - 6; anchor = "end";
+    } else {
+      const y1 = a.y + a.h / 2, y2 = b.y + b.h / 2, mx = (a.x + b.x + b.w) / 2;
+      d = `M ${a.x} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${b.x + b.w} ${y2}`;
+      lx = mx; ly = (y1 + y2) / 2 - 6; anchor = "middle";
+    }
+    out.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${w}" stroke-dasharray="${dash}"
+      marker-end="url(#mk-${s.on ? "on" : s.cls === "answer" ? "plain" : "eng"})"/>`);
+    let label = s.labels.join(" / ");
+    if (label.length > 38) label = label.slice(0, 36) + "…";
+    out.push(`<text x="${lx}" y="${ly}" font-size="10" fill="${s.on ? P.accent : P.muted}" text-anchor="${anchor}"
+      stroke="${P.bg}" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">${esc(label)}</text>`);
+  }
+
+  /* boxes */
+  for (const [key, b] of Object.entries(box)) {
+    const n = b.node;
+    const on = path.nodes.has(key);
+    if (b.outcome) {
+      const ink = P.tier(n.color), fill = P.tierBg(n.color);
+      out.push(`<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="9" fill="${fill}"
+        stroke="${ink}" stroke-width="${on ? 3 : 1.6}" ${on ? "" : 'opacity=".85"'}/>`);
+      let ty = b.y + 18;
+      for (const line of b.title) {
+        out.push(`<text x="${b.x + 11}" y="${ty}" font-size="11.5" font-weight="700" fill="${ink}">${esc(line)}</text>`);
+        ty += M.titleH;
       }
-    });
-  });
-  flow.forEach(id => {
-    const y = pad + rows[id] * rowH;
-    parts.push(`<g><rect class="box ${taken.has(id) ? "on" : ""}" x="${x1}" y="${y}" width="${boxW}" height="${boxH}" rx="8"/>
-      <text class="lbl" x="${x1 + 12}" y="${y + 16}">${esc(id.split("_")[0])} — ${esc(String(TREE.nodes[id].text).slice(0, 34))}…</text>
-      <text x="${x1 + 12}" y="${y + 29}">${esc(String(TREE.nodes[id].articleRef || "").slice(0, 42))}</text></g>`);
-  });
-  Object.entries(outcomeRows).forEach(([oid, r]) => {
-    const oc = TREE.outcomes[oid];
-    const y = pad + r * rowH;
-    parts.push(`<g><rect class="box ${E.state.flags.primaryTier === oid ? "on" : ""}" x="${x2}" y="${y}" width="${boxW}" height="${boxH}" rx="8" style="stroke: var(--c-${oc.color})"/>
-      <text class="lbl" x="${x2 + 12}" y="${y + 23}">${esc(E.shortOf(oc))}</text></g>`);
-  });
+      for (const line of b.sub) {
+        out.push(`<text x="${b.x + 11}" y="${ty}" font-size="9.5" fill="${P.muted}">${esc(line)}</text>`);
+        ty += M.subH;
+      }
+      continue;
+    }
+    const dash = n.kind === "context" ? ' stroke-dasharray="6 4"' : "";
+    out.push(`<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="9" fill="${P.surface}"
+      stroke="${on ? P.accent : P.ink}" stroke-width="${on ? 2.6 : 1.5}"${dash}/>`);
+    out.push(`<text x="${b.x + 11}" y="${b.y + 16}" font-size="9.5" font-weight="700" fill="${P.accent}"
+      letter-spacing=".05em">${esc(key)}</text>`);
+    let ty = b.y + 32;
+    for (const line of b.title) {
+      out.push(`<text x="${b.x + 11}" y="${ty}" font-size="11.5" fill="${P.ink}">${esc(line)}</text>`);
+      ty += M.titleH;
+    }
+    for (const line of b.sub) {
+      out.push(`<text x="${b.x + 11}" y="${ty}" font-size="9.5" fill="${P.muted}">${esc(line)}</text>`);
+      ty += M.subH;
+    }
+  }
 
-  return `<svg class="map" viewBox="0 0 ${x2 + boxW + 10} ${h}" width="${x2 + boxW + 10}" height="${h}" role="img"
-    aria-label="${esc(t("result.mapAria"))}">${parts.join("")}</svg>
+  /* legend */
+  const legend = [
+    ["answer", t("map.legend.answer")],
+    ["unsure", t("map.legend.unsure")],
+    ["engine", t("map.legend.engine")],
+    ["crosslink", t("map.legend.crosslink")]
+  ];
+  let lx = M.pad, ly = height - 26;
+  for (const [cls, text] of legend) {
+    const dash = cls === "crosslink" ? "1 5" : cls === "engine" ? "2 4" : cls === "unsure" ? "5 4" : "none";
+    const stroke = cls === "answer" || cls === "unsure" ? P.muted : P.accent;
+    out.push(`<path d="M ${lx} ${ly} l 24 0" stroke="${stroke}" stroke-width="1.6" stroke-dasharray="${dash}"/>`);
+    out.push(`<text x="${lx + 30}" y="${ly + 4}" font-size="10" fill="${P.muted}">${esc(text)}</text>`);
+    lx += 40 + text.length * 5.4;
+    if (lx > width - 200) { lx = M.pad; ly += 16; }
+  }
+
+  const defs = `<defs>
+    <marker id="mk-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="${P.muted}"/></marker>
+    <marker id="mk-eng" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="${P.accent}"/></marker>
+    <marker id="mk-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="${P.accent}"/></marker>
+  </defs>`;
+
+  return `<svg class="map" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img"
+    xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    aria-label="${esc(t("result.mapAria"))}">${defs}<rect width="${width}" height="${height}" fill="${P.bg}"/>${out.join("")}</svg>`;
+}
+
+/* the map panel: the drawing, a caption and a download */
+function mapPanel({ highlight }) {
+  return `${decisionMapSVG({ highlight })}
+    <div class="actions no-print" style="margin-top:10px">
+      <button class="btn small" data-download-map="${highlight ? "path" : "plain"}">${esc(t("map.download"))}</button>
+    </div>
     <p style="font-size:.85rem;color:var(--text-muted);margin-top:8px">${esc(t("result.mapCaption"))}</p>`;
 }
+
+function downloadMapSVG(highlight) {
+  const svg = decisionMapSVG({ highlight, resolveColors: true });
+  const blob = new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n${svg}`], { type: "image/svg+xml;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${t("export.filename")}-decision-tree-${new Date().toISOString().slice(0, 10)}.svg`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+document.addEventListener("click", (ev) => {
+  const btn = ev.target.closest("[data-download-map]");
+  if (btn) downloadMapSVG(btn.dataset.downloadMap === "path");
+});
 
 /* ---------- markdown export ---------- */
 function downloadSummary(heading, cards, triggered) {

@@ -386,10 +386,11 @@ def nice_dates(value):
 def emit_svg(g: Graph) -> str:
     PAD, COL_W, GAP = 28, 330, 90
     GUTTER = 46            # room to the left for arrows that skip a row
+    BAND_HEAD = 22         # headroom so a phase label is not hidden behind a box
     X0 = PAD + GUTTER
     X1 = X0 + COL_W + GAP
     LINE_H, TITLE_H, SUB_H = 16, 15, 13
-    HEAD = 74
+    HEAD = 74 + BAND_HEAD
 
     boxes, y = {}, HEAD
     for node in g.flow_nodes():
@@ -400,7 +401,7 @@ def emit_svg(g: Graph) -> str:
         h = 14 + len(title_lines) * TITLE_H + (len(sub_lines) + len(note_lines)) * SUB_H + 12
         boxes[node.key] = dict(x=X0, y=y, w=COL_W, h=h, title=title_lines,
                                sub=sub_lines, notes=note_lines)
-        y += h + 34          # room for the answer label in the gap
+        y += h + 36          # room for the answer label and the next phase band
     flow_bottom = y
 
     for node in g.outcome_nodes():
@@ -431,8 +432,8 @@ def emit_svg(g: Graph) -> str:
         members = [boxes[k] for k in phase.get("nodes", []) if k in boxes]
         if not members:
             continue
-        top = min(b["y"] for b in members) - 12
-        bot = max(b["y"] + b["h"] for b in members) + 12
+        top = min(b["y"] for b in members) - BAND_HEAD
+        bot = max(b["y"] + b["h"] for b in members) + 8
         out.append(f'<rect x="{X0 - 14}" y="{top}" width="{COL_W + 28}" height="{bot - top}" rx="12" '
                    f'fill="{PHASE_BANDS[i % len(PHASE_BANDS)]}" stroke="{RULE}" stroke-dasharray="3 3"/>')
         out.append(f'<text x="{X0 - 6}" y="{top + 15}" font-size="11" font-weight="700" '

@@ -355,6 +355,74 @@ scenario("“I'm not sure” records a review flag and routes conservatively", (
   check("and flags it for review", gpai.flags.reviewFlags.length, 1);
 });
 
+/* ------------------------------------------------------- decision map */
+scenario("Decision map is complete and follows the path", () => {
+  const E = newEngine();
+  const g = E.mapGraph();
+  const keys = new Set(g.nodes.map(n => n.key));
+
+  check("every node in the tree is on the map",
+    Object.keys(tree.nodes).filter(k => !keys.has(k)), []);
+  /* the bug this guards: four cards are never an option's `next`, and an earlier
+     version of the map simply left them out */
+  check("every result card is on the map",
+    Object.keys(tree.outcomes).filter(k => !keys.has(k)), []);
+  check("every card has at least one incoming arrow",
+    Object.keys(tree.outcomes).filter(k => !g.edges.some(e => e.dst === k)), []);
+  check("no arrow points at something that is not on the map",
+    g.edges.filter(e => !keys.has(e.src) || !keys.has(e.dst)).map(e => `${e.src}>${e.dst}`), []);
+
+  const engineEdge = (src, dst) => g.edges.some(e => e.src === src && e.dst === dst && e.style === "engine");
+  check("the transparency overlay is drawn from the node that collects the items",
+    engineEdge("T0_transparency", "TRANSPARENCY"), true);
+  check("minimal risk is drawn from the result node", engineEdge("RESULT", "MINIMAL_RISK"), true);
+  check("the systemic GPAI card is drawn from the question that sets it",
+    engineEdge("G1_systemic", "GPAI_MODEL_SYSTEMIC"), true);
+  check("a tier carries on into the overlays",
+    engineEdge("HIGH_RISK_ANNEX_III", "T0_transparency"), true);
+  check("banned skips transparency and goes to the GPAI question",
+    engineEdge("PROHIBITED", "G0_gpai") && !engineEdge("PROHIBITED", "T0_transparency"), true);
+  check("out of scope stops", g.edges.some(e => e.src === "OUT_OF_SCOPE"), false);
+  check("the cross-link is drawn as its own arrow",
+    g.edges.some(e => e.src === "S4_annex_iii_area" && e.dst === "T0_transparency" && e.style === "crosslink"), true);
+  check("the map routing agrees with the engine",
+    [E.nextAfterOutcome("OUT_OF_SCOPE"), E.nextAfterOutcome("PROHIBITED"), E.nextAfterOutcome("MINIMAL_RISK")],
+    [null, "G0_gpai", "T0_transparency"]);
+
+  check("phases are handed to the map", g.phases.length, 4);
+  check("every flow box has a row", g.nodes.filter(n => n.col === 0 && n.row === undefined).length, 0);
+
+  /* highlighting: walk scenario 7 and check what lights up */
+  const r = run([
+    ...OPEN(), ["S2_annex_i_product", NO], ["S4_annex_iii_area", tick("Annex III(1)(c)")],
+    ["S5_profiling", NO], ["S6_filter", NO], ["T0_transparency", GO], ["G0_gpai", NO]
+  ]);
+  const p = r.E.pathTaken();
+  check("answered questions are highlighted",
+    ["S0_ai_system", "C0_context", "S1_prohibited", "S4_annex_iii_area", "T0_transparency"]
+      .filter(k => !p.nodes.has(k)), []);
+  check("the tier card it reached is highlighted", p.nodes.has("HIGH_RISK_ANNEX_III"), true);
+  check("the transparency card it earned is highlighted", p.nodes.has("TRANSPARENCY"), true);
+  check("a card it did not reach is not highlighted", p.nodes.has("PROHIBITED"), false);
+  check("the arrow into the tier is highlighted", p.edges.has("S6_filter>HIGH_RISK_ANNEX_III"), true);
+  check("the engine arrow back into the overlays is highlighted",
+    p.edges.has("HIGH_RISK_ANNEX_III>T0_transparency"), true);
+
+  const gpai = run([
+    ...OPEN(), ["S2_annex_i_product", NO], ["S4_annex_iii_area", NONE],
+    ["T0_transparency", GO], ["G0_gpai", YES], ["G1_systemic", YES]
+  ]);
+  const pg = gpai.E.pathTaken();
+  check("the GPAI card is highlighted from the answer that sets it",
+    pg.edges.has("G1_systemic>GPAI_MODEL_SYSTEMIC") && pg.nodes.has("GPAI_MODEL_SYSTEMIC"), true);
+  check("minimal risk is highlighted when no tier was set",
+    pg.edges.has("RESULT>MINIMAL_RISK"), true);
+
+  const oos = run([["S0_ai_system", NO]]);
+  check("out of scope highlights only the first question and its card",
+    [...oos.E.pathTaken().nodes].sort(), ["OUT_OF_SCOPE", "S0_ai_system"]);
+});
+
 /* ------------------------------------------------------------ navigation */
 scenario("Navigation: back, edit, reset", () => {
   const E = newEngine();

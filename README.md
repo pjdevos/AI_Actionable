@@ -100,8 +100,24 @@ has no handler for, an obligation that is not `{role, text}`.
 
 ## The diagram
 
-`render-decision-tree.py` draws the tree straight from the two JSON files, so it never needs
-reprogramming when the content changes — add a question, rename a node, change an answer or add
+It exists in two places, both generated from the same JSON — never hand-drawn:
+
+**In the app.** Two collapsed panels: *See the whole decision tree before you start* on the start
+screen, and *Show the decision map, with your path highlighted* on the result screen. Both are
+drawn at runtime from the loaded JSON, so they follow a translated file, follow the light/dark
+theme, and the result-screen one highlights the boxes and arrows the reader actually went through.
+Each panel has a **Download the diagram (.svg)** button that writes a standalone file with the
+colours resolved. They stay collapsed by default and never appear during the questions, per
+SPEC §5.1 (a full tree mid-assessment overwhelms rather than helps).
+
+The graph model behind it lives in the engine (`mapGraph()`, `pathTaken()`), not in the drawing
+code, because it encodes routing rather than looks — and so the tests can cover it. They do: 24
+checks assert that every node and every result card is on the map with at least one incoming
+arrow. That guards a real defect this work uncovered — the earlier in-app map silently omitted
+four of the nine result cards.
+
+**As files, for the repo and for print.** `render-decision-tree.py` draws the same tree straight
+from the two JSON files, so it never needs reprogramming when the content changes — add a question, rename a node, change an answer or add
 an outcome and the diagram follows on the next run. Standard library only, no graphviz needed.
 
 ```bash
