@@ -1,0 +1,86 @@
+%%{init: {'flowchart': {'curve': 'basis'}} }%%
+flowchart TD
+  subgraph scope["Scope & basics"]
+    direction TB
+    S0_ai_system{{"<b>S0_ai_system</b><br/>Is your system an artificial<br/>intelligence tool?<br/><i>Art. 3(1)</i>"}}
+    C0_context(["<b>C0_context</b><br/>First, a little about you (optional)<br/><i>optional, never changes the tier</i>"])
+    S1_prohibited{{"<b>S1_prohibited</b><br/>Does your system do any of the things<br/>the AI Act bans outright?<br/><i>Art. 5 · 8 items to tick<br/>(prohibitedPractices)</i>"}}
+  end
+  subgraph tier["Risk tier"]
+    direction TB
+    S2_annex_i_product{{"<b>S2_annex_i_product</b><br/>Is your system part of a physical<br/>product that already has EU safety<br/>rules?<br/><i>Art. 6(1); Art. 3(14); Annex I</i>"}}
+    S3_annex_i_tpca{{"<b>S3_annex_i_tpca</b><br/>Does that product need to be checked<br/>by an independent body before it's<br/>sold?<br/><i>Art. 6(1)(b)</i>"}}
+    S4_annex_iii_area{{"<b>S4_annex_iii_area</b><br/>Is your system used for one of the<br/>sensitive purposes on the AI Act's<br/>high-risk list?<br/><i>Art. 6(2); Annex III · 25 items for<br/>reference (annexIII)</i>"}}
+    S5_profiling{{"<b>S5_profiling</b><br/>Does your system build a profile of<br/>individual people?<br/><i>Art. 6(3), third sub-paragraph; Art. 4(4)<br/>GDPR</i>"}}
+    S6_filter{{"<b>S6_filter</b><br/>Could your system be exempt because it<br/>only plays a limited, supporting role?<br/><i>Art. 6(3)(a)-(d); Recital 53 · 4 items to<br/>tick (filterConditions)</i>"}}
+  end
+  subgraph transparency["Transparency"]
+    direction TB
+    T0_transparency{{"<b>T0_transparency</b><br/>Does your system need to be open with<br/>people in any of these ways?<br/><i>Art. 50 · 4 items to tick<br/>(transparencyTriggers)</i>"}}
+  end
+  subgraph gpai["GPAI"]
+    direction TB
+    G0_gpai{{"<b>G0_gpai</b><br/>Did you build a general-purpose<br/>('foundation') AI model?<br/><i>Art. 3(63); Art. 53</i>"}}
+    G1_systemic{{"<b>G1_systemic</b><br/>Is your model one of the most<br/>powerful, 'systemic-risk' models?<br/><i>Art. 51; Art. 55</i>"}}
+  end
+  RESULT["<b>RESULT</b><br/>Result"]
+  OUT_OF_SCOPE[["<b>Not an AI system</b><br/>Art. 3(1)"]]
+  PROHIBITED[["<b>Banned</b><br/>Art. 5 · applies: 2 February 2025"]]
+  HIGH_RISK_ANNEX_I[["<b>High-risk — safety product</b><br/>Art. 6(1) · Art. 8-15 · Art. 16-27 ·<br/>applies: originally 2 August 2027,<br/>postponed by the AI Omnibus to 2 August<br/>2028"]]
+  HIGH_RISK_ANNEX_III[["<b>High-risk — listed use</b><br/>Art. 6(2) · Art. 8-15 · Art. 16-27 ·<br/>applies: originally 2 August 2026,<br/>postponed by the AI Omnibus to 2<br/>December 2027"]]
+  NOT_HIGH_RISK_FILTERED[["<b>Not high-risk (exempt)</b><br/>Art. 6(3) · Art. 6(4) · Art. 49(2) ·<br/>applies: originally 2 August 2026,<br/>postponed by the AI Omnibus to 2<br/>December 2027"]]
+  TRANSPARENCY[["<b>Transparency duties</b><br/>Art. 50 · applies: 2 August 2026"]]
+  GPAI_MODEL[["<b>GPAI model</b><br/>Art. 53 · Art. 2(12) · Annexes XI, XII ·<br/>applies: 2 August 2025"]]
+  MINIMAL_RISK[["<b>Minimal risk</b><br/>Art. 95 · Art. 2(12)"]]
+  GPAI_MODEL_SYSTEMIC[["<b>GPAI model — systemic risk</b><br/>Art. 51 · Art. 52 · Art. 53 · applies: 2<br/>August 2025"]]
+  S0_ai_system -->|"Yes, it is an artificial intelligence tool"| C0_context
+  S0_ai_system -->|"No, it only runs pre-written code / fixed rules"| OUT_OF_SCOPE
+  S0_ai_system -.->|"not sure: I'm not sure whether it 'infers'"| C0_context
+  C0_context -->|"save and continue / skip"| S1_prohibited
+  S1_prohibited -->|"Yes, at least one of these applies"| PROHIBITED
+  S1_prohibited -->|"No, none of these apply"| S2_annex_i_product
+  S2_annex_i_product -->|"Yes, it's a regulated product or a safety part of one"| S3_annex_i_tpca
+  S2_annex_i_product -->|"No"| S4_annex_iii_area
+  S2_annex_i_product -.->|"not sure: I'm not sure"| S3_annex_i_tpca
+  S3_annex_i_tpca -->|"Yes, an independent body must check it"| HIGH_RISK_ANNEX_I
+  S3_annex_i_tpca -->|"No, we're allowed to self-certify"| S4_annex_iii_area
+  S3_annex_i_tpca -.->|"not sure: I'm not sure"| S4_annex_iii_area
+  S4_annex_iii_area -->|"Yes, it matches at least one listed use"| S5_profiling
+  S4_annex_iii_area -->|"No, none of these match"| T0_transparency
+  S4_annex_iii_area -.->|"not sure: I'm not sure"| S5_profiling
+  S5_profiling -->|"Yes, it profiles people"| HIGH_RISK_ANNEX_III
+  S5_profiling -->|"No"| S6_filter
+  S5_profiling -.->|"not sure: I'm not sure"| S6_filter
+  S6_filter -->|"Yes, one of these fits and it doesn't drive the decision"| NOT_HIGH_RISK_FILTERED
+  S6_filter -->|"No, none really fits (or it does affect the outcome)"| HIGH_RISK_ANNEX_III
+  S6_filter -.->|"not sure: I'm not sure"| HIGH_RISK_ANNEX_III
+  T0_transparency -->|"Continue"| G0_gpai
+  G0_gpai -->|"Yes, I provide a general-purpose model"| G1_systemic
+  G0_gpai -->|"No, it's a specific-purpose system, or I use someone else'…"| RESULT
+  G0_gpai -.->|"not sure: I'm not sure"| RESULT
+  G1_systemic -->|"Yes (over the 10^25 FLOP bar, or designated)"| RESULT
+  G1_systemic -->|"No / it's a smaller model"| RESULT
+  G1_systemic -.->|"not sure: I'm not sure"| RESULT
+  PROHIBITED ==>|"then: banned overrides everything; transparency is moot"| G0_gpai
+  HIGH_RISK_ANNEX_I ==>|"then: carries on into the overlays"| T0_transparency
+  HIGH_RISK_ANNEX_III ==>|"then: carries on into the overlays"| T0_transparency
+  NOT_HIGH_RISK_FILTERED ==>|"then: carries on into the overlays"| T0_transparency
+  MINIMAL_RISK ==>|"then: carries on into the overlays"| T0_transparency
+  TRANSPARENCY ==>|"then: carries on into the overlays"| T0_transparency
+  GPAI_MODEL ==>|"then: carries on into the overlays"| T0_transparency
+  GPAI_MODEL_SYSTEMIC ==>|"then: carries on into the overlays"| T0_transparency
+  G1_systemic ==>|"then: adds the model card: Yes (over the 10^25 FLOP bar, or desi…"| GPAI_MODEL_SYSTEMIC
+  G1_systemic ==>|"then: adds the model card: No / it's a smaller model"| GPAI_MODEL
+  G1_systemic ==>|"then: adds the model card: I'm not sure"| GPAI_MODEL
+  T0_transparency ==>|"then: if at least one item applies (stacks on the tier)"| TRANSPARENCY
+  RESULT ==>|"then: no tier was set along the way"| MINIMAL_RISK
+  S4_annex_iii_area -.->|"cross-link: Annex III(1)(b), Annex III(1)(c) auto-derives 50-3"| T0_transparency
+  style OUT_OF_SCOPE fill:#eef0f3,stroke:#4b5563,stroke-width:2px,color:#14181f
+  style PROHIBITED fill:#fdeceb,stroke:#c81e1e,stroke-width:2px,color:#14181f
+  style HIGH_RISK_ANNEX_I fill:#fdefe4,stroke:#b3450b,stroke-width:2px,color:#14181f
+  style HIGH_RISK_ANNEX_III fill:#fdefe4,stroke:#b3450b,stroke-width:2px,color:#14181f
+  style NOT_HIGH_RISK_FILTERED fill:#fdf3d7,stroke:#8a6100,stroke-width:2px,color:#14181f
+  style TRANSPARENCY fill:#e8eeff,stroke:#1d4ed8,stroke-width:2px,color:#14181f
+  style GPAI_MODEL fill:#f1e9fe,stroke:#6528c4,stroke-width:2px,color:#14181f
+  style MINIMAL_RISK fill:#e6f5ea,stroke:#11703a,stroke-width:2px,color:#14181f
+  style GPAI_MODEL_SYSTEMIC fill:#f1e9fe,stroke:#6528c4,stroke-width:2px,color:#14181f

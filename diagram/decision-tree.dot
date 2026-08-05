@@ -1,0 +1,82 @@
+digraph decision_tree {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=11, splines=spline];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#ffffff", color="#14181f"];
+  edge [fontname="Helvetica", fontsize=9, color="#5b6472"];
+  labelloc="t"; label="EU AI Act – Risk Tier Self-Assessment — v1.2.0 · plain wording · generated from decision-tree.json";
+  subgraph cluster_0 {
+    label="Scope & basics"; style="rounded,dashed"; color="#b9c0ca"; fontsize=10;
+    "S0_ai_system" [label="S0_ai_system\nIs your system an artificial\nintelligence tool?\nArt. 3(1)", shape=box];
+    "C0_context" [label="C0_context\nFirst, a little about you (optional)\noptional, never changes the tier", shape=box, style="rounded,dashed,filled"];
+    "S1_prohibited" [label="S1_prohibited\nDoes your system do any of the things\nthe AI Act bans outright?\nArt. 5 · 8 items to tick (prohibitedPractices)", shape=box];
+  }
+  subgraph cluster_1 {
+    label="Risk tier"; style="rounded,dashed"; color="#b9c0ca"; fontsize=10;
+    "S2_annex_i_product" [label="S2_annex_i_product\nIs your system part of a physical\nproduct that already has EU safety\nrules?\nArt. 6(1); Art. 3(14); Annex I", shape=box];
+    "S3_annex_i_tpca" [label="S3_annex_i_tpca\nDoes that product need to be checked by\nan independent body before it's sold?\nArt. 6(1)(b)", shape=box];
+    "S4_annex_iii_area" [label="S4_annex_iii_area\nIs your system used for one of the\nsensitive purposes on the AI Act's high-\nrisk list?\nArt. 6(2); Annex III · 25 items for reference\n(annexIII)", shape=box];
+    "S5_profiling" [label="S5_profiling\nDoes your system build a profile of\nindividual people?\nArt. 6(3), third sub-paragraph; Art. 4(4) GDPR", shape=box];
+    "S6_filter" [label="S6_filter\nCould your system be exempt because it\nonly plays a limited, supporting role?\nArt. 6(3)(a)-(d); Recital 53 · 4 items to tick\n(filterConditions)", shape=box];
+  }
+  subgraph cluster_2 {
+    label="Transparency"; style="rounded,dashed"; color="#b9c0ca"; fontsize=10;
+    "T0_transparency" [label="T0_transparency\nDoes your system need to be open with\npeople in any of these ways?\nArt. 50 · 4 items to tick\n(transparencyTriggers)", shape=box];
+  }
+  subgraph cluster_3 {
+    label="GPAI"; style="rounded,dashed"; color="#b9c0ca"; fontsize=10;
+    "G0_gpai" [label="G0_gpai\nDid you build a general-purpose\n('foundation') AI model?\nArt. 3(63); Art. 53", shape=box];
+    "G1_systemic" [label="G1_systemic\nIs your model one of the most powerful,\n'systemic-risk' models?\nArt. 51; Art. 55", shape=box];
+  }
+  "RESULT" [label="RESULT\nResult\nall applicable cards are compiled here"];
+  "OUT_OF_SCOPE" [label="Not an AI system\nArt. 3(1)", shape=box3d, fillcolor="#eef0f3", color="#4b5563", penwidth=2];
+  "PROHIBITED" [label="Banned\nArt. 5 · applies: 2 February 2025", shape=box3d, fillcolor="#fdeceb", color="#c81e1e", penwidth=2];
+  "HIGH_RISK_ANNEX_I" [label="High-risk — safety product\nArt. 6(1) · Art. 8-15 · Art. 16-27 · applies:\noriginally 2 August 2027, postponed by the AI\nOmnibus to 2 August 2028", shape=box3d, fillcolor="#fdefe4", color="#b3450b", penwidth=2];
+  "HIGH_RISK_ANNEX_III" [label="High-risk — listed use\nArt. 6(2) · Art. 8-15 · Art. 16-27 · applies:\noriginally 2 August 2026, postponed by the AI\nOmnibus to 2 December 2027", shape=box3d, fillcolor="#fdefe4", color="#b3450b", penwidth=2];
+  "NOT_HIGH_RISK_FILTERED" [label="Not high-risk (exempt)\nArt. 6(3) · Art. 6(4) · Art. 49(2) · applies:\noriginally 2 August 2026, postponed by the AI\nOmnibus to 2 December 2027", shape=box3d, fillcolor="#fdf3d7", color="#8a6100", penwidth=2];
+  "TRANSPARENCY" [label="Transparency duties\nArt. 50 · applies: 2 August 2026", shape=box3d, fillcolor="#e8eeff", color="#1d4ed8", penwidth=2];
+  "GPAI_MODEL" [label="GPAI model\nArt. 53 · Art. 2(12) · Annexes XI, XII ·\napplies: 2 August 2025", shape=box3d, fillcolor="#f1e9fe", color="#6528c4", penwidth=2];
+  "MINIMAL_RISK" [label="Minimal risk\nArt. 95 · Art. 2(12)", shape=box3d, fillcolor="#e6f5ea", color="#11703a", penwidth=2];
+  "GPAI_MODEL_SYSTEMIC" [label="GPAI model — systemic risk\nArt. 51 · Art. 52 · Art. 53 · applies: 2\nAugust 2025", shape=box3d, fillcolor="#f1e9fe", color="#6528c4", penwidth=2];
+  "S0_ai_system" -> "C0_context" [label="Yes, it is an artificial intelligence tool", style=solid];
+  "S0_ai_system" -> "OUT_OF_SCOPE" [label="No, it only runs pre-written code / fixed rules", style=solid];
+  "S0_ai_system" -> "C0_context" [label="I'm not sure whether it 'infers'", style=dashed];
+  "C0_context" -> "S1_prohibited" [label="save and continue / skip", style=solid];
+  "S1_prohibited" -> "PROHIBITED" [label="Yes, at least one of these applies", style=solid];
+  "S1_prohibited" -> "S2_annex_i_product" [label="No, none of these apply", style=solid];
+  "S2_annex_i_product" -> "S3_annex_i_tpca" [label="Yes, it's a regulated product or a safety part of one", style=solid];
+  "S2_annex_i_product" -> "S4_annex_iii_area" [label="No", style=solid];
+  "S2_annex_i_product" -> "S3_annex_i_tpca" [label="I'm not sure", style=dashed];
+  "S3_annex_i_tpca" -> "HIGH_RISK_ANNEX_I" [label="Yes, an independent body must check it", style=solid];
+  "S3_annex_i_tpca" -> "S4_annex_iii_area" [label="No, we're allowed to self-certify", style=solid];
+  "S3_annex_i_tpca" -> "S4_annex_iii_area" [label="I'm not sure", style=dashed];
+  "S4_annex_iii_area" -> "S5_profiling" [label="Yes, it matches at least one listed use", style=solid];
+  "S4_annex_iii_area" -> "T0_transparency" [label="No, none of these match", style=solid];
+  "S4_annex_iii_area" -> "S5_profiling" [label="I'm not sure", style=dashed];
+  "S5_profiling" -> "HIGH_RISK_ANNEX_III" [label="Yes, it profiles people", style=solid];
+  "S5_profiling" -> "S6_filter" [label="No", style=solid];
+  "S5_profiling" -> "S6_filter" [label="I'm not sure", style=dashed];
+  "S6_filter" -> "NOT_HIGH_RISK_FILTERED" [label="Yes, one of these fits and it doesn't drive the decision", style=solid];
+  "S6_filter" -> "HIGH_RISK_ANNEX_III" [label="No, none really fits (or it does affect the outcome)", style=solid];
+  "S6_filter" -> "HIGH_RISK_ANNEX_III" [label="I'm not sure", style=dashed];
+  "T0_transparency" -> "G0_gpai" [label="Continue", style=solid];
+  "G0_gpai" -> "G1_systemic" [label="Yes, I provide a general-purpose model", style=solid];
+  "G0_gpai" -> "RESULT" [label="No, it's a specific-purpose system, or I use someone else's model", style=solid];
+  "G0_gpai" -> "RESULT" [label="I'm not sure", style=dashed];
+  "G1_systemic" -> "RESULT" [label="Yes (over the 10^25 FLOP bar, or designated)", style=solid];
+  "G1_systemic" -> "RESULT" [label="No / it's a smaller model", style=solid];
+  "G1_systemic" -> "RESULT" [label="I'm not sure", style=dashed];
+  "PROHIBITED" -> "G0_gpai" [label="banned overrides everything; transparency is moot", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "HIGH_RISK_ANNEX_I" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "HIGH_RISK_ANNEX_III" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "NOT_HIGH_RISK_FILTERED" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "MINIMAL_RISK" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "TRANSPARENCY" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "GPAI_MODEL" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "GPAI_MODEL_SYSTEMIC" -> "T0_transparency" [label="carries on into the overlays", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "G1_systemic" -> "GPAI_MODEL_SYSTEMIC" [label="adds the model card: Yes (over the 10^25 FLOP bar, or designated)", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "G1_systemic" -> "GPAI_MODEL" [label="adds the model card: No / it's a smaller model", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "G1_systemic" -> "GPAI_MODEL" [label="adds the model card: I'm not sure", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "T0_transparency" -> "TRANSPARENCY" [label="if at least one item applies (stacks on the tier)", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "RESULT" -> "MINIMAL_RISK" [label="no tier was set along the way", style=dotted, color="#1d4ed8", penwidth=1.8];
+  "S4_annex_iii_area" -> "T0_transparency" [label="Annex III(1)(b), Annex III(1)(c) auto-derives 50-3", style=dotted, color="#1d4ed8", constraint=false];
+}

@@ -98,6 +98,50 @@ has no handler for, an obligation that is not `{role, text}`.
   first one). A node missing from that list joins the first phase of its module automatically,
   so the stepper cannot go blank. Phases a run never visits are marked *n/a*, never left blank.
 
+## The diagram
+
+`render-decision-tree.py` draws the tree straight from the two JSON files, so it never needs
+reprogramming when the content changes — add a question, rename a node, change an answer or add
+an outcome and the diagram follows on the next run. Standard library only, no graphviz needed.
+
+```bash
+python render-decision-tree.py
+```
+
+Writes into `diagram/`:
+
+| File | Use |
+|---|---|
+| `decision-tree.md` | the diagram as Mermaid in Markdown — **GitHub renders it inline**, no tools |
+| `decision-tree.svg` | self-contained, opens in any browser, prints |
+| `decision-tree.mmd` | Mermaid source, for pasting elsewhere |
+| `decision-tree.dot` | Graphviz source; also rendered to `.svg`/`.png` if `dot` is installed |
+
+Options: `--wording legal` swaps every question for the regulation's own wording from
+`node.legalText` (the default `plain` uses the questions as the tool asks them); `--lang nl`
+reads `decision-tree.nl.json` + `ui.nl.json`; `--formats svg`; `--out FOLDER`; `--check`
+validates and writes nothing.
+
+How to read it: a plain arrow is an answer · a dashed arrow is "I'm not sure" (merged with the
+answer arrow when both lead to the same place, so the label reads e.g. "yes / not sure") · a
+dotted blue arrow is what the engine does once the spine reaches a tier · a wide-swinging dotted
+arrow is a cross-link, where an earlier answer settles a later question · a dashed box is the
+optional context step · a coloured box is a result card in its tier colour · the grey bands are
+the four phases of the stepper.
+
+Four result cards are never the target of an answer — minimal risk, the transparency overlay and
+the two GPAI cards are derived by the engine from the accumulated flags. The generator draws those
+arrows too (from `setsGpai` and `setsFlag` in the data), so nothing floats unexplained. The one
+thing written in the script rather than read from the JSON is the engine's post-tier routing
+(`ENGINE_ROUTING`), because the JSON has no way to express it; it mirrors SPEC §7.
+
+`--check` also reports structural problems and exits non-zero, so it doubles as a data check:
+unreachable nodes, outcomes no answer can produce, dangling `next` targets, and outcome colours
+outside the palette.
+
+**Regenerate after editing the JSON** — the files in `diagram/` are generated and will otherwise
+go stale. Each carries a "generated" header saying which version it came from.
+
 ## Translating
 
 Copy both files to `decision-tree.nl.json` and `ui.nl.json`, translate them (leave keys, node
