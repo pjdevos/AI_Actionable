@@ -20,11 +20,11 @@ external requests — no Google Fonts, no CDN.
 | `fari-theme.css` | This project's layer: the two added warm colours and the seven-tier mapping. Kept as a file for review; its contents are inlined in `index.html`. |
 | `theme-preview.html` | Static design review of the target look. |
 | `check-theme.py` | Re-verifies contrast, brand rules and token resolution. |
-| `embed-fonts.py` | Re-inlines the woff2 files as base64 after a font change. |
+| `embed-assets.py` | Re-inlines the woff2 fonts and the two attribution logos as base64. |
 
 ```bash
 python check-theme.py     # contrast + brand rules + token resolution
-python embed-fonts.py     # after changing the font files
+python embed-assets.py    # after replacing a font or a logo file
 ```
 
 **Seven tiers on a cool palette.** FARI has three status colours and no orange or yellow, so
@@ -45,11 +45,13 @@ the accents also clear 4.5:1 except teal — which is why body text on a tint al
 - **Icons.** Lucide 0.460.0, inlined as SVG paths. The Lucide CDN `<script>` is deliberately not
   loaded (SPEC §11 is explicit about this, and it would break a file:// or sandboxed page). Five
   paths come verbatim from `theme-preview.html`; all 21 were rendered and eyeballed.
-- **ERDF attribution is mandatory,** so the footer carries the funding line in EN, NL and FR plus
-  a link to the ERDF site, and it is one of the few footer parts that still prints. **The logos
-  are not in the export**: drop `fari-logo-color.png` and `vub-ulb-logo.png` next to `index.html`
-  and they appear automatically; until then the logo row stays hidden rather than showing broken
-  images. Get them from the FARI communication kit.
+- **ERDF attribution is mandatory,** so the footer carries the funding line in EN, NL and FR, a
+  link to the ERDF site, and the FARI and VUB-ULB logos. All of it prints. The logos are not part
+  of the design-system export: the full-resolution PNGs sit in this folder as the source, and
+  `embed-assets.py` writes copies scaled to twice their display height into `index.html` as
+  data URIs (430 KB of PNG becomes 34 KB). They are inlined rather than referenced so the
+  attribution travels with the file and survives being printed — print dialogs routinely drop
+  background images and broken `<img>` sources. Replace a logo, re-run the script.
 
 ## Two data files, deliberately separate
 
@@ -92,7 +94,7 @@ node sync-embedded-json.mjs
 node test-scenarios.mjs
 ```
 
-94 checks, including the twelve SPEC §8 scenarios. The suite extracts the engine out of
+118 checks, including the twelve SPEC §8 scenarios. The suite extracts the engine out of
 `index.html`, so it tests the code that actually ships. It fails if the embedded copies have
 drifted, if the code asks for a `ui` key the JSON lacks, or if a tier has no `presentation`
 entry.
